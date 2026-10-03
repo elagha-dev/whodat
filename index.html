@@ -134,6 +134,7 @@ button.alt{background:var(--card);color:var(--ink)}
 .avs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px}
 button.ae{width:auto;flex:none;font-size:24px;line-height:1;padding:3px;box-shadow:none;border:0;background:transparent;border-radius:50%}.ae svg{display:block;width:42px;height:42px;border-radius:50%;border:2px solid var(--line)}
 button.ae.on{box-shadow:0 0 0 3px #ffb800}button.ae:active:not(:disabled),button.ae.pr:not(:disabled){background:transparent;transform:none;box-shadow:none}button.ae.on:active:not(:disabled){box-shadow:0 0 0 3px #ffb800}
+.chip .st{width:9px;height:9px;border-radius:50%;background:#12a36a;flex:none;margin-left:2px}.chip.away{opacity:.6}.chip.away .st{background:var(--mute)}
 .chip.done .av{background:#12a36a;color:#fff;border-color:#12a36a}
 @keyframes shine{from{background-position:0 0,0 0}to{background-position:0 0,100% 0}}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.done{color:#5be3a1;background:linear-gradient(#173324,#173324) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%}}
@@ -332,7 +333,9 @@ var LV={room:null,code:'',name:'',sig:'',done:''};
 function lvP(){var L=LV.room?LV.room.peers().filter(function(p){return p.kind=='viewer'&&p.presence.n&&!(p.isMe&&!p.sameTab)}):[];L.forEach(function(p){if(p.presence.e)AVM[p.presence.n]=p.presence.e});return L}
 function lvMe(){return lvP().filter(function(p){return p.isMe})[0]}
 function lvH(){var h=lvP().filter(function(p){return p.presence.h})[0];return h?h.presence:null}
-function chip(n,f){return '<span class="chip'+(f?' done':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+'</span>'}
+function chip(n,f,off){return '<span class="chip'+(f?' done':'')+(off?' away':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+(off===undefined?'':'<i class="st" title="'+(off?'Away':'Online')+'"></i>')+'</span>'}
+function plHtml(H){return lvP().sort(function(a,b){return a.presence.n<b.presence.n?-1:1}).map(function(p){return chip(p.presence.n,H.ph=='facts'?!!p.presence.f:undefined,!!p.presence.off)}).join('')}
+function plLive(H){var e=$('pl');if(!e)return;var h=plHtml(H);if(e._h!==h){e._h=h;e.innerHTML=h}}
 function tick(P,H){var key=H.r+'.'+H.t;if(LV.done==key)return;var cd=cardOf(H.t,H.ord,H.gm,H.qs),gp=P.filter(function(p){return p.presence.n==cd.g})[0],g=gp&&gp.presence.g;
 if(H.sy&&H.gm=='q'&&H.qt=='ans'&&H.ord.length==2){var ap2=P.filter(function(p){return p.presence.n==cd.o})[0],jv2=ap2&&ap2.presence.jv;if(!(jv2&&jv2.r===H.r&&jv2.t===H.t))return;LV.done=key;var sc2=Object.assign({},H.sc),ok2=!!jv2.j;if(ok2&&gp)sc2[gp.presence.n]=(sc2[gp.presence.n]||0)+1;LV.room.presence({rv:1,lg:'',ok:ok2?1:0,jd:0,sc:sc2,ra:now()});return}
 if(!(g&&g.r===H.r&&g.t===H.t))return;
@@ -355,7 +358,7 @@ function clock(){var H=lvH();if(!H)return;var me=lvMe();
 if(me&&me.presence.h&&(H.ph=='lobby'||H.ph=='facts'))lvP().forEach(function(p){if(!p.isMe&&p.presence.off&&now()-p.presence.off>45000)LV.room.drop(p.peer)});
 if(H.ph=='play'){var k=H.r+'.'+H.t;var nx=$('nxt');if(nx&&H.rv&&H.ra)nx.textContent=nxtLeft(H);if(!H.pz&&me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>7000&&LV.adv!==k){LV.adv=k;lvNext()}
 if(H.rv===0&&H.qa&&H.tq){var q=$('qtm');if(q){q.textContent=qleft(H);tmrTick(H)}if(!H.pz&&me&&me.presence.h&&now()-H.qa>H.tq*1000){var P2=lvP(),cd2=cardOf(H.t,H.ord,H.gm,H.qs),gp2=P2.filter(function(p){return p.presence.n==cd2.g})[0],g2=gp2&&gp2.presence.g;if(!(g2&&g2.r===H.r&&g2.t===H.t)&&LV.to!==k){LV.to=k;LV.done=k;LV.room.presence({rv:1,lg:'',ok:0,jd:0,sc:H.sc,ra:now(),to:1})}}}return}
-if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
+plLive(H);if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
 if(me&&me.presence.h&&P.length>=H.min&&LV.auto!=='l'){LV.auto='l';lvToFacts()}}
 async function lvOpen(code,name,host,resume){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
 LV.room=mkRoom(code,resume&&resume.pid,resume&&resume.seed);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
@@ -384,11 +387,11 @@ function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
 if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
 var host=!!me.presence.h,ph=H.ph,h='';
-if(ph=='lobby'){h='<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="count" style="margin:0">'+(H.gm=='q'?(H.qt=='ans'?'Questions · guess the answer'+(H.sy?' · say it out loud':''):'Questions · guess the person'):'Facts mode')+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips">'+names.map(function(n){return chip(n)}).join('')+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
+if(ph=='lobby'){h='<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="count" style="margin:0">'+(H.gm=='q'?(H.qt=='ans'?'Questions · guess the answer'+(H.sy?' · say it out loud':''):'Questions · guess the person'):'Facts mode')+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips" id="pl">'+plHtml(H)+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
 if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button>'}
 else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='';
 if(!me.presence.f)h+=how(3,H.gm=='q'?'Answer honestly. Others will guess it was you!':'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+factInputs(H.gm,H.qs)+'</div><button id="sf">Done →</button><div class="panel" style="margin-top:18px"><div class="chips" style="margin:0">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
-else h+=how(3,'Saved! Waiting for everyone else…')+'<div class="panel"><div class="chips">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
+else h+=how(3,'Saved! Waiting for everyone else…')+'<div class="panel"><div class="chips" id="pl">'+plHtml(H)+'</div></div>';
 }
 else if(ph=='play'){var n=total(H.ord,H.gm,H.qs),cd=cardOf(H.t,H.ord,H.gm,H.qs),g=cd.g,o=cd.o,mine=g==me.presence.n;
 if(!mine){var gp0=P.filter(function(p){return p.presence.n==g})[0],gv=gp0&&gp0.presence.g,b2=H.gm=='q'&&H.qt=='ans'&&H.ord.length==2&&!H.rv&&o==me.presence.n&&!(me.presence.jv&&me.presence.jv.r===H.r&&me.presence.jv.t===H.t),sayA=b2&&!!H.sy,jdg=b2&&!H.sy&&H.jd==H.t+1&&gv&&gv.r===H.r&&gv.t===H.t;
