@@ -153,7 +153,7 @@ button.alt{background:var(--card);color:var(--ink)}
 .gms{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button.gm{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px;font-size:18px;box-shadow:3px 3px 0 var(--shadow);position:relative}
 button.gm .e{font-size:28px;line-height:1.1}button.gm small{font-size:13px;font-weight:500;opacity:.8;line-height:1.2}
-button.gm.sel{background:var(--acc);color:#fff}button.gm.sel:after{content:"✓";position:absolute;top:8px;right:12px;font-size:18px}
+
 .ql{font-weight:700;margin:10px 2px 0}.ql:first-child{margin-top:0}
 .qbox{padding:18px 16px 26px}.qt{font-size:15px;color:var(--mute);font-weight:600;margin-bottom:8px}.qa{font-size:25px;font-weight:700;line-height:1.2}
 .dlgo{align-items:center;padding:20px;z-index:20}.dlg{border-radius:22px;max-width:360px;box-shadow:6px 6px 0 var(--shadow);text-align:center;padding:24px 20px 20px}.dlg p{margin:0 0 18px;font-size:21px;font-weight:600;line-height:1.25;word-break:break-word}.dlg .nav{margin:0}
@@ -164,6 +164,7 @@ button.gm.sel{background:var(--acc);color:#fff}button.gm.sel:after{content:"✓"
 .wsheet .panel{background:none;border:0;box-shadow:none;padding:0;margin-bottom:18px}
 .opts{display:grid;gap:10px}.opts button{background:var(--card);color:var(--ink);text-align:left;font-size:19px;line-height:1.25;padding:14px 16px}
 .seg{display:flex;gap:8px;margin-top:8px}.seg button{padding:10px 0;font-size:16px;box-shadow:none}.seg button.sel{background:var(--acc);color:#fff}
+button.gm.sel,.seg button.sel{color:#fff;border:3px solid transparent;background:linear-gradient(var(--acc),var(--acc)) padding-box,linear-gradient(110deg,var(--line) 0%,var(--line) 36%,#ffb800 46%,#fff4b8 50%,#ffb800 54%,var(--line) 64%,var(--line) 100%) border-box;background-size:100% 100%,280% 100%;animation:shine 2.4s ease-in-out infinite alternate}
 </style></head><body><main id="app"></main>
 <script>
 var FBC={apiKey:"AIzaSyBrtcq3XeAQt0LwZkr8xo2eTQyASnqVum0",authDomain:"whodattttt.firebaseapp.com",databaseURL:"https://whodattttt-default-rtdb.firebaseio.com",projectId:"whodattttt",appId:"1:712331315424:web:07c813ef92b0736f902885"};
