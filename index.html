@@ -122,6 +122,10 @@ button.alt{background:var(--card);color:var(--ink)}
 .chip{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:99px;padding:5px 12px 5px 5px;font-weight:600}
 .chip{border:2px solid transparent}
 .chip.done{font-weight:700;color:#0a7a4b;background:linear-gradient(#e6f8ee,#e6f8ee) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%;animation:shine 2s linear infinite alternate;box-shadow:0 0 10px rgba(255,200,0,.55)}
+.chip[data-pf]{cursor:pointer}
+.avs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px}
+button.ae{width:auto;flex:none;font-size:24px;line-height:1;padding:5px 9px;box-shadow:none;border-width:2px;background:var(--card);border-radius:12px}
+button.ae.on{border-color:#ffb800;box-shadow:0 0 0 2px #ffb800}
 .chip.done .av{background:#12a36a;color:#fff;border-color:#12a36a}
 @keyframes shine{from{background-position:0 0,0 0}to{background-position:0 0,100% 0}}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.done{color:#5be3a1;background:linear-gradient(#173324,#173324) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%}}
@@ -200,20 +204,29 @@ presence:function(patch){mine.onDisconnect().remove();return mine.update(patch)}
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){ref.off();mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
-var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'facts',qt:'who',qs:[],sy:false};
+var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'facts',qt:'who',qs:[],sy:false,av:''};
 if(PRE&&FBC){S.mode='live';S.step='lv';S.lvs='join'}
 var app=document.getElementById('app'),$=function(id){return document.getElementById(id)};
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
 function col(p){return C[S.players.indexOf(p)%10]}
-function av(p){return '<span class="av">'+esc(p.charAt(0).toUpperCase())+'</span>'}
+var AVM={},EMO=['😀','😎','🤠','🦊','🐼','🐸','🦄','🐙','🐯','🦁','🐵','🐧','👾','🤖','👻','🍕'];
+function profs(){try{return JSON.parse(localStorage.getItem('profiles')||'[]').map(function(x){return typeof x=='string'?{n:x,e:''}:x})}catch(e){return[]}}
+function loadAv(){profs().forEach(function(p){if(p.e)AVM[p.n]=p.e})}loadAv();
+function saveProf(n,e){try{var old=profs().filter(function(x){return x.n==n})[0],l=profs().filter(function(x){return x.n!=n});l.unshift({n:n,e:e||(old&&old.e)||''});localStorage.setItem('profiles',JSON.stringify(l.slice(0,12)));if(l[0].e)AVM[n]=l[0].e}catch(x){}}
+function profRow(skip){var l=profs().filter(function(p){return !skip||skip.indexOf(p.n)<0});if(!l.length)return '';return '<div class="lbl">Saved</div><div class="chips">'+l.map(function(p){return '<span class="chip" data-pf="'+esc(p.n)+'" data-pe="'+p.e+'">'+av(p.n)+esc(p.n)+' <a data-pr="'+esc(p.n)+'">✕</a></span>'}).join('')+'</div>'}
+function avPick(){return '<div class="lbl">Avatar</div><div class="avs">'+EMO.map(function(e){return '<button class="ae'+(S.av==e?' on':'')+'" data-ae="'+e+'" aria-label="Avatar '+e+'">'+e+'</button>'}).join('')+'</div>'}
+function hist(){try{return JSON.parse(localStorage.getItem('hist')||'[]')}catch(e){return[]}}
+function recHist(sc,gm){try{var s2=Object.keys(sc||{}).map(function(n){return [n,sc[n]]}).sort(function(a,b){return b[1]-a[1]});if(!s2.length)return;var id=gm+JSON.stringify(s2),l=hist();if(l[0]&&l[0].id==id&&Date.now()-l[0].t<300000)return;l.unshift({id:id,t:Date.now(),g:gm=='q'?'Questions':'Facts',s:s2});localStorage.setItem('hist',JSON.stringify(l.slice(0,30)))}catch(e){}}
+function showHist(){var l=hist(),d=document.createElement('div');d.className='ov';d.innerHTML='<div class="sheet"><h2>History</h2>'+(l.length?l.map(function(h){var w=h.s[0];return '<div class="panel" style="margin-bottom:10px"><div class="count" style="margin:0 0 6px">'+new Date(h.t).toLocaleDateString(undefined,{day:'numeric',month:'short'})+' · '+h.g+'</div>'+h.s.map(function(x,i){return '<div class="score"><span class="m">'+(['🥇','🥈','🥉'][i]||i+1)+'</span>'+av(x[0])+esc(x[0])+'<b>'+x[1]+'</b></div>'}).join('')+'</div>'}).join(''):'<p>No games yet.</p>')+(l.length?'<button class="alt" id="hc" style="margin-bottom:10px">Clear history</button>':'')+'<button id="hx">Close</button></div>';document.body.appendChild(d);d.onclick=function(e){if(e.target==d||e.target.id=='hx')d.remove();if(e.target.id=='hc'){try{localStorage.removeItem('hist')}catch(x){}d.remove()}}}
+function av(p){var e=AVM[p];return '<span class="av">'+(e?e:esc(p.charAt(0).toUpperCase()))+'</span>'}
 function how(n,t){return '<div class="how"><div>'+t+'</div></div>'}
 var ICON={leave:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg>',end:'<svg viewBox="0 0 24 24" width="14" height="14"><rect x="5" y="5" width="14" height="14" rx="3" fill="currentColor"/></svg>'};
 function hdr(k){var btn='',me;
 if(S.step=='lv'){if(S.lvs=='game'&&LV.room&&(me=lvMe()))btn=me.presence.h?'end':'leave'}
 else if(S.step!='mode')btn='end';
 var sw='';
-return '<div class="top"><div class="logo">Who Dat</div><div style="display:flex;gap:8px">'+sw+(btn?'<button class="alt hp q" id="rs" aria-label="'+(btn=='leave'?'Leave game':'End game')+'">'+ICON[btn]+'</button>':'')+'<button class="alt hp q" id="hp" aria-label="How to play">?</button></div></div>'}
+return '<div class="top"><div class="logo">Who Dat</div><div style="display:flex;gap:8px">'+sw+(btn?'<button class="alt hp q" id="rs" aria-label="'+(btn=='leave'?'Leave game':'End game')+'">'+ICON[btn]+'</button>':'')+'<button class="alt hp q" id="hi" aria-label="History">🕘</button><button class="alt hp q" id="hp" aria-label="How to play">?</button></div></div>'}
 function isSetup(){var k=S.step;if(k=='play'||k=='end')return false;if(k=='lv'&&S.lvs=='game'){var H=lvH();return !H||H.ph=='lobby'||H.ph=='facts'}return true}
 function wzb(k){var lv=S.mode=='live'||k=='mode',Lb=lv?['Mode','Lobby','Start']:['Rules','Players','Start'],m;
 if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2}[H.ph]||0:0}else m={mode:0,rules:0,setup:1,facts:2}[k];
@@ -252,12 +265,12 @@ mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color
 lv:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
 if(S.lvs=='cfg')return how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="cfgok">Save →</button></div>';
 if(S.lvs=='choose')return m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%" aria-label="Back">←</button></div>';
-if(S.lvs=='host')return m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+mnRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="create">Create →</button></div>';
-if(S.lvs=='join')return m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"></div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="joinGo">Join →</button></div>';
+if(S.lvs=='host')return m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+avPick()+profRow()+mnRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="create">Create →</button></div>';
+if(S.lvs=='join')return m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+avPick()+profRow()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="joinGo">Join →</button></div>';
 return m+lvGame()},
 rules:function(){return '<div class="panel">'+mnRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div>'+
 '<div class="nav"><button class="alt" id="bk0" aria-label="Back">←</button><button id="go0">Next →</button></div>'},
-setup:function(){return '<div class="panel"><div class="row"><input id="nm" placeholder="Name" maxlength="20" autocomplete="off"><button id="add">Add</button></div>'+
+setup:function(){return '<div class="panel"><div class="row"><input id="nm" placeholder="Name" maxlength="20" autocomplete="off"><button id="add">Add</button></div>'+avPick()+profRow(S.players)+
 '<div class="chips">'+S.players.map(function(p,i){return '<span class="chip">'+av(p)+esc(p)+' <a data-rm="'+i+'">✕</a></span>'}).join('')+'</div>'+
 '<div class="count">'+S.players.length+' / '+S.min+' players</div></div>'+
 '<div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="go"'+(S.players.length!=S.min?' disabled':'')+'>Next →</button></div>'},
@@ -273,12 +286,12 @@ if(S.picked===null){if(say)h+='<div class="panel" style="text-align:center"><div
 else if(S.jd)h+=sayUI(act);
 else{var ok=!!S.okv;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'Correct! +1':'Not quite')+'<small>It was '+(ans?'“'+esc(act)+'”':esc(o))+'</small></div><button id="next">'+(S.t<N-1?'Next player →':'See scores →')+'</button>'}
 return h},
-end:function(){var r=S.players.slice().sort(function(a,b){return S.score[b]-S.score[a]}),md=['','',''];
+end:function(){recHist(S.score,S.gm);var r=S.players.slice().sort(function(a,b){return S.score[b]-S.score[a]}),md=['','',''];
 return '<h2>Final scores</h2><div class="panel">'+r.map(function(p,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(p)+esc(p)+'<b>'+S.score[p]+'</b></div>'}).join('')+'</div>'+
 '<button id="again">Play again</button><button class="alt" id="reset" style="margin-top:14px">New players</button>'}
 };
 var LV={room:null,code:'',name:'',sig:'',done:''};
-function lvP(){return LV.room?LV.room.peers().filter(function(p){return p.kind=='viewer'&&p.presence.n&&!(p.isMe&&!p.sameTab)}):[]}
+function lvP(){var L=LV.room?LV.room.peers().filter(function(p){return p.kind=='viewer'&&p.presence.n&&!(p.isMe&&!p.sameTab)}):[];L.forEach(function(p){if(p.presence.e)AVM[p.presence.n]=p.presence.e});return L}
 function lvMe(){return lvP().filter(function(p){return p.isMe})[0]}
 function lvH(){var h=lvP().filter(function(p){return p.presence.h})[0];return h?h.presence:null}
 function chip(n,f){return '<span class="chip'+(f?' done':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+'</span>'}
@@ -308,7 +321,7 @@ async function lvOpen(code,name,host){if(!fbInit()){S.msg='Firebase is not set u
 LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
 try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
 LV.room.onPeers(onP);
-await LV.room.presence(host?{n:name,h:1,ph:'lobby',gm:S.gm,qt:S.qt,sy:S.sy?1:0,min:S.min,end:now()+S.dur*60000}:{n:name});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
+await LV.room.presence(host?{n:name,e:AVM[name]||'',h:1,ph:'lobby',gm:S.gm,qt:S.qt,sy:S.sy?1:0,min:S.min,end:now()+S.dur*60000}:{n:name,e:AVM[name]||''});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
 if(!host)setTimeout(function(){if(!lvH()){S.msg='No game found with code '+code;LV.room.leave();LV.room=null;S.lvs='join';R()}},4000)}
 function lvStart(){var ord=shuffle(lvP().filter(function(p){return p.presence.f}).map(function(p){return p.presence.n})),sc={};ord.forEach(function(n){sc[n]=0});LV.room.presence({ph:'play',ord:ord,t:0,rv:0,r:Date.now(),sc:sc,lg:null,jd:0})}
 function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
@@ -329,7 +342,7 @@ h='<div class="pc"><span>Card '+(H.t+1)+' of '+n+'</span><span>Your turn!</span>
 (ans?ansCard(H.qs,cd.qi,o,H.t+1):cardHTML(H.gm,H.qs,cd.qi,f,H.t+1));
 if(!H.rv){if(say)h+='<div class="panel" style="text-align:center"><div style="font-size:22px;font-weight:700">Say your guess out loud</div><div class="count" style="margin:6px 0 0">'+esc(o)+' will confirm…</div></div>';else if(pend&&locked){var aH=P.some(function(p){return p.presence.n==o});h+=aH?'<div class="panel" style="text-align:center"><div class="count" style="margin:0">You said</div><div style="font-size:22px;font-weight:700;margin:2px 0 14px">“'+esc(gg.v)+'”</div><div class="count" style="margin:0">'+esc(o)+' is checking…</div></div>':judgeUI(gg.v,(f||[])[cd.qi])}else if(!locked){if(txt)h+=txtIn();else if(ans)h+=ansOpts(H.ord.filter(function(x){return x!==g}),getF,cd.qi,H.t*3+H.r%7,'data-lg');else h+='<div class="grid">'+H.ord.filter(function(x){return x!==g}).map(function(x){return '<button data-lg="'+esc(x)+'">'+av(x)+esc(x)+'</button>'}).join('')+'</div>'}else h+='<div class="count">Locked in ✓</div>'}
 else{var ok=!!H.ok;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'You got it! +1':'Not quite')+'<small>It was '+(ans?'“'+esc((f||[])[cd.qi]||'')+'”':esc(o))+'</small></div><div class="count">Next card coming up…</div>'}}}
-else{var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h='<h2>Final scores</h2><div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'<div class="count">Waiting for the host to start another round</div>')}
+else{recHist(H.sc,H.gm);var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h='<h2>Final scores</h2><div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'<div class="count">Waiting for the host to start another round</div>')}
 return h}
 function dlg(msg,yes,fn){var d=document.createElement('div');d.className='ov dlgo';
 d.innerHTML='<div class="sheet dlg"><p>'+esc(msg)+'</p><div class="nav">'+(yes?'<button class="alt" id="dn">Cancel</button><button id="dy">'+esc(yes)+'</button>':'<button id="dy">OK</button>')+'</div></div>';
@@ -343,7 +356,11 @@ S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;
 function stopGame(){var me=LV.room&&lvMe();dlg(me?(me.presence.h?'Want to stop the game for everyone?':'Want to leave the game?'):'Want to stop the game?',me&&!me.presence.h?'Leave':'Stop game',function(){
 if(me&&me.presence.h){var rm=LV.room;rm.presence({ph:'closed'});LV.room=null;clearInterval(LV.iv);setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
 doReset('')})}
-function bind(){Array.prototype.forEach.call(app.querySelectorAll('[data-sy]'),function(b){b.onclick=function(){S.sy=b.dataset.sy=='1';R()}});
+function bind(){if($('hi'))$('hi').onclick=showHist;
+Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(b){b.onclick=function(){S.av=S.av==b.dataset.ae?'':b.dataset.ae;Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(x){x.classList.toggle('on',x.dataset.ae==S.av)})}});
+Array.prototype.forEach.call(app.querySelectorAll('[data-pf]'),function(c){c.onclick=function(){var i=$('nm');if(!i)return;i.value=c.dataset.pf;S.av=c.dataset.pe||'';if(S.av)AVM[c.dataset.pf]=S.av;if(S.step=='setup')$('add').click();else{Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(x){x.classList.toggle('on',x.dataset.ae==S.av)});i.focus()}}});
+Array.prototype.forEach.call(app.querySelectorAll('[data-pr]'),function(a){a.onclick=function(e){e.stopPropagation();var n=a.dataset.pr;try{localStorage.setItem('profiles',JSON.stringify(profs().filter(function(x){return x!=n})))}catch(x){}R()}});
+Array.prototype.forEach.call(app.querySelectorAll('[data-sy]'),function(b){b.onclick=function(){S.sy=b.dataset.sy=='1';R()}});
 Array.prototype.forEach.call(app.querySelectorAll('[data-qt]'),function(b){b.onclick=function(){S.qt=b.dataset.qt;S.min=Math.max(S.min,minFor());R()}});
 Array.prototype.forEach.call(app.querySelectorAll('[data-gm]'),function(b){b.onclick=function(){S.gm=b.dataset.gm;S.min=Math.max(S.min,minFor());R()}});
 if($('sw1'))$('sw1').onclick=function(){S.one=!S.one;if(S.one&&S.step!='mode'){S.mode='one';S.step='rules';S.lvs=''}else if(!S.one&&S.step!='mode'){S.step='mode';S.mode='';S.lvs=''}R()};if($('hp'))$('hp').onclick=help;if($('rs'))$('rs').onclick=stopGame;
@@ -361,8 +378,8 @@ q('hostb',function(){if(!FBC){S.lvs='cfg';S.nx='host'}else S.lvs='host';R()});q(
 q('cfgok',function(){var t=$('cfg').value,o={},re=/["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g,m;while((m=re.exec(t)))o[m[1]]=m[2];if(!o.apiKey||!(o.databaseURL||o.projectId)){S.msg='That does not look like a Firebase config. Copy the whole block.';R();return}if(!o.databaseURL)o.databaseURL='https://'+o.projectId+'-default-rtdb.firebaseio.com';FBC=o;try{localStorage.setItem('fbc',JSON.stringify(o))}catch(e){}S.lvs=S.nx||'choose';R()});
 q('sh',function(){var u=location.href.split('#')[0]+'#g='+LV.code;if(navigator.share)navigator.share({title:'Join my game',text:'Join with code '+LV.code,url:u}).catch(function(){});else if(navigator.clipboard){navigator.clipboard.writeText(u);$('sh').textContent='Link copied'}else dlg('Copy this link: '+u)});
 q('mn',function(){if(S.min>2){S.min--;if(S.min<3){S.gm='q';S.qt='ans'}R()}});q('pl',function(){if(S.min<10){S.min++;if(S.min>=3)S.sy=false;R()}});
-q('create',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!nm){dlg('Enter your name');return}var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];lvOpen(c,nm,true)});
-q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$('cd').value.trim().toUpperCase();if(!nm||c.length!=4){dlg('Enter the 4-letter code and your name');return}lvOpen(c,nm,false)});
+q('create',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!nm){dlg('Enter your name');return}var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];if(S.av)AVM[nm]=S.av;saveProf(nm,S.av);lvOpen(c,nm,true)});
+q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$('cd').value.trim().toUpperCase();if(!nm||c.length!=4){dlg('Enter the 4-letter code and your name');return}if(S.av)AVM[nm]=S.av;saveProf(nm,S.av);lvOpen(c,nm,false)});
 q('sf',function(){var f=readF(lvH().gm);if(!f)return;LV.room.presence({f:f})});
 q('ag',lvStart);
 q('sk',lvNext);
@@ -373,7 +390,7 @@ Array.prototype.forEach.call(app.querySelectorAll('[data-lg]'),function(b){b.onc
 if(S.step=='rules'){$('bk0').onclick=function(){S.step='mode';S.mode='';R()};$('mn').onclick=function(){if(S.min>2){S.min--;if(S.min<3){S.gm='q';S.qt='ans'}R()}};$('pl').onclick=function(){if(S.min<10){S.min++;if(S.min>=3)S.sy=false;R()}};$('go0').onclick=function(){S.step='setup';R()}}
 if(S.step=='setup'){
 $('bk').onclick=function(){S.step='rules';R()};
-var add=function(){var v=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!v||S.players.length>=S.min||S.players.indexOf(v)>-1)return;S.players.push(v);R();$('nm').focus()};
+var add=function(){var v=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!v||S.players.length>=S.min||S.players.indexOf(v)>-1)return;S.players.push(v);if(S.av)AVM[v]=S.av;saveProf(v,S.av);S.av='';R();$('nm').focus()};
 $('add').onclick=add;$('nm').onkeydown=function(e){if(e.key=='Enter')add()};
 Array.prototype.forEach.call(app.querySelectorAll('[data-rm]'),function(a){a.onclick=function(){S.players.splice(+a.dataset.rm,1);R()}});
 $('go').onclick=function(){var n=S.players.length;if(n!=S.min){dlg(n<S.min?'Add '+(S.min-n)+' more player'+(S.min-n>1?'s':'')+' first.':'Remove '+(n-S.min)+' player'+(n-S.min>1?'s':'')+' first.');return}S.i=0;S.facts={};S.qs=S.gm=='q'?pickQs():[];S.step='facts';R()}}
