@@ -1,54 +1,131 @@
 <!DOCTYPE html>
+<!--
+=====================================================================
+ WHO DAT  -  Developer notes (for later use / extension)
+=====================================================================
+
+WHAT IT IS
+  A party game for 2-10 players. Everyone writes 2-3 secret facts, then
+  each turn one player sees another player's facts and guesses who wrote
+  them. Single file (index.html), no build step. Works in two modes:
+    1. One phone  : pass the phone around. No internet needed.
+    2. Live       : every player on their own phone, synced by Firebase.
+
+HOSTING
+  Upload index.html to a public GitHub repo, then Settings > Pages >
+  Branch: main > Save. Any static host works (Netlify, Firebase Hosting).
+
+FIREBASE SETUP (one time)
+  1. console.firebase.google.com > create project > add Web app (</>).
+  2. Menu > Databases & Storage > Realtime Database > Create Database
+     (location: United States) > Rules tab > paste:
+       { "rules": { "games": { "$code": { ".read": true, ".write": true } } } }
+     > Publish.
+  3. Put your config in the FBC variable at the top of the <script>.
+     If you use another database region, set databaseURL to the address
+     shown at the top of the Realtime Database page.
+  The config is not secret. The rules above let anyone read/write the
+  "games" data; tighten them if you ever store anything sensitive.
+
+HOW LIVE MODE WORKS
+  Data lives at  games/<CODE>/players/<playerId>  (one record per phone).
+  Each phone writes only its own record ("presence"):
+    Everyone : n = name, f = facts [..], g = guess {t, r, v}
+    Host only: h = 1, ph = phase (lobby|facts|play|end), min, ord = turn
+               order, t = turn index, rv = 1 when result is shown,
+               lg = last guess, sc = scores {name: points}, r = round id,
+               end = lobby countdown end (server time, ms)
+  The HOST phone is the referee. All phones just render what they see.
+  Card for turn t: guesser = ord[t], facts owner = ord[(t+1) % n]
+  (a rotation, so nobody ever gets their own card).
+  Disconnected phones are removed automatically (onDisconnect).
+  The invite link carries the Firebase config and game code in the URL
+  hash (#c=...&g=CODE), so friends need no setup.
+
+MAIN PARTS OF THE CODE  (search for these names)
+  FBC, fbInit, mkRoom : Firebase connection and the small "room" wrapper
+  V.mode / V.rules / V.setup / V.facts / V.play / V.end : one-phone screens
+  V.lv, lvGame        : live-mode screens (lobby, facts, play, end)
+  lvOpen, onP, tick   : join/create game, react to changes, host scoring
+  lvStart             : host starts or restarts a game (shuffles order)
+  hdr                 : the 5-step wizard bar at the top
+  CSS variables in :root : colors and dark mode
+
+EASY CHANGES
+  Colors / fonts      : edit the :root variables and the Fredoka font link.
+  Player limits       : minimum is chosen in the app; max 10 is checked in
+                        lvGame (names.length>10) and setup (players.length>=10).
+  Facts per player    : the three inputs f0,f1,f2 (min 2 checked in 'sf'
+                        and 'save'); add f3 by extending those arrays.
+  Scoring             : in tick() (live) and the guess handler in bind()
+                        (one phone). Currently +1 per correct guess.
+  Wizard labels       : the Lb array in hdr().
+
+IDEAS TO EXTEND
+  - Several guesses per card, or points that shrink with each wrong guess.
+  - Kick/rename players, or a timer per turn.
+  - Save past scores (add a "history" path in Firebase).
+  - Sound or haptics on a correct guess (navigator.vibrate).
+  - Lock rules down with Firebase Anonymous Auth.
+
+TROUBLESHOOTING
+  "Firebase is not set up yet"   : FBC is missing or has no apiKey.
+  Stuck on "Connecting"          : wrong databaseURL, database not created,
+                                   or rules not published.
+  Names with . # $ [ ] /         : removed on purpose (not allowed by Firebase).
+  Changes not showing after upload: wait ~1 min and reopen the tab.
+=====================================================================
+-->
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Who Wrote That? Party Game</title>
+<title>Who Dat</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#fff3e0;--card:#fff;--ink:#2a1f4d;--mute:#7a6f96;--acc:#ff5a5f;--acc2:#6c4cf1;--sun:#ffd166;--ok:#12a36a;--bad:#e5484d;--line:#2a1f4d;--soft:#f6ead6;--shadow:#2a1f4d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1530;--card:#2a2146;--ink:#fff4e4;--mute:#b3a8d1;--line:#fff4e4;--soft:#362b5a;--shadow:#0d0919;--sun:#ffd166}}
-:root[data-theme="dark"]{--bg:#1b1530;--card:#2a2146;--ink:#fff4e4;--mute:#b3a8d1;--line:#fff4e4;--soft:#362b5a;--shadow:#0d0919}
+:root{--bg:#f4f4f1;--card:#fff;--ink:#1a1a1a;--mute:#777;--acc:#ff5a5f;--soft:#ebebe6;--line:#1a1a1a;--shadow:#1a1a1a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141414;--card:#202020;--ink:#f2f2f0;--mute:#9a9a9a;--line:#f2f2f0;--soft:#2c2c2c;--shadow:#000}}
+:root[data-theme="dark"]{--bg:#141414;--card:#202020;--ink:#f2f2f0;--mute:#9a9a9a;--line:#f2f2f0;--soft:#2c2c2c;--shadow:#000}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:500 17px/1.35 Fredoka,ui-rounded,"SF Pro Rounded",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
 main{max-width:480px;margin:0 auto;padding:16px 18px 48px}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.logo{font-weight:700;font-size:20px;letter-spacing:.5px}.logo b{color:var(--acc)}
+.logo{font-weight:700;font-size:20px;letter-spacing:.5px}
 .wz{display:flex;justify-content:space-between;position:relative;margin:4px 0 20px}
 .wz:before{content:"";position:absolute;left:8%;right:8%;top:15px;height:4px;background:var(--soft);border-radius:4px}
 .wz div{position:relative;flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--mute)}
 .wz b{display:grid;place-items:center;width:32px;height:32px;margin:0 auto 4px;border-radius:50%;background:var(--soft);border:3px solid var(--line);color:var(--ink);font-size:15px}
-.wz .on b{background:var(--acc);color:#fff}.wz .on{color:var(--ink)}.wz .done b{background:var(--sun);color:#2a1f4d}
+.wz .on b{background:var(--acc);color:#fff}.wz .on{color:var(--ink)}.wz .done b{background:var(--ink);color:var(--bg)}
 .nav{display:flex;gap:10px}.nav .alt{width:96px;flex:none}
-.opt small{display:block;font-weight:500;font-size:14px;opacity:.9;margin-top:2px}.code{letter-spacing:10px;font-size:52px;font-weight:700;text-align:center;color:var(--acc)}
+.opt small{display:block;font-weight:500;font-size:14px;opacity:.9;margin-top:2px}.code{letter-spacing:10px;font-size:52px;font-weight:700;text-align:center;color:var(--ink)}
 .big{font-size:84px;font-weight:700;line-height:1;text-align:center}
 .stp{display:flex;align-items:center;justify-content:center;gap:22px;margin:6px 0}
 .stp button{width:64px;height:64px;padding:0;font-size:32px;flex:none}
 h1{font-size:34px;line-height:1.05;margin:6px 0 12px;font-weight:700}
 h2{font-size:28px;line-height:1.1;margin:6px 0 12px;font-weight:700}
-.how{display:flex;gap:12px;align-items:center;background:var(--sun);color:#2a1f4d;border:3px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:4px 4px 0 var(--shadow);margin:6px 0 18px;font-weight:600}
-.how .n{flex:none;width:34px;height:34px;border-radius:50%;background:#2a1f4d;color:#ffd166;display:grid;place-items:center;font-weight:700}
+.how{display:flex;gap:12px;align-items:center;background:var(--soft);color:var(--ink);border:3px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:4px 4px 0 var(--shadow);margin:6px 0 18px;font-weight:600}
+.how .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700}
 .panel{background:var(--card);border:3px solid var(--line);border-radius:22px;padding:16px;box-shadow:5px 5px 0 var(--shadow);margin-bottom:18px}
 input,textarea{width:100%;padding:14px 16px;border:3px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);font:inherit;margin:5px 0;outline:0}
-input:focus{border-color:var(--acc2)}
-button{font:inherit;font-weight:700;font-size:18px;color:#fff;background:var(--acc);border:3px solid var(--line);border-radius:16px;padding:14px 18px;width:100%;box-shadow:4px 4px 0 var(--shadow);cursor:pointer;transition:transform .08s,box-shadow .08s}
-button:active:not(:disabled){transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
+input:focus,textarea:focus{border-color:var(--acc)}
+button{font:inherit;font-weight:700;font-size:18px;color:var(--bg);background:var(--ink);border:3px solid var(--line);border-radius:16px;padding:14px 18px;width:100%;box-shadow:4px 4px 0 var(--shadow);cursor:pointer;transition:transform .08s,box-shadow .08s}
+button:active:not(:disabled){transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow);background:var(--acc);color:#fff}
 button:disabled{opacity:.45;box-shadow:none}
 button.alt{background:var(--card);color:var(--ink)}
 .row{display:flex;gap:10px}.row input{flex:1;margin:0}.row button{width:auto;padding:0 20px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:99px;padding:5px 12px 5px 5px;font-weight:600}
 .chip a{color:var(--mute);cursor:pointer;padding:0 2px}
-.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;border:2px solid var(--line);flex:none}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink);font-weight:700;font-size:15px;border:2px solid var(--line);flex:none}
 .count{text-align:center;color:var(--mute);margin:12px 0 0;font-weight:600}
 .pc{display:flex;justify-content:space-between;color:var(--mute);font-weight:600;margin:4px 2px 10px}
 .ticket{background:var(--card);border:3px solid var(--line);border-radius:22px;box-shadow:5px 5px 0 var(--shadow);overflow:hidden;transform:rotate(-1.2deg);margin:4px 0 22px;position:relative}
-.ticket .hd{background:var(--acc2);color:#fff;padding:10px 16px;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between}
+.ticket .hd{background:var(--ink);color:var(--bg);padding:10px 16px;font-weight:700;letter-spacing:1px;display:flex;justify-content:space-between}
 .ticket .q{position:absolute;right:10px;bottom:-26px;font-size:130px;font-weight:700;opacity:.08;line-height:1}
 .fact{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;font-size:20px;font-weight:600;border-top:2px dashed var(--soft)}
 .fact:first-of-type{border-top:0}
-.fact span{flex:none;width:26px;height:26px;border-radius:50%;background:var(--sun);color:#2a1f4d;display:grid;place-items:center;font-size:14px;font-weight:700;margin-top:2px}
+.fact span{flex:none;width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ink);display:grid;place-items:center;font-size:14px;font-weight:700;margin-top:2px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid button{display:flex;align-items:center;gap:8px;background:var(--card);color:var(--ink);padding:10px;font-size:17px;text-align:left}
 .grid .av{width:28px;height:28px}
@@ -56,9 +133,15 @@ button.alt{background:var(--card);color:var(--ink)}
 .res small{display:block;font-size:16px;font-weight:500;opacity:.95;margin-top:2px}
 .score{display:flex;align-items:center;gap:12px;padding:10px 0;font-weight:600;font-size:20px;border-bottom:2px dashed var(--soft)}
 .score:last-child{border:0}.score b{margin-left:auto;font-size:24px}.score .m{width:30px;text-align:center}
+.res.ok{background:var(--acc);color:#fff}.res.no{background:var(--ink);color:var(--bg)}
+.ov{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-width:480px;width:100%;max-height:85%;overflow:auto}
+.sheet h2{margin:0 0 10px}.sheet ol,.sheet ul{padding-left:20px;margin:6px 0 14px}.sheet li{margin:6px 0}.sheet h3{margin:14px 0 4px;font-size:18px}
+.hp{width:auto;padding:6px 14px;font-size:15px;box-shadow:3px 3px 0 var(--shadow);border-radius:12px}
+.seg{display:flex;gap:8px;margin-top:8px}.seg button{padding:10px 0;font-size:16px;box-shadow:none}.seg button.sel{background:var(--acc);color:#fff}
 </style></head><body><main id="app"></main>
 <script>
-var FBC=null;
+var FBC={apiKey:"AIzaSyBrtcq3XeAQt0LwZkr8xo2eTQyASnqVum0",authDomain:"whodattttt.firebaseapp.com",databaseURL:"https://whodattttt-default-rtdb.firebaseio.com",projectId:"whodattttt",appId:"1:712331315424:web:07c813ef92b0736f902885"};
 (function(){try{var m=/(?:^|&)c=([^&]+)/.exec(location.hash.slice(1));if(m){FBC=JSON.parse(atob(decodeURIComponent(m[1])));try{localStorage.setItem('fbc',JSON.stringify(FBC))}catch(e){}}else{var v=localStorage.getItem('fbc');if(v)FBC=JSON.parse(v)}}catch(e){}})();
 var PRE=(/(?:^|&)g=([A-Za-z0-9]{4})/.exec(location.hash.slice(1))||[])[1]||'';
 var FDB=null;
@@ -70,40 +153,41 @@ presence:function(patch){mine.onDisconnect().remove();return mine.update(patch)}
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){ref.off();mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
-var S={step:'mode',mode:'',lvs:'',msg:'',min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null};
+var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null};
 if(PRE&&FBC){S.mode='live';S.step='lv';S.lvs='join'}
 var app=document.getElementById('app'),$=function(id){return document.getElementById(id)};
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
 function col(p){return C[S.players.indexOf(p)%10]}
-function av(p){return '<span class="av" style="background:'+col(p)+'">'+esc(p.charAt(0).toUpperCase())+'</span>'}
+function av(p){return '<span class="av">'+esc(p.charAt(0).toUpperCase())+'</span>'}
 function how(n,t){return '<div class="how"><div class="n">'+n+'</div><div>'+t+'</div></div>'}
-function hdr(k){var lv=S.mode=='live',Lb=lv?['Mode','Lobby','Facts','Guess','Scores']:['Rules','Players','Facts','Guess','Scores'],m;
-if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2,play:3,end:4}[H.ph]:0}else m={mode:0,rules:0,setup:1,facts:2,play:3,end:4}[k];
-return '<div class="top"><div class="logo">Who <b>Wrote</b> That?</div></div><div class="wz">'+Lb.map(function(l,i){return '<div class="'+(i==m?'on':i<m?'done':'')+'"><b>'+(i<m?'✓':i+1)+'</b>'+l+'</div>'}).join('')+'</div>'}
+function hdr(k){var lv=S.mode=='live'||k=='mode'||k=='hostm',Lb=lv?['Mode','Lobby','Facts','Guess','Scores']:['Rules','Players','Facts','Guess','Scores'],m;
+if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2,play:3,end:4}[H.ph]:0}else m={mode:0,hostm:0,rules:0,setup:1,facts:2,play:3,end:4}[k];
+return '<div class="top"><div class="logo">Who Dat</div><button class="alt hp" id="hp">How to play</button></div><div class="wz">'+Lb.map(function(l,i){return '<div class="'+(i==m?'on':i<m?'done':'')+'"><b>'+(i<m?'✓':i+1)+'</b>'+l+'</div>'}).join('')+'</div>'}
 function R(){var keep={},n=0,fo=document.activeElement&&document.activeElement.id;
 if(S.step=='lv')['nm','cd','cfg','f0','f1','f2'].forEach(function(i){if($(i)){keep[i]=$(i).value;n++}});
 app.innerHTML=hdr(S.step)+V[S.step]();
 for(var i in keep)if($(i))$(i).value=keep[i];
 if(n&&fo&&$(fo))$(fo).focus();bind();if(!n)window.scrollTo(0,0)}
 var V={
-mode:function(){return '<h1>How do you want to play? </h1>'+how(1,'Pick one phone for everyone, or let each person use their own.')+
-'<button id="m1" class="opt"> One phone<small>Pass it around the group</small></button><button id="m2" class="opt alt" style="margin-top:14px"> Everyone on their own phone<small>Live game with a 4-letter code</small></button>'},
-lv:function(){var m=S.msg?'<div class="how" style="background:var(--bad);color:#fff"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
-if(S.lvs=='cfg')return '<h1>One-time setup</h1>'+how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="cfgok">Save →</button></div>';
-if(S.lvs=='choose')return '<h1>Play on your phones </h1>'+how(1,'One person hosts and shares a 4-letter code. Everyone else joins with it.')+m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%">← Back</button></div>';
-if(S.lvs=='host')return '<h1>Host a game </h1>'+how(1,'Enter your name and the minimum number of players.')+m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"><div class="stp"><button class="alt" id="mn">−</button><div class="big" style="font-size:56px">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players</div></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="create">Create →</button></div>';
-if(S.lvs=='join')return '<h1>Join a game </h1>'+how(1,'Type the 4-letter code from the host and your name.')+m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="joinGo">Join →</button></div>';
+mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';return how(1,'Host a new game, or join one with a code from your host.')+m+
+'<div class="nav" style="flex-direction:column"><button id="mh" class="opt">Host a game<small>Start a game for your group</small></button><button id="mj" class="opt alt" style="width:100%">Join a game<small>Enter the 4-letter code from the host</small></button></div>'},
+hostm:function(){return how(1,'Choose how everyone will play.')+'<div class="nav" style="flex-direction:column"><button id="h1" class="opt">One phone<small>Pass the phone around the group</small></button><button id="h2" class="opt alt" style="width:100%">Each on their own phone<small>Share a link. Players join and add their own names</small></button><button class="alt" id="bk" style="width:100%">← Back</button></div>'},
+lv:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
+if(S.lvs=='cfg')return how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="cfgok">Save →</button></div>';
+if(S.lvs=='choose')return how(1,'One person hosts and shares a 4-letter code. Everyone else joins with it.')+m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%">← Back</button></div>';
+if(S.lvs=='host')return how(1,'Enter your name, the minimum players and how long people have to join.')+m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"><div class="stp"><button class="alt" id="mn">−</button><div class="big" style="font-size:56px">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players</div><div class="count" style="margin-top:14px">Time to join</div><div class="seg">'+[1,2,3,5].map(function(d){return '<button data-d="'+d+'" class="alt'+(S.dur==d?' sel':'')+'">'+d+' min</button>'}).join('')+'</div></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="create">Create →</button></div>';
+if(S.lvs=='join')return how(1,'Type the 4-letter code from the host and your name.')+m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="joinGo">Join →</button></div>';
 return m+lvGame()},
-rules:function(){return '<h1>How many players at least? </h1>'+how(1,'Pick the minimum number of players needed to start (2–10).')+
+rules:function(){return how(1,'Pick the minimum number of players needed to start (2–10).')+
 '<div class="panel"><div class="stp"><button class="alt" id="mn">−</button><div class="big">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players · up to 10 can join</div></div>'+
 '<div class="nav"><button class="alt" id="bk0">← Back</button><button id="go0">Next →</button></div>'},
-setup:function(){return '<h1>Add the players </h1>'+how(2,'Type each name and tap Add. You need at least '+S.min+' (max 10).')+
+setup:function(){return how(2,'Type each name and tap Add. You need at least '+S.min+' (max 10).')+
 '<div class="panel"><div class="row"><input id="nm" placeholder="Name" maxlength="20" autocomplete="off"><button id="add">Add</button></div>'+
 '<div class="chips">'+S.players.map(function(p,i){return '<span class="chip">'+av(p)+esc(p)+' <a data-rm="'+i+'">✕</a></span>'}).join('')+'</div>'+
 '<div class="count">'+S.players.length+' / 10 players'+(S.players.length<S.min?' · need '+(S.min-S.players.length)+' more':'')+'</div></div>'+
 '<div class="nav"><button class="alt" id="bk">← Back</button><button id="go"'+(S.players.length<S.min?' disabled':'')+'>Next →</button></div>'},
-facts:function(){var p=S.players[S.i];return '<h2>Pass the phone to <span style="color:'+col(p)+'">'+esc(p)+'</span></h2>'+how(3,'Write 2–3 true facts about <u>you</u>. Hide the screen from others!')+
+facts:function(){var p=S.players[S.i];return how(3,'Pass the phone to <b>'+esc(p)+'</b>. Write 2–3 true facts about <u>you</u>. Hide the screen!')+
 '<div class="panel">'+[0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off" value="'+esc((S.facts[p]||[])[k]||'').replace(/"/g,'&quot;')+'">'}).join('')+'</div>'+
 '<div class="nav"><button class="alt" id="bk">← Back</button><button id="save">'+(S.i<S.players.length-1?'Done — pass on →':'Done — start →')+'</button></div><div class="count">Player '+(S.i+1)+' of '+S.players.length+'</div>'},
 play:function(){var g=S.order[S.t],o=S.order[(S.t+1)%S.order.length],h;
@@ -111,10 +195,10 @@ h='<div class="pc"><span>Card '+(S.t+1)+' of '+S.order.length+'</span><span>Your
 (S.picked===null?how(4,'Read the card. Tap who you think wrote it.'):how(4,'Tap Next, then pass the phone to the next player.'))+
 '<div class="ticket"><div class="hd"><span>MYSTERY PLAYER</span><span>#'+(S.t+1)+'</span></div>'+S.facts[o].map(function(f,i){return '<div class="fact"><span>'+(i+1)+'</span><div>'+esc(f)+'</div></div>'}).join('')+'<div class="q">?</div></div>';
 if(S.picked===null)h+='<div class="grid">'+S.players.filter(function(p){return p!==g}).map(function(p){return '<button data-g="'+esc(p)+'">'+av(p)+esc(p)+'</button>'}).join('')+'</div>';
-else{var ok=S.picked===o;h+='<div class="res" style="background:var(--'+(ok?'ok':'bad')+')">'+(ok?'Correct! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div><button id="next">'+(S.t<S.order.length-1?'Next player →':'See scores →')+'</button>'}
+else{var ok=S.picked===o;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'Correct! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div><button id="next">'+(S.t<S.order.length-1?'Next player →':'See scores →')+'</button>'}
 return h},
 end:function(){var r=S.players.slice().sort(function(a,b){return S.score[b]-S.score[a]}),md=['','',''];
-return '<h1>Final scores </h1>'+how(5,'The winner gets bragging rights. Play again or start fresh.')+
+return how(5,'Final scores. The winner gets bragging rights. Play again or start fresh.')+
 '<div class="panel">'+r.map(function(p,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(p)+esc(p)+'<b>'+S.score[p]+'</b></div>'}).join('')+'</div>'+
 '<button id="again">Play again</button><button class="alt" id="reset" style="margin-top:14px">New players</button>'}
 };
@@ -128,34 +212,46 @@ if(g&&g.r===H.r&&g.t===H.t){LV.done=key;var o=H.ord[(H.t+1)%H.ord.length],sc=Obj
 function onP(){var P=lvP(),me=lvMe(),H=lvH();if(!me)return;
 var d=P.filter(function(o){return !o.isMe&&o.presence.n==me.presence.n&&o.peer<me.peer})[0];if(d){LV.name=me.presence.n+' 2';LV.room.presence({n:LV.name});return}
 if(me.presence.h&&H&&H.ph=='play'&&H.rv===0)tick(P,H);
+if(me.presence.h&&H&&H.ph=='facts'&&P.length&&P.every(function(p){return p.presence.f})&&LV.auto!=='f'){LV.auto='f';lvStart()}
 var g=JSON.stringify([P.map(function(p){return [p.presence.n,!!p.presence.f,p.presence.g&&p.presence.g.t]}),H&&[H.ph,H.t,H.rv,H.lg,H.r]]);
 if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game')R()}}
-async function lvOpen(code,name,host){if(!fbInit()){S.msg='Firebase is not set up yet.';S.lvs='choose';R();return}
-LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.room.onPeers(onP);
-await LV.room.presence(host?{n:name,h:1,ph:'lobby',min:S.min}:{n:name});S.lvs='game';R();
+var OFF=0;function now(){return Date.now()+OFF}
+function clkTxt(H,n){var r=Math.max(0,Math.ceil((H.end-now())/1000));if(r>0)return 'Starts in '+Math.floor(r/60)+':'+('0'+r%60).slice(-2);return n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more players'}
+function clock(){var H=lvH();if(!H||H.ph!='lobby')return;var P=lvP(),me=lvMe(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
+if(me&&me.presence.h&&H.end-now()<=0&&P.length>=H.min&&LV.auto!=='l'){LV.auto='l';LV.room.presence({ph:'facts'})}}
+async function lvOpen(code,name,host){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
+LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.auto='';
+try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
+LV.room.onPeers(onP);
+await LV.room.presence(host?{n:name,h:1,ph:'lobby',min:S.min,end:now()+S.dur*60000}:{n:name});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
 if(!host)setTimeout(function(){if(!lvH()){S.msg='No game found with code '+code;LV.room.leave();LV.room=null;S.lvs='join';R()}},4000)}
 function lvStart(){var ord=shuffle(lvP().filter(function(p){return p.presence.f}).map(function(p){return p.presence.n})),sc={};ord.forEach(function(n){sc[n]=0});LV.room.presence({ph:'play',ord:ord,t:0,rv:0,r:Date.now(),sc:sc,lg:null})}
 function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
-if(!H||!me)return '<h1>Connecting… </h1>'+how(1,'Hang tight, finding the game.');
+if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
 var host=!!me.presence.h,ph=H.ph,h='';
-if(ph=='lobby'){h='<h1>Game lobby </h1>'+how(2,host?'Share the code. Tap Start when everyone has joined.':'You’re in! Wait for the host to start.')+'<div class="panel"><div class="code">'+esc(LV.code)+'</div><div class="chips">'+names.map(function(n){return chip(n)}).join('')+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
-if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><button id="st"'+(names.length<H.min||names.length>10?' disabled':'')+'>Start — enter facts →</button>'}
-else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='<h2>Your facts </h2>';
+if(ph=='lobby'){h=how(2,host?'Share the invite link. The game starts automatically when the countdown ends.':'You are in! The game starts automatically when the countdown ends.')+'<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips">'+names.map(function(n){return chip(n)}).join('')+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
+if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><div class="nav"><button class="alt" id="ad">+1 min</button><button id="st"'+(names.length<H.min?' disabled':'')+'>Start now →</button></div>'}
+else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='';
 if(!me.presence.f)h+=how(3,'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+[0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off">'}).join('')+'</div><button id="sf">Done →</button>';
-else h+=how(3,'Saved! Waiting for everyone else.')+'<div class="panel"><div class="chips">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
-if(host&&me.presence.f)h+='<button id="sg" style="margin-top:14px"'+(all?'':' disabled')+'>Start the game →</button>'}
+else h+=how(3,'Saved! The game starts automatically when everyone is done.')+'<div class="panel"><div class="chips">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
+}
 else if(ph=='play'){var n=H.ord.length,g=H.ord[H.t],o=H.ord[(H.t+1)%n],op=P.filter(function(p){return p.presence.n==o})[0],f=(op&&op.presence.f)||['(player left)'],mine=g==me.presence.n,locked=me.presence.g&&me.presence.g.r===H.r&&me.presence.g.t===H.t;
 h='<div class="pc"><span>Card '+(H.t+1)+' of '+n+'</span><span>'+(mine?'Your turn!':esc(g)+'’s turn')+'</span></div>'+how(4,H.rv?(host?'Tap Next to continue.':'Wait for the host to continue.'):mine?'Tap who you think wrote this card.':'Guess in your head — '+esc(g)+' is choosing.')+
 '<div class="ticket"><div class="hd"><span>MYSTERY PLAYER</span><span>#'+(H.t+1)+'</span></div>'+f.map(function(x,i){return '<div class="fact"><span>'+(i+1)+'</span><div>'+esc(x)+'</div></div>'}).join('')+'<div class="q">?</div></div>';
 if(!H.rv){if(mine&&!locked)h+='<div class="grid">'+H.ord.filter(function(x){return x!==g}).map(function(x){return '<button data-lg="'+esc(x)+'">'+av(x)+esc(x)+'</button>'}).join('')+'</div>';else if(locked)h+='<div class="count">Locked in ✓</div>'}
-else{var ok=H.lg===o;h+='<div class="res" style="background:var(--'+(ok?'ok':'bad')+')">'+(ok?''+esc(g)+' got it! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div>'+(host?'<button id="nx">'+(H.t<n-1?'Next →':'See scores →')+'</button>':'')}}
-else{var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h='<h1>Final scores </h1>'+how(5,host?'Play again with a new order, or finish.':'The host can start another round.')+'<div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'')}
+else{var ok=H.lg===o;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?''+esc(g)+' got it! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div>'+(host?'<button id="nx">'+(H.t<n-1?'Next →':'See scores →')+'</button>':'')}}
+else{var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h=how(5,host?'Final scores. Play again with a new order, or finish.':'Final scores. The host can start another round.')+'<div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'')}
 return h}
-function bind(){
-if(S.step=='mode'){$('m1').onclick=function(){S.mode='one';S.step='rules';R()};$('m2').onclick=function(){S.mode='live';S.step='lv';S.lvs='choose';R()}}
+function help(){var d=document.createElement('div');d.className='ov';
+d.innerHTML='<div class="sheet"><h2>How to play</h2><ol><li>Everyone secretly writes 2–3 true facts about themselves.</li><li>The facts are shuffled into mystery cards. Nobody gets their own card.</li><li>On your turn, read the card and tap the person you think wrote it.</li><li>A correct guess scores 1 point. The most points at the end wins.</li></ol><h3>One phone</h3><p>Pass the same phone around. Hide the screen while writing your facts.</p><h3>Everyone on their own phone</h3><ul><li>The host creates a game and sends the invite link.</li><li>Friends open the link, add their own name and join. They appear in the lobby.</li><li>The game starts automatically when the countdown ends and enough players have joined.</li><li>Facts are collected, then the guessing starts by itself.</li><li>Late joiners can only watch.</li></ul><h3>Tips</h3><ul><li>Pick facts that are surprising but not too obvious.</li><li>Do not react when your own card shows up.</li></ul><button id="hx" style="margin-top:6px">Got it</button></div>';
+document.body.appendChild(d);d.onclick=function(e){if(e.target==d||e.target.id=='hx')d.remove()}}
+function bind(){if($('hp'))$('hp').onclick=help;
+if(S.step=='mode'){$('mh').onclick=function(){S.step='hostm';R()};$('mj').onclick=function(){S.mode='live';S.step='lv';if(!FBC){S.lvs='cfg';S.nx='join'}else S.lvs='join';R()}}
+if(S.step=='hostm'){$('h1').onclick=function(){S.mode='one';S.step='rules';R()};$('h2').onclick=function(){S.mode='live';S.step='lv';if(!FBC){S.lvs='cfg';S.nx='host'}else S.lvs='host';R()};$('bk').onclick=function(){S.step='mode';R()}}
 if(S.step=='lv'){var q=function(i,fn){if($(i))$(i).onclick=fn};
-q('bk',function(){if(S.lvs=='choose'){S.step='mode';S.mode=''}else S.lvs='choose';R()});
+q('bk',function(){S.step=S.lvs=='host'?'hostm':'mode';S.mode='';R()});
+Array.prototype.forEach.call(app.querySelectorAll('[data-d]'),function(b){b.onclick=function(){S.dur=+b.dataset.d;R()}});
 q('hostb',function(){if(!FBC){S.lvs='cfg';S.nx='host'}else S.lvs='host';R()});q('joinb',function(){if(!FBC){S.lvs='cfg';S.nx='join'}else S.lvs='join';R()});
 q('cfgok',function(){var t=$('cfg').value,o={},re=/["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g,m;while((m=re.exec(t)))o[m[1]]=m[2];if(!o.apiKey||!(o.databaseURL||o.projectId)){S.msg='That does not look like a Firebase config. Copy the whole block.';R();return}if(!o.databaseURL)o.databaseURL='https://'+o.projectId+'-default-rtdb.firebaseio.com';FBC=o;try{localStorage.setItem('fbc',JSON.stringify(o))}catch(e){}S.lvs=S.nx||'choose';R()});
 q('sh',function(){var u=location.href.split('#')[0]+'#c='+encodeURIComponent(btoa(JSON.stringify(FBC)))+'&g='+LV.code;if(navigator.share)navigator.share({title:'Join my game',text:'Join with code '+LV.code,url:u}).catch(function(){});else if(navigator.clipboard){navigator.clipboard.writeText(u);$('sh').textContent='Link copied'}else prompt('Copy this link',u)});
@@ -164,10 +260,10 @@ q('create',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(
 q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$('cd').value.trim().toUpperCase();if(!nm||c.length!=4){alert('Enter the 4-letter code and your name');return}lvOpen(c,nm,false)});
 q('st',function(){LV.room.presence({ph:'facts'})});
 q('sf',function(){var f=[0,1,2].map(function(k){return $('f'+k).value.trim()}).filter(Boolean);if(f.length<2){alert('Please write at least 2 facts.');return}LV.room.presence({f:f})});
-q('sg',lvStart);q('ag',lvStart);
+q('ag',lvStart);q('ad',function(){var H=lvH();LV.room.presence({end:Math.max(H.end,now())+60000})});
 q('nx',function(){var H=lvH(),t=H.t+1;LV.room.presence(t>=H.ord.length?{ph:'end'}:{t:t,rv:0,lg:null})});
 Array.prototype.forEach.call(app.querySelectorAll('[data-lg]'),function(b){b.onclick=function(){var H=lvH();LV.room.presence({g:{t:H.t,r:H.r,v:b.dataset.lg}})}})}
-if(S.step=='rules'){$('bk0').onclick=function(){S.step='mode';R()};$('mn').onclick=function(){if(S.min>2){S.min--;R()}};$('pl').onclick=function(){if(S.min<10){S.min++;R()}};$('go0').onclick=function(){S.step='setup';R()}}
+if(S.step=='rules'){$('bk0').onclick=function(){S.step='hostm';R()};$('mn').onclick=function(){if(S.min>2){S.min--;R()}};$('pl').onclick=function(){if(S.min<10){S.min++;R()}};$('go0').onclick=function(){S.step='setup';R()}}
 if(S.step=='setup'){
 $('bk').onclick=function(){S.step='rules';R()};
 var add=function(){var v=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!v||S.players.length>=10||S.players.indexOf(v)>-1)return;S.players.push(v);R();$('nm').focus()};
