@@ -220,7 +220,7 @@ drop:function(k){ref.child(k).remove()},
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){live=false;ref.off();conn.off();try{mine.onDisconnect().cancel()}catch(e){}mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
-var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'facts',qt:'who',qs:[],sy:false,av:'',tqi:1,qc:'fun'};
+var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:2,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'q',qt:'ans',qs:[],sy:false,av:'',tqi:3,qc:'fun'};
 if(PRE&&FBC){S.mode='live';S.step='lv';S.lvs='join'}
 var app=document.getElementById('app'),$=function(id){return document.getElementById(id)};
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
@@ -261,7 +261,7 @@ if(gm=='q')return qs.map(function(t,k){return '<div class="ql">'+esc(t)+'</div><
 return [0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off" value="'+q(vals[k])+'">'}).join('')}
 function readF(gm){var f=[0,1,2].map(function(k){return $('f'+k).value.trim()});if(gm=='q'){if(f.some(function(x){return !x})){dlg('Please answer every question.');return null}return f}f=f.filter(Boolean);if(f.length<2){dlg('Please write at least 2 facts.');return null}return f}
 function minFor(){return S.gm=='q'&&S.qt=='ans'?2:3}
-var TQV=[10,15,20,30,45,60];
+var TQV=[10,15,20,25,30,45,60];
 function tqRow(){return '<div class="fld"><span>Time per question</span><div class="mini"><button class="alt" id="tqm">−</button><b>'+TQV[S.tqi]+'s</b><button class="alt" id="tqp">+</button></div></div>'}
 function nxtLeft(H){return Math.max(0,Math.ceil((H.ra+7000-(H.pz||now()))/1000))}
 function tmrHTML(H){return '<div class="tmr'+(tmrLow(H)?' low':'')+'" id="tmrw"><div class="tmrt"><span class="tmrl">Time left</span><span class="tmrn" id="qtm">'+qleft(H)+'</span></div><div class="tmrb"><i id="tmrf" style="width:'+tmrPct(H)+'%"></i></div></div>'}
@@ -401,7 +401,7 @@ function help(){var d=document.createElement('div');d.className='ov';
 d.innerHTML='<div class="sheet"><h2>How to play</h2><ol><li>Pick a game type. Facts and Guess the person need at least 3 players, because with 2 the guess is obvious. Facts: everyone secretly writes 2–3 true facts about themselves. Questions: everyone answers 3 fun questions, then either guess who wrote an answer, or guess what a person answered (with 2 players you say your guess out loud and the other person confirms (or type it when playing apart); with 3 or more you pick from the other players’ answers).</li><li>The facts are shuffled into mystery cards. Nobody gets their own card.</li><li>On your turn, read the card and tap the person you think wrote it.</li><li>A correct guess scores 1 point. The most points at the end wins.</li></ol><h3>One phone</h3><p>Pass the same phone around. Hide the screen while writing your facts.</p><h3>Everyone on their own phone</h3><ul><li>The host creates a game and sends the invite link.</li><li>Friends open the link, add their own name and join. They appear in the lobby.</li><li>The game starts automatically once everyone has joined.</li><li>Facts are collected, then the guessing starts by itself.</li><li>Only the player whose turn it is sees the card. Everyone else just sees whose turn it is.</li><li>Anyone can ask to pause, restart, or play again. The host decides.</li><li>Only the host can end the game. Other players can leave.</li><li>Late joiners can only watch.</li></ul><h3>Tips</h3><ul><li>Pick facts that are surprising but not too obvious.</li><li>Do not react when your own card shows up.</li><li>Tap the stop or exit button at the top to leave. If the host stops the game, it ends for everyone.</li></ul><button id="hx" style="margin-top:6px">Got it</button></div>';
 document.body.appendChild(d);d.onclick=function(e){if(e.target==d||e.target.id=='hx')d.remove()}}
 function doReset(msg){clearSess();clearInterval(LV.iv);if(LV.room){try{LV.room.leave()}catch(e){}LV.room=null}LV.sig='';LV.auto='';PRE='';
-S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;S.score={};S.picked=null;S.okv=null;S.jd=false;S.ready=false;S.min=5;S.dur=2;S.sy=false;S.msg=msg||'';R()}
+S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;S.score={};S.picked=null;S.okv=null;S.jd=false;S.ready=false;S.min=2;S.gm='q';S.qt='ans';S.dur=2;S.sy=false;S.msg=msg||'';R()}
 function stopGame(){var me=LV.room&&lvMe();dlg(me?(me.presence.h?'Want to stop the game for everyone?':'Want to leave the game?'):'Want to stop the game?',me&&!me.presence.h?'Leave':'Stop game',function(){
 clearSess();if(me&&me.presence.h){var rm=LV.room;rm.presence({ph:'closed'});LV.room=null;clearInterval(LV.iv);setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
 doReset('')})}
