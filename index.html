@@ -39,8 +39,8 @@ HOW LIVE MODE WORKS
   Card for turn t: guesser = ord[t], facts owner = ord[(t+1) % n]
   (a rotation, so nobody ever gets their own card).
   Disconnected phones are removed automatically (onDisconnect).
-  The invite link carries the Firebase config and game code in the URL
-  hash (#c=...&g=CODE), so friends need no setup.
+  The invite link is your page address plus the game code (#g=CODE). The
+  Firebase config is already inside this file, so friends need no setup.
 
 MAIN PARTS OF THE CODE  (search for these names)
   FBC, fbInit, mkRoom : Firebase connection and the small "room" wrapper
@@ -260,7 +260,7 @@ q('bk',function(){S.step=S.lvs=='host'?'hostm':'mode';S.mode='';R()});
 Array.prototype.forEach.call(app.querySelectorAll('[data-d]'),function(b){b.onclick=function(){S.dur=+b.dataset.d;R()}});
 q('hostb',function(){if(!FBC){S.lvs='cfg';S.nx='host'}else S.lvs='host';R()});q('joinb',function(){if(!FBC){S.lvs='cfg';S.nx='join'}else S.lvs='join';R()});
 q('cfgok',function(){var t=$('cfg').value,o={},re=/["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g,m;while((m=re.exec(t)))o[m[1]]=m[2];if(!o.apiKey||!(o.databaseURL||o.projectId)){S.msg='That does not look like a Firebase config. Copy the whole block.';R();return}if(!o.databaseURL)o.databaseURL='https://'+o.projectId+'-default-rtdb.firebaseio.com';FBC=o;try{localStorage.setItem('fbc',JSON.stringify(o))}catch(e){}S.lvs=S.nx||'choose';R()});
-q('sh',function(){var u=location.href.split('#')[0]+'#c='+encodeURIComponent(btoa(JSON.stringify(FBC)))+'&g='+LV.code;if(navigator.share)navigator.share({title:'Join my game',text:'Join with code '+LV.code,url:u}).catch(function(){});else if(navigator.clipboard){navigator.clipboard.writeText(u);$('sh').textContent='Link copied'}else prompt('Copy this link',u)});
+q('sh',function(){var u=location.href.split('#')[0]+'#g='+LV.code;if(navigator.share)navigator.share({title:'Join my game',text:'Join with code '+LV.code,url:u}).catch(function(){});else if(navigator.clipboard){navigator.clipboard.writeText(u);$('sh').textContent='Link copied'}else prompt('Copy this link',u)});
 q('mn',function(){if(S.min>2){S.min--;R()}});q('pl',function(){if(S.min<10){S.min++;R()}});
 q('create',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!nm){alert('Enter your name');return}var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];lvOpen(c,nm,true)});
 q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$('cd').value.trim().toUpperCase();if(!nm||c.length!=4){alert('Enter the 4-letter code and your name');return}lvOpen(c,nm,false)});
