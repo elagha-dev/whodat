@@ -48,7 +48,8 @@ MAIN PARTS OF THE CODE  (search for these names)
   V.lv, lvGame        : live-mode screens (lobby, facts, play, end)
   lvOpen, onP, tick   : join/create game, react to changes, host scoring
   lvStart             : host starts or restarts a game (shuffles order)
-  hdr                 : the 5-step wizard bar at the top
+  hdr / wzb / isSetup : top bar; setup screens (mode, lobby, facts) show as a
+                        popup wizard, play/end are flat full-screen
   CSS variables in :root : colors and dark mode
 
 EASY CHANGES
@@ -59,7 +60,7 @@ EASY CHANGES
                         and 'save'); add f3 by extending those arrays.
   Scoring             : in tick() (live) and the guess handler in bind()
                         (one phone). Currently +1 per correct guess.
-  Wizard labels       : the Lb array in hdr().
+  Reveal time        : 3500 ms in clock() (auto-advance after a guess).
 
 IDEAS TO EXTEND
   - Several guesses per card, or points that shrink with each wrong guess.
@@ -93,7 +94,7 @@ main{max-width:480px;margin:0 auto;padding:16px 18px 48px}
 .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .logo{font-weight:700;font-size:20px;letter-spacing:.5px}
 .wz{display:flex;justify-content:space-between;position:relative;margin:4px 0 20px}
-.wz:before{content:"";position:absolute;left:8%;right:8%;top:15px;height:4px;background:var(--soft);border-radius:4px}
+.wz:before{content:"";position:absolute;left:16.6%;right:16.6%;top:15px;height:4px;background:var(--soft);border-radius:4px}
 .wz div{position:relative;flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--mute)}
 .wz b{display:grid;place-items:center;width:32px;height:32px;margin:0 auto 4px;border-radius:50%;background:var(--soft);border:3px solid var(--line);color:var(--ink);font-size:15px}
 .wz .on b{background:var(--acc);color:#fff}.wz .on{color:var(--ink)}.wz .done b{background:var(--ink);color:var(--bg)}
@@ -116,6 +117,12 @@ button.alt{background:var(--card);color:var(--ink)}
 .row{display:flex;gap:10px}.row input{flex:1;margin:0}.row button{width:auto;padding:0 20px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .chip{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:99px;padding:5px 12px 5px 5px;font-weight:600}
+.chip{border:2px solid transparent}
+.chip.done{font-weight:700;color:#0a7a4b;background:linear-gradient(#e6f8ee,#e6f8ee) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%;animation:shine 2s linear infinite alternate;box-shadow:0 0 10px rgba(255,200,0,.55)}
+.chip.done .av{background:#12a36a;color:#fff;border-color:#12a36a}
+@keyframes shine{from{background-position:0 0,0 0}to{background-position:0 0,100% 0}}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.done{color:#5be3a1;background:linear-gradient(#173324,#173324) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%}}
+:root[data-theme="dark"] .chip.done{color:#5be3a1;background:linear-gradient(#173324,#173324) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%}
 .chip a{color:var(--mute);cursor:pointer;padding:0 2px}
 .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--ink);font-weight:700;font-size:15px;border:2px solid var(--line);flex:none}
 .count{text-align:center;color:var(--mute);margin:12px 0 0;font-weight:600}
@@ -138,6 +145,8 @@ button.alt{background:var(--card);color:var(--ink)}
 .sheet{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:22px 22px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-width:480px;width:100%;max-height:85%;overflow:auto}
 .sheet h2{margin:0 0 10px}.sheet ol,.sheet ul{padding-left:20px;margin:6px 0 14px}.sheet li{margin:6px 0}.sheet h3{margin:14px 0 4px;font-size:18px}
 .hp{width:auto;padding:6px 14px;font-size:15px;box-shadow:3px 3px 0 var(--shadow);border-radius:12px}
+.wt{text-align:center;padding:44px 16px}.wt .av{width:76px;height:76px;font-size:36px;margin:0 auto 16px}.wt h2{margin:0}
+.wzo{align-items:center;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px))}.wsheet{border-radius:22px;max-height:100%;box-shadow:6px 6px 0 var(--shadow)}.wsheet .top{margin-bottom:10px}
 .seg{display:flex;gap:8px;margin-top:8px}.seg button{padding:10px 0;font-size:16px;box-shadow:none}.seg button.sel{background:var(--acc);color:#fff}
 </style></head><body><main id="app"></main>
 <script>
@@ -153,62 +162,65 @@ presence:function(patch){mine.onDisconnect().remove();return mine.update(patch)}
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){ref.off();mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
-var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null};
+var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,ready:false};
 if(PRE&&FBC){S.mode='live';S.step='lv';S.lvs='join'}
 var app=document.getElementById('app'),$=function(id){return document.getElementById(id)};
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
 function col(p){return C[S.players.indexOf(p)%10]}
 function av(p){return '<span class="av">'+esc(p.charAt(0).toUpperCase())+'</span>'}
-function how(n,t){return '<div class="how"><div class="n">'+n+'</div><div>'+t+'</div></div>'}
-function hdr(k){var lv=S.mode=='live'||k=='mode'||k=='hostm',Lb=lv?['Mode','Lobby','Facts','Guess','Scores']:['Rules','Players','Facts','Guess','Scores'],m;
-if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2,play:3,end:4}[H.ph]:0}else m={mode:0,hostm:0,rules:0,setup:1,facts:2,play:3,end:4}[k];
-return '<div class="top"><div class="logo">Who Dat</div><div style="display:flex;gap:8px">'+(S.step!='mode'?'<button class="alt hp" id="rs">Restart</button>':'')+'<button class="alt hp" id="hp">How to play</button></div></div><div class="wz">'+Lb.map(function(l,i){return '<div class="'+(i==m?'on':i<m?'done':'')+'"><b>'+(i<m?'✓':i+1)+'</b>'+l+'</div>'}).join('')+'</div>'}
+function how(n,t){return '<div class="how"><div>'+t+'</div></div>'}
+function hdr(k){var btn='',me;
+if(S.step=='lv'){if(S.lvs=='game'&&LV.room&&(me=lvMe()))btn=me.presence.h?'Restart':'Leave'}
+else if(S.step!='mode'&&S.step!='hostm')btn='Restart';
+return '<div class="top"><div class="logo">Who Dat</div><div style="display:flex;gap:8px">'+(btn?'<button class="alt hp" id="rs">'+btn+'</button>':'')+'<button class="alt hp" id="hp">How to play</button></div></div>'}
+function isSetup(){var k=S.step;if(k=='play'||k=='end')return false;if(k=='lv'&&S.lvs=='game'){var H=lvH();return !H||H.ph=='lobby'||H.ph=='facts'}return true}
+function wzb(k){var lv=S.mode=='live'||k=='mode'||k=='hostm',Lb=lv?['Mode','Lobby','Facts']:['Rules','Players','Facts'],m;
+if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2}[H.ph]||0:0}else m={mode:0,hostm:0,rules:0,setup:1,facts:2}[k];
+return '<div class="wz">'+Lb.map(function(l,i){return '<div class="'+(i==m?'on':i<m?'done':'')+'"><b>'+(i<m?'✓':i+1)+'</b>'+l+'</div>'}).join('')+'</div>'}
 function R(){var keep={},n=0,fo=document.activeElement&&document.activeElement.id;
 if(S.step=='lv')['nm','cd','cfg','f0','f1','f2'].forEach(function(i){if($(i)){keep[i]=$(i).value;n++}});
-app.innerHTML=hdr(S.step)+V[S.step]();
+var w=isSetup(),body=V[S.step]();app.innerHTML=w?'<div class="ov wzo"><div class="sheet wsheet">'+hdr(S.step)+wzb(S.step)+body+'</div></div>':hdr(S.step)+body;
 for(var i in keep)if($(i))$(i).value=keep[i];
 if(n&&fo&&$(fo))$(fo).focus();bind();if(!n)window.scrollTo(0,0)}
 var V={
-mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';return how(1,'Host a new game, or join one with a code from your host.')+m+
+mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';return m+
 '<div class="nav" style="flex-direction:column"><button id="mh" class="opt">Host a game<small>Start a game for your group</small></button><button id="mj" class="opt alt" style="width:100%">Join a game<small>Enter the 4-letter code from the host</small></button></div>'},
-hostm:function(){return how(1,'Choose how everyone will play.')+'<div class="nav" style="flex-direction:column"><button id="h1" class="opt">One phone<small>Pass the phone around the group</small></button><button id="h2" class="opt alt" style="width:100%">Each on their own phone<small>Share a link. Players join and add their own names</small></button><button class="alt" id="bk" style="width:100%">← Back</button></div>'},
+hostm:function(){return '<div class="nav" style="flex-direction:column"><button id="h1" class="opt">One phone<small>Pass the phone around the group</small></button><button id="h2" class="opt alt" style="width:100%">Each on their own phone<small>Share a link. Players join and add their own names</small></button><button class="alt" id="bk" style="width:100%">← Back</button></div>'},
 lv:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
 if(S.lvs=='cfg')return how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="cfgok">Save →</button></div>';
-if(S.lvs=='choose')return how(1,'One person hosts and shares a 4-letter code. Everyone else joins with it.')+m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%">← Back</button></div>';
-if(S.lvs=='host')return how(1,'Enter your name, the minimum players and how long people have to join.')+m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"><div class="stp"><button class="alt" id="mn">−</button><div class="big" style="font-size:56px">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players</div><div class="count" style="margin-top:14px">Time to join</div><div class="seg">'+[1,2,3,5].map(function(d){return '<button data-d="'+d+'" class="alt'+(S.dur==d?' sel':'')+'">'+d+' min</button>'}).join('')+'</div></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="create">Create →</button></div>';
-if(S.lvs=='join')return how(1,'Type the 4-letter code from the host and your name.')+m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="joinGo">Join →</button></div>';
+if(S.lvs=='choose')return m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%">← Back</button></div>';
+if(S.lvs=='host')return m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"><div class="stp"><button class="alt" id="mn">−</button><div class="big" style="font-size:56px">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players</div><div class="count" style="margin-top:14px">Time to join</div><div class="seg">'+[1,2,3,5].map(function(d){return '<button data-d="'+d+'" class="alt'+(S.dur==d?' sel':'')+'">'+d+' min</button>'}).join('')+'</div></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="create">Create →</button></div>';
+if(S.lvs=='join')return m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off"></div><div class="nav"><button class="alt" id="bk">← Back</button><button id="joinGo">Join →</button></div>';
 return m+lvGame()},
-rules:function(){return how(1,'Pick the minimum number of players needed to start (2–10).')+
-'<div class="panel"><div class="stp"><button class="alt" id="mn">−</button><div class="big">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players · up to 10 can join</div></div>'+
+rules:function(){return '<div class="panel"><div class="stp"><button class="alt" id="mn">−</button><div class="big">'+S.min+'</div><button class="alt" id="pl">+</button></div><div class="count">minimum players · up to 10 can join</div></div>'+
 '<div class="nav"><button class="alt" id="bk0">← Back</button><button id="go0">Next →</button></div>'},
-setup:function(){return how(2,'Type each name and tap Add. You need at least '+S.min+' (max 10).')+
-'<div class="panel"><div class="row"><input id="nm" placeholder="Name" maxlength="20" autocomplete="off"><button id="add">Add</button></div>'+
+setup:function(){return '<div class="panel"><div class="row"><input id="nm" placeholder="Name" maxlength="20" autocomplete="off"><button id="add">Add</button></div>'+
 '<div class="chips">'+S.players.map(function(p,i){return '<span class="chip">'+av(p)+esc(p)+' <a data-rm="'+i+'">✕</a></span>'}).join('')+'</div>'+
 '<div class="count">'+S.players.length+' / 10 players'+(S.players.length<S.min?' · need '+(S.min-S.players.length)+' more':'')+'</div></div>'+
 '<div class="nav"><button class="alt" id="bk">← Back</button><button id="go"'+(S.players.length<S.min?' disabled':'')+'>Next →</button></div>'},
-facts:function(){var p=S.players[S.i];return how(3,'Pass the phone to <b>'+esc(p)+'</b>. Write 2–3 true facts about <u>you</u>. Hide the screen!')+
+facts:function(){var p=S.players[S.i];return how(3,'<b>'+esc(p)+'</b>, write 2–3 true facts about <u>you</u>. Hide the screen!')+
 '<div class="panel">'+[0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off" value="'+esc((S.facts[p]||[])[k]||'').replace(/"/g,'&quot;')+'">'}).join('')+'</div>'+
 '<div class="nav"><button class="alt" id="bk">← Back</button><button id="save">'+(S.i<S.players.length-1?'Done — pass on →':'Done — start →')+'</button></div><div class="count">Player '+(S.i+1)+' of '+S.players.length+'</div>'},
 play:function(){var g=S.order[S.t],o=S.order[(S.t+1)%S.order.length],h;
+if(!S.ready&&S.picked===null)return '<div class="panel wt">'+av(g)+'<h2>'+esc(g)+'’s turn</h2></div><button id="rdy">I’m '+esc(g)+' — show card</button>';
 h='<div class="pc"><span>Card '+(S.t+1)+' of '+S.order.length+'</span><span>Your turn, '+esc(g)+'</span></div>'+
-(S.picked===null?how(4,'Read the card. Tap who you think wrote it.'):how(4,'Tap Next, then pass the phone to the next player.'))+
+
 '<div class="ticket"><div class="hd"><span>MYSTERY PLAYER</span><span>#'+(S.t+1)+'</span></div>'+S.facts[o].map(function(f,i){return '<div class="fact"><span>'+(i+1)+'</span><div>'+esc(f)+'</div></div>'}).join('')+'<div class="q">?</div></div>';
 if(S.picked===null)h+='<div class="grid">'+S.players.filter(function(p){return p!==g}).map(function(p){return '<button data-g="'+esc(p)+'">'+av(p)+esc(p)+'</button>'}).join('')+'</div>';
 else{var ok=S.picked===o;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'Correct! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div><button id="next">'+(S.t<S.order.length-1?'Next player →':'See scores →')+'</button>'}
 return h},
 end:function(){var r=S.players.slice().sort(function(a,b){return S.score[b]-S.score[a]}),md=['','',''];
-return how(5,'Final scores. The winner gets bragging rights. Play again or start fresh.')+
-'<div class="panel">'+r.map(function(p,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(p)+esc(p)+'<b>'+S.score[p]+'</b></div>'}).join('')+'</div>'+
+return '<h2>Final scores</h2><div class="panel">'+r.map(function(p,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(p)+esc(p)+'<b>'+S.score[p]+'</b></div>'}).join('')+'</div>'+
 '<button id="again">Play again</button><button class="alt" id="reset" style="margin-top:14px">New players</button>'}
 };
 var LV={room:null,code:'',name:'',sig:'',done:''};
 function lvP(){return LV.room?LV.room.peers().filter(function(p){return p.kind=='viewer'&&p.presence.n&&!(p.isMe&&!p.sameTab)}):[]}
 function lvMe(){return lvP().filter(function(p){return p.isMe})[0]}
 function lvH(){var h=lvP().filter(function(p){return p.presence.h})[0];return h?h.presence:null}
-function chip(n,f){return '<span class="chip">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+'</span>'}
+function chip(n,f){return '<span class="chip'+(f?' done':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+'</span>'}
 function tick(P,H){var key=H.r+'.'+H.t;if(LV.done==key)return;var gp=P.filter(function(p){return p.presence.n==H.ord[H.t]})[0],g=gp&&gp.presence.g;
-if(g&&g.r===H.r&&g.t===H.t){LV.done=key;var o=H.ord[(H.t+1)%H.ord.length],sc=Object.assign({},H.sc);if(g.v===o)sc[gp.presence.n]=(sc[gp.presence.n]||0)+1;LV.room.presence({rv:1,lg:g.v,sc:sc})}}
+if(g&&g.r===H.r&&g.t===H.t){LV.done=key;var o=H.ord[(H.t+1)%H.ord.length],sc=Object.assign({},H.sc);if(g.v===o)sc[gp.presence.n]=(sc[gp.presence.n]||0)+1;LV.room.presence({rv:1,lg:g.v,sc:sc,ra:now()})}}
 function onP(){var P=lvP(),me=lvMe(),H=lvH();if(!me)return;
 if(H&&H.ph=='closed'&&!me.presence.h){doReset('The host ended the game.');return}
 var d=P.filter(function(o){return !o.isMe&&o.presence.n==me.presence.n&&o.peer<me.peer})[0];if(d){LV.name=me.presence.n+' 2';LV.room.presence({n:LV.name});return}
@@ -218,10 +230,13 @@ var g=JSON.stringify([P.map(function(p){return [p.presence.n,!!p.presence.f,p.pr
 if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game')R()}}
 var OFF=0;function now(){return Date.now()+OFF}
 function clkTxt(H,n){var r=Math.max(0,Math.ceil((H.end-now())/1000));if(r>0)return 'Starts in '+Math.floor(r/60)+':'+('0'+r%60).slice(-2);return n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more players'}
-function clock(){var H=lvH();if(!H||H.ph!='lobby')return;var P=lvP(),me=lvMe(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
+function lvNext(){var H=lvH(),t=H.t+1;LV.room.presence(t>=H.ord.length?{ph:'end'}:{t:t,rv:0,lg:null})}
+function clock(){var H=lvH();if(!H)return;var me=lvMe();
+if(H.ph=='play'){var k=H.r+'.'+H.t;if(me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>3500&&LV.adv!==k){LV.adv=k;lvNext()}return}
+if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
 if(me&&me.presence.h&&H.end-now()<=0&&P.length>=H.min&&LV.auto!=='l'){LV.auto='l';LV.room.presence({ph:'facts'})}}
 async function lvOpen(code,name,host){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
-LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.auto='';
+LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
 try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
 LV.room.onPeers(onP);
 await LV.room.presence(host?{n:name,h:1,ph:'lobby',min:S.min,end:now()+S.dur*60000}:{n:name});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
@@ -231,25 +246,27 @@ function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
 if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
 var host=!!me.presence.h,ph=H.ph,h='';
-if(ph=='lobby'){h=how(2,host?'Share the invite link. The game starts automatically when the countdown ends.':'You are in! The game starts automatically when the countdown ends.')+'<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips">'+names.map(function(n){return chip(n)}).join('')+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
+if(ph=='lobby'){h='<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips">'+names.map(function(n){return chip(n)}).join('')+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
 if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><div class="nav"><button class="alt" id="ad">+1 min</button><button id="st"'+(names.length<H.min?' disabled':'')+'>Start now →</button></div>'}
 else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='';
-if(!me.presence.f)h+=how(3,'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+[0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off">'}).join('')+'</div><button id="sf">Done →</button>';
-else h+=how(3,'Saved! The game starts automatically when everyone is done.')+'<div class="panel"><div class="chips">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
+if(!me.presence.f)h+=how(3,'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+[0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off">'}).join('')+'</div><button id="sf">Done →</button><div class="panel" style="margin-top:18px"><div class="chips" style="margin:0">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
+else h+=how(3,'Saved! Waiting for everyone else…')+'<div class="panel"><div class="chips">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
 }
-else if(ph=='play'){var n=H.ord.length,g=H.ord[H.t],o=H.ord[(H.t+1)%n],op=P.filter(function(p){return p.presence.n==o})[0],f=(op&&op.presence.f)||['(player left)'],mine=g==me.presence.n,locked=me.presence.g&&me.presence.g.r===H.r&&me.presence.g.t===H.t;
-h='<div class="pc"><span>Card '+(H.t+1)+' of '+n+'</span><span>'+(mine?'Your turn!':esc(g)+'’s turn')+'</span></div>'+how(4,H.rv?(host?'Tap Next to continue.':'Wait for the host to continue.'):mine?'Tap who you think wrote this card.':'Guess in your head — '+esc(g)+' is choosing.')+
+else if(ph=='play'){var n=H.ord.length,g=H.ord[H.t],o=H.ord[(H.t+1)%n],mine=g==me.presence.n;
+if(!mine){h='<div class="panel wt">'+av(g)+'<h2>'+esc(g)+'’s turn</h2></div>'+(host?'<button class="alt" id="sk">Skip turn</button>':'')}
+else{var op=P.filter(function(p){return p.presence.n==o})[0],f=(op&&op.presence.f)||['(player left)'],locked=me.presence.g&&me.presence.g.r===H.r&&me.presence.g.t===H.t;
+h='<div class="pc"><span>Card '+(H.t+1)+' of '+n+'</span><span>Your turn!</span></div>'+
 '<div class="ticket"><div class="hd"><span>MYSTERY PLAYER</span><span>#'+(H.t+1)+'</span></div>'+f.map(function(x,i){return '<div class="fact"><span>'+(i+1)+'</span><div>'+esc(x)+'</div></div>'}).join('')+'<div class="q">?</div></div>';
-if(!H.rv){if(mine&&!locked)h+='<div class="grid">'+H.ord.filter(function(x){return x!==g}).map(function(x){return '<button data-lg="'+esc(x)+'">'+av(x)+esc(x)+'</button>'}).join('')+'</div>';else if(locked)h+='<div class="count">Locked in ✓</div>'}
-else{var ok=H.lg===o;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?''+esc(g)+' got it! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div>'+(host?'<button id="nx">'+(H.t<n-1?'Next →':'See scores →')+'</button>':'')}}
-else{var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h=how(5,host?'Final scores. Play again with a new order, or finish.':'Final scores. The host can start another round.')+'<div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'')}
+if(!H.rv){if(!locked)h+='<div class="grid">'+H.ord.filter(function(x){return x!==g}).map(function(x){return '<button data-lg="'+esc(x)+'">'+av(x)+esc(x)+'</button>'}).join('')+'</div>';else h+='<div class="count">Locked in ✓</div>'}
+else{var ok=H.lg===o;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'You got it! +1':'Not quite')+'<small>It was '+esc(o)+'</small></div><div class="count">Next card coming up…</div>'}}}
+else{var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h='<h2>Final scores</h2><div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'<div class="count">Waiting for the host to start another round</div>')}
 return h}
 function help(){var d=document.createElement('div');d.className='ov';
-d.innerHTML='<div class="sheet"><h2>How to play</h2><ol><li>Everyone secretly writes 2–3 true facts about themselves.</li><li>The facts are shuffled into mystery cards. Nobody gets their own card.</li><li>On your turn, read the card and tap the person you think wrote it.</li><li>A correct guess scores 1 point. The most points at the end wins.</li></ol><h3>One phone</h3><p>Pass the same phone around. Hide the screen while writing your facts.</p><h3>Everyone on their own phone</h3><ul><li>The host creates a game and sends the invite link.</li><li>Friends open the link, add their own name and join. They appear in the lobby.</li><li>The game starts automatically when the countdown ends and enough players have joined.</li><li>Facts are collected, then the guessing starts by itself.</li><li>Late joiners can only watch.</li></ul><h3>Tips</h3><ul><li>Pick facts that are surprising but not too obvious.</li><li>Do not react when your own card shows up.</li><li>Tap Restart to stop and go back to the start. If the host restarts, the game ends for everyone.</li></ul><button id="hx" style="margin-top:6px">Got it</button></div>';
+d.innerHTML='<div class="sheet"><h2>How to play</h2><ol><li>Everyone secretly writes 2–3 true facts about themselves.</li><li>The facts are shuffled into mystery cards. Nobody gets their own card.</li><li>On your turn, read the card and tap the person you think wrote it.</li><li>A correct guess scores 1 point. The most points at the end wins.</li></ol><h3>One phone</h3><p>Pass the same phone around. Hide the screen while writing your facts.</p><h3>Everyone on their own phone</h3><ul><li>The host creates a game and sends the invite link.</li><li>Friends open the link, add their own name and join. They appear in the lobby.</li><li>The game starts automatically when the countdown ends and enough players have joined.</li><li>Facts are collected, then the guessing starts by itself.</li><li>Only the player whose turn it is sees the card. Everyone else just sees whose turn it is.</li><li>Only the host can restart the game. Other players can leave.</li><li>Late joiners can only watch.</li></ul><h3>Tips</h3><ul><li>Pick facts that are surprising but not too obvious.</li><li>Do not react when your own card shows up.</li><li>Tap Restart to stop and go back to the start. If the host restarts, the game ends for everyone.</li></ul><button id="hx" style="margin-top:6px">Got it</button></div>';
 document.body.appendChild(d);d.onclick=function(e){if(e.target==d||e.target.id=='hx')d.remove()}}
 function doReset(msg){clearInterval(LV.iv);if(LV.room){try{LV.room.leave()}catch(e){}LV.room=null}LV.sig='';LV.auto='';PRE='';
-S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;S.score={};S.picked=null;S.min=5;S.dur=2;S.msg=msg||'';R()}
-function stopGame(){if(!confirm('Stop and go back to the start?'))return;var me=LV.room&&lvMe();
+S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;S.score={};S.picked=null;S.ready=false;S.min=5;S.dur=2;S.msg=msg||'';R()}
+function stopGame(){var me=LV.room&&lvMe();if(!confirm(me?(me.presence.h?'End the game for everyone and go back to the start?':'Leave the game?'):'Stop and go back to the start?'))return;
 if(me&&me.presence.h){var rm=LV.room;rm.presence({ph:'closed'});LV.room=null;clearInterval(LV.iv);setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
 doReset('')}
 function bind(){if($('hp'))$('hp').onclick=help;if($('rs'))$('rs').onclick=stopGame;
@@ -267,7 +284,7 @@ q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$
 q('st',function(){LV.room.presence({ph:'facts'})});
 q('sf',function(){var f=[0,1,2].map(function(k){return $('f'+k).value.trim()}).filter(Boolean);if(f.length<2){alert('Please write at least 2 facts.');return}LV.room.presence({f:f})});
 q('ag',lvStart);q('ad',function(){var H=lvH();LV.room.presence({end:Math.max(H.end,now())+60000})});
-q('nx',function(){var H=lvH(),t=H.t+1;LV.room.presence(t>=H.ord.length?{ph:'end'}:{t:t,rv:0,lg:null})});
+q('sk',lvNext);
 Array.prototype.forEach.call(app.querySelectorAll('[data-lg]'),function(b){b.onclick=function(){var H=lvH();LV.room.presence({g:{t:H.t,r:H.r,v:b.dataset.lg}})}})}
 if(S.step=='rules'){$('bk0').onclick=function(){S.step='hostm';R()};$('mn').onclick=function(){if(S.min>2){S.min--;R()}};$('pl').onclick=function(){if(S.min<10){S.min++;R()}};$('go0').onclick=function(){S.step='setup';R()}}
 if(S.step=='setup'){
@@ -280,13 +297,14 @@ if(S.step=='facts'){$('bk').onclick=function(){if(S.i>0)S.i--;else S.step='setup
 var f=[0,1,2].map(function(k){return $('f'+k).value.trim()}).filter(Boolean);
 if(f.length<2){alert('Please write at least 2 facts.');return}
 S.facts[S.players[S.i]]=f;S.i++;
-if(S.i>=S.players.length){S.order=shuffle(S.players);S.t=0;S.picked=null;S.score={};S.players.forEach(function(p){S.score[p]=0});S.step='play'}
+if(S.i>=S.players.length){S.order=shuffle(S.players);S.t=0;S.picked=null;S.ready=false;S.score={};S.players.forEach(function(p){S.score[p]=0});S.step='play'}
 R()}}
 
 if(S.step=='play'){
 Array.prototype.forEach.call(app.querySelectorAll('[data-g]'),function(b){b.onclick=function(){
 var g=S.order[S.t],o=S.order[(S.t+1)%S.order.length];S.picked=b.dataset.g;if(S.picked===o)S.score[g]++;R()}});
-if($('next'))$('next').onclick=function(){S.picked=null;S.t++;if(S.t>=S.order.length)S.step='end';R()}}
+if($('rdy'))$('rdy').onclick=function(){S.ready=true;R()};
+if($('next'))$('next').onclick=function(){S.picked=null;S.ready=false;S.t++;if(S.t>=S.order.length)S.step='end';R()}}
 if(S.step=='end'){$('again').onclick=function(){S.i=0;S.facts={};S.step='facts';R()};$('reset').onclick=function(){S.players=[];S.step='setup';R()}}
 }
 R();
