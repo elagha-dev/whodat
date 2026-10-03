@@ -189,11 +189,14 @@ button.gm .e{font-size:28px;line-height:1.1}button.gm small{font-size:13px;font-
 
 .ql{font-weight:700;margin:10px 2px 0}.ql:first-child{margin-top:0}
 .qbox{padding:18px 16px 26px}.qt{font-size:15px;color:var(--mute);font-weight:600;margin-bottom:8px}.qa{font-size:25px;font-weight:700;line-height:1.2}
-.tmr{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:5;margin:0 0 14px;padding:10px 16px 12px;background:var(--card);border:3px solid var(--line);border-radius:18px;box-shadow:4px 4px 0 var(--shadow)}
-.tmrt{display:flex;align-items:center;justify-content:space-between}.tmrl{font-size:15px;font-weight:600;color:var(--mute);text-transform:uppercase;letter-spacing:.8px}.tmrn{font-size:44px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-.tmrb{height:12px;margin-top:8px;border-radius:6px;background:var(--soft);border:2px solid var(--line);overflow:hidden}.tmrb i{display:block;height:100%;background:#12a36a;transition:width .5s linear}
-.tmr.low{background:var(--acc);color:#fff;animation:tmrp .7s ease-in-out infinite alternate}.tmr.low .tmrl{color:#fff}.tmr.low .tmrb{background:rgba(255,255,255,.35);border-color:#fff}.tmr.low .tmrb i{background:#fff}
-@keyframes tmrp{to{transform:scale(1.03)}}
+.tmr{position:fixed;left:calc(12px + env(safe-area-inset-left,0px) + var(--vx,0px));top:calc(12px + env(safe-area-inset-top,0px) + var(--vy,0px));width:64px;height:64px;z-index:30;border-radius:50%;background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:3px 3px 0 var(--shadow);display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.tmr svg{position:absolute;left:0;top:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.tmr circle{fill:none;stroke-width:5}.tmr .tk{stroke:var(--soft)}.tmr .pg{stroke:#12a36a;stroke-linecap:butt;transition:stroke-dashoffset .5s linear}
+.tmrn{position:relative;font-size:19px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.tmr.low{background:var(--acc);color:#fff;animation:tmrp .7s ease-in-out infinite alternate}.tmr.low .tk{stroke:rgba(255,255,255,.35)}.tmr.low .pg{stroke:#fff}
+@keyframes tmrp{to{transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){.tmr.low{animation:none}}
+
 .dlgo{align-items:center;padding:20px;z-index:20}.dlg{border-radius:22px;max-width:360px;box-shadow:6px 6px 0 var(--shadow);text-align:center;padding:24px 20px 20px}.dlg p{margin:0 0 18px;font-size:21px;font-weight:600;line-height:1.25;word-break:break-word}.dlg .nav{margin:0}
 .lbl{font-size:13px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.8px;margin:18px 2px 8px}
 .fld{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 0;font-weight:600}
@@ -269,10 +272,12 @@ function minFor(){return S.gm=='q'&&S.qt=='ans'?2:3}
 var TQV=[10,15,20,25,30,45,60];
 function tqRow(){return '<div class="fld"><span>Time per question</span><div class="mini"><button class="alt" id="tqm">−</button><b>'+TQV[S.tqi]+'s</b><button class="alt" id="tqp">+</button></div></div>'}
 function nxtLeft(H){return Math.max(0,Math.ceil((H.ra+7000-(H.pz||now()))/1000))}
-function tmrHTML(H){return '<div class="tmr'+(tmrLow(H)?' low':'')+'" id="tmrw"><div class="tmrt"><span class="tmrl">Time left</span><span class="tmrn" id="qtm">'+qleft(H)+'</span></div><div class="tmrb"><i id="tmrf" style="width:'+tmrPct(H)+'%"></i></div></div>'}
+var TMR_C=2*Math.PI*24;
+function tmrHTML(H){return '<div class="tmr'+(tmrLow(H)?' low':'')+'" id="tmrw"><svg viewBox="0 0 56 56" aria-hidden="true"><circle class="tk" cx="28" cy="28" r="24"/><circle class="pg" id="tmrf" cx="28" cy="28" r="24" stroke-dasharray="'+TMR_C.toFixed(2)+'" stroke-dashoffset="'+tmrOff(H)+'"/></svg><span class="tmrn" id="qtm">'+qleft(H)+'</span></div>'}
+function tmrOff(H){return (TMR_C*(1-tmrPct(H)/100)).toFixed(2)}
 function tmrPct(H){return Math.max(0,Math.min(100,(H.qa+H.tq*1000-(H.pz||now()))/(H.tq*10)))}
 function tmrLow(H){return (H.qa+H.tq*1000-(H.pz||now()))<=5000}
-function tmrTick(H){var w=$('tmrw'),f=$('tmrf');if(f)f.style.width=tmrPct(H)+'%';if(w)w.classList.toggle('low',tmrLow(H))}
+function tmrTick(H){var w=$('tmrw'),f=$('tmrf');if(f)f.style.strokeDashoffset=tmrOff(H);if(w)w.classList.toggle('low',tmrLow(H))}
 function qleft(H){return Math.max(0,Math.ceil((H.qa+H.tq*1000-(H.pz||now()))/1000))+'s'}
 function mnRow(){return '<div class="fld"><span>Players</span><div class="mini"><button class="alt" id="mn">−</button><b>'+S.min+'</b><button class="alt" id="pl">+</button></div></div>'}
 function isRight(qt,v,o,qi,getF){if(qt=='ans'){if(v===o)return true;var a=(getF(v)||[])[qi],b=(getF(o)||[])[qi];return a!==undefined&&a===b}return v===o}
@@ -476,5 +481,8 @@ var sn=await FDB.ref('games/'+z.c.toLowerCase()+'/players/'+z.p).once('value');i
 S.mode='live';S.step='lv';S.lvs='game';if(z.n&&AVM)S.msg='';await lvOpen(z.c,z.n,!!z.h,{pid:z.p,seed:sn.val()})}catch(e){}})();
 </script><script>(function(){var cur=null;function off(){if(cur){cur.classList.remove('pr');cur=null}}
 document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('button');off();if(b&&!b.disabled){cur=b;b.classList.add('pr')}},true);
-['pointerup','pointercancel','dragstart'].forEach(function(t){document.addEventListener(t,off,true)});})();</script>
+['pointerup','pointercancel','dragstart'].forEach(function(t){document.addEventListener(t,off,true)});})();
+(function(){var vv=window.visualViewport;if(!vv)return;var r=document.documentElement.style;function pin(){r.setProperty('--vx',vv.offsetLeft+'px');r.setProperty('--vy',vv.offsetTop+'px')}
+vv.addEventListener('resize',pin);vv.addEventListener('scroll',pin);window.addEventListener('scroll',pin,{passive:true});pin()})();
+</script>
 </body></html>
