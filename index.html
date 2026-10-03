@@ -204,7 +204,7 @@ presence:function(patch){mine.onDisconnect().remove();return mine.update(patch)}
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){ref.off();mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
-var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'facts',qt:'who',qs:[],sy:false,av:''};
+var S={step:'mode',mode:'',lvs:'',msg:'',dur:2,min:5,players:[],facts:{},i:0,order:[],t:0,score:{},picked:null,okv:null,jd:false,ready:false,gm:'facts',qt:'who',qs:[],sy:false,av:'',tqi:1,qc:'fun'};
 if(PRE&&FBC){S.mode='live';S.step='lv';S.lvs='join'}
 var app=document.getElementById('app'),$=function(id){return document.getElementById(id)};
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
@@ -232,7 +232,10 @@ function wzb(k){var lv=S.mode=='live'||k=='mode',Lb=lv?['Mode','Lobby','Start']:
 if(k=='lv'){var H=S.lvs=='game'&&lvH();m=H?{lobby:1,facts:2}[H.ph]||0:0}else m={mode:0,rules:0,setup:1,facts:2}[k];
 return '<div class="wz">'+Lb.map(function(l,i){return '<div class="'+(i==m?'on':i<m?'done':'')+'"><b>'+(i<m?'✓':i+1)+'</b>'+l+'</div>'}).join('')+'</div>'}
 var QN=3,QB=['What is your most useless talent?','What would your last meal be?','What is the worst gift you have ever received?','Which song do you know every word to?','What is your go-to karaoke song?','What is a food you refuse to eat?','What is your most irrational fear?','If you won the lottery tomorrow, what is the first thing you would buy?','What is the most embarrassing thing on your phone?','What superpower would you pick?','What is your guilty-pleasure TV show?','Where would you move if you could live anywhere?','What is the strangest thing you have ever eaten?','What is your biggest pet peeve?','What did you want to be when you grew up?','What is the best trip you have ever taken?','Which fictional character are you most like?','What is your hidden talent?','What is a rule you always break?','What is the last thing you searched for online?','What is your most-used emoji?','What is a movie you can watch over and over?','What would your nickname be on a deserted island?','What is the pettiest thing you have ever done?','What is a skill you wish you had?','What is your signature dance move?','What is the weirdest dream you remember?','Which old trend do you secretly miss?','What is your comfort food?','What is a lie you told as a kid?'];
-function pickQs(){return shuffle(QB).slice(0,QN)}
+var QDEEP=['What is something you have changed your mind about in the last few years?','What is a small moment you will never forget?','What is the best advice you have ever been given?','What do you wish people understood about you?','What is something you are proud of that you rarely mention?','What is a fear you have overcome?','Who has shaped you the most, and how?','What would you do with a free year and no obligations?','What is a habit you would like to build?','What is the kindest thing a stranger has done for you?','What do you value most in a friend?','What is a risk you are glad you took?','What is something you wish you had started earlier?','If you could relive one day, which would it be?','What does a perfect ordinary day look like for you?'],
+QSPICY=['What is the most embarrassing thing you have done while drunk?','What is the worst date you have ever been on?','What is your most regrettable text to an ex?','What is the wildest thing you have done on a night out?','What is your biggest turn-off?','What is the most daring thing you have done for a crush?','What is a secret you have never told your parents?','What is the biggest lie you have told to get out of something?','What is your guilty pleasure when you are home alone?','Who in this room would you swap lives with for a week?','What is the worst pick-up line you have heard or used?','What is the most awkward thing that has happened on a first date?','What is the pettiest thing you have ever done?','What is your most unpopular opinion about dating?','What is the biggest white lie you tell on dates?','What is something you did at a party that you hope nobody remembers?','Who was your most embarrassing crush?'];
+function pickQs(){var b=S.qc=='deep'?QDEEP:S.qc=='spicy'?QSPICY:QB;return shuffle(b).slice(0,QN)}
+function qcPick(){var o=[['fun','Fun','Light and silly'],['deep','Deep','Thoughtful'],['spicy','Spicy 18+','Adults only']];return '<div class="lbl">Question style</div><div class="gms" style="grid-template-columns:repeat(3,1fr)">'+o.map(function(x){return '<button class="alt gm'+(S.qc==x[0]?' sel':'')+'" data-qc="'+x[0]+'">'+x[1]+'<small>'+x[2]+'</small></button>'}).join('')+'</div>'}
 function total(ord,gm,qs){return gm=='q'?ord.length*QN:ord.length}
 function cardOf(t,ord,gm,qs){var n=ord.length;if(gm!='q')return{g:ord[t],o:ord[(t+1)%n],qi:0};var qi=Math.floor(t/n),i=t%n;return{g:ord[i],o:ord[(i+1+(qi%(n-1)))%n],qi:qi}}
 function cardHTML(gm,qs,qi,f,num){f=f||['(player left)'];return '<div class="ticket"><div class="hd"><span>'+(gm=='q'?'MYSTERY ANSWER':'MYSTERY PLAYER')+'</span><span>#'+num+'</span></div>'+(gm=='q'?'<div class="qbox"><div class="qt">'+esc(qs[qi])+'</div><div class="qa">“'+esc(f[qi]||'(player left)')+'”</div></div>':f.map(function(x,i){return '<div class="fact"><span>'+(i+1)+'</span><div>'+esc(x)+'</div></div>'}).join(''))+'<div class="q">?</div></div>'}
@@ -241,6 +244,9 @@ if(gm=='q')return qs.map(function(t,k){return '<div class="ql">'+esc(t)+'</div><
 return [0,1,2].map(function(k){return '<input id="f'+k+'" placeholder="Fact '+(k+1)+(k>1?' (optional)':'')+'" maxlength="100" autocomplete="off" value="'+q(vals[k])+'">'}).join('')}
 function readF(gm){var f=[0,1,2].map(function(k){return $('f'+k).value.trim()});if(gm=='q'){if(f.some(function(x){return !x})){dlg('Please answer every question.');return null}return f}f=f.filter(Boolean);if(f.length<2){dlg('Please write at least 2 facts.');return null}return f}
 function minFor(){return S.gm=='q'&&S.qt=='ans'?2:3}
+var TQV=[10,15,20,30,45,60];
+function tqRow(){return '<div class="fld"><span>Time per question</span><div class="mini"><button class="alt" id="tqm">−</button><b>'+TQV[S.tqi]+'s</b><button class="alt" id="tqp">+</button></div></div>'}
+function qleft(H){return Math.max(0,Math.ceil((H.qa+H.tq*1000-now())/1000))+'s'}
 function mnRow(){return '<div class="fld"><span>Players</span><div class="mini"><button class="alt" id="mn">−</button><b>'+S.min+'</b><button class="alt" id="pl">+</button></div></div>'}
 function isRight(qt,v,o,qi,getF){if(qt=='ans'){if(v===o)return true;var a=(getF(v)||[])[qi],b=(getF(o)||[])[qi];return a!==undefined&&a===b}return v===o}
 function norm(x){return String(x||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim()}
@@ -253,7 +259,7 @@ function judgeUI(said,act,by){return '<div class="panel" style="text-align:cente
 function optOrder(len,seed){var a=[],i,r=seed%len;for(i=0;i<len;i++)a.push((i+r)%len);return seed%2?a.reverse():a}
 function ansCard(qs,qi,o,num){return '<div class="ticket"><div class="hd"><span>WHAT DID '+esc(o).toUpperCase()+' SAY?</span><span>#'+num+'</span></div><div class="qbox"><div class="qa">'+esc(qs[qi])+'</div></div><div class="q">?</div></div>'}
 function qtPick(){return '<div class="lbl">How to guess</div><div class="gms"><button class="alt gm'+(S.qt=='who'?' sel':'')+'" data-qt="who">Guess the person<small>Read an answer, pick who wrote it</small></button><button class="alt gm'+(S.qt=='ans'?' sel':'')+'" data-qt="ans">Guess the answer<small>See a person, guess what they answered</small></button></div>'}
-function gmPick(){if(S.min<3)return '<div class="gms"><button class="alt gm sel" data-qt="ans" style="grid-column:1/-1">Guess the answer<small>See a person, guess what they answered</small></button></div>'+(S.mode!='live'?'<div class="hint">More game types unlock with 3+ players.</div>':'<div class="lbl">How to guess</div><div class="gms"><button class="alt gm'+(S.sy?'':' sel')+'" data-sy="0">Type it<small>Not next to each other</small></button><button class="alt gm'+(S.sy?' sel':'')+'" data-sy="1">Say it<small>Sitting together</small></button></div><div class="hint">More game types unlock with 3+ players.</div>');return '<div class="gms"><button class="alt gm'+(S.gm=='facts'?' sel':'')+'" data-gm="facts">Facts<small>Write secret facts about yourself</small></button><button class="alt gm'+(S.gm=='q'?' sel':'')+'" data-gm="q">Questions<small>Answer fun questions, guess who said what</small></button></div>'+(S.gm=='q'?qtPick():'')}
+function gmPick(){if(S.min<3)return '<div class="gms"><button class="alt gm sel" data-qt="ans" style="grid-column:1/-1">Guess the answer<small>See a person, guess what they answered</small></button></div>'+qcPick()+(S.mode!='live'?'<div class="hint">More game types unlock with 3+ players.</div>':'<div class="lbl">How to guess</div><div class="gms"><button class="alt gm'+(S.sy?'':' sel')+'" data-sy="0">Type it<small>Not next to each other</small></button><button class="alt gm'+(S.sy?' sel':'')+'" data-sy="1">Say it<small>Sitting together</small></button></div><div class="hint">More game types unlock with 3+ players.</div>');return '<div class="gms"><button class="alt gm'+(S.gm=='facts'?' sel':'')+'" data-gm="facts">Facts<small>Write secret facts about yourself</small></button><button class="alt gm'+(S.gm=='q'?' sel':'')+'" data-gm="q">Questions<small>Answer fun questions, guess who said what</small></button></div>'+(S.gm=='q'?qtPick()+qcPick():'')}
 function R(){var keep={},n=0,fo=document.activeElement&&document.activeElement.id;
 if(S.step=='lv')['nm','cd','cfg','f0','f1','f2','gt'].forEach(function(i){if($(i)){keep[i]=$(i).value;n++}});
 var w=isSetup(),body=V[S.step](),Hh=S.step=='lv'&&S.lvs=='game'&&lvH();app.innerHTML=w?'<div class="ov wzo"><div class="sheet wsheet">'+hdr(S.step)+wzb(S.step)+body+'</div></div>':hdr(S.step)+body;
@@ -265,7 +271,7 @@ mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color
 lv:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
 if(S.lvs=='cfg')return how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="cfgok">Save →</button></div>';
 if(S.lvs=='choose')return m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%" aria-label="Back">←</button></div>';
-if(S.lvs=='host')return m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+avPick()+profRow()+mnRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="create">Create →</button></div>';
+if(S.lvs=='host')return m+'<div class="panel"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+avPick()+profRow()+mnRow()+tqRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="create">Create →</button></div>';
 if(S.lvs=='join')return m+'<div class="panel"><input id="cd" placeholder="CODE" value="'+esc(PRE)+'" maxlength="4" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px"><input id="nm" placeholder="Your name" maxlength="20" autocomplete="off">'+avPick()+profRow()+'</div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="joinGo">Join →</button></div>';
 return m+lvGame()},
 rules:function(){return '<div class="panel">'+mnRow()+'<div class="lbl">Game type</div>'+gmPick()+'</div>'+
@@ -312,18 +318,19 @@ if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game')R()}}
 var OFF=0;function now(){return Date.now()+OFF}
 function clkTxt(H,n){return n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more player'+(H.min-n>1?'s':'')}
 function lvToFacts(){var H=lvH();LV.room.presence(H&&H.gm=='q'?{ph:'facts',qs:pickQs()}:{ph:'facts'})}
-function lvNext(){var H=lvH(),t=H.t+1;LV.room.presence(t>=total(H.ord,H.gm,H.qs)?{ph:'end'}:{t:t,rv:0,lg:null,jd:0})}
+function lvNext(){var H=lvH(),t=H.t+1;LV.room.presence(t>=total(H.ord,H.gm,H.qs)?{ph:'end'}:{t:t,rv:0,lg:null,jd:0,qa:now()})}
 function clock(){var H=lvH();if(!H)return;var me=lvMe();
-if(H.ph=='play'){var k=H.r+'.'+H.t;if(me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>3500&&LV.adv!==k){LV.adv=k;lvNext()}return}
+if(H.ph=='play'){var k=H.r+'.'+H.t;if(me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>7000&&LV.adv!==k){LV.adv=k;lvNext()}
+if(H.rv===0&&H.qa&&H.tq){var q=$('qtm');if(q)q.textContent=qleft(H);if(me&&me.presence.h&&now()-H.qa>H.tq*1000){var P2=lvP(),cd2=cardOf(H.t,H.ord,H.gm,H.qs),gp2=P2.filter(function(p){return p.presence.n==cd2.g})[0],g2=gp2&&gp2.presence.g;if(!(g2&&g2.r===H.r&&g2.t===H.t)&&LV.to!==k){LV.to=k;LV.done=k;LV.room.presence({rv:1,lg:'',ok:0,jd:0,sc:H.sc,ra:now(),to:1})}}}return}
 if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
 if(me&&me.presence.h&&P.length>=H.min&&LV.auto!=='l'){LV.auto='l';lvToFacts()}}
 async function lvOpen(code,name,host){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
 LV.room=mkRoom(code);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
 try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
 LV.room.onPeers(onP);
-await LV.room.presence(host?{n:name,e:AVM[name]||'',h:1,ph:'lobby',gm:S.gm,qt:S.qt,sy:S.sy?1:0,min:S.min,end:now()+S.dur*60000}:{n:name,e:AVM[name]||''});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
+await LV.room.presence(host?{n:name,e:AVM[name]||'',h:1,ph:'lobby',gm:S.gm,qt:S.qt,sy:S.sy?1:0,min:S.min,tq:TQV[S.tqi],end:now()+S.dur*60000}:{n:name,e:AVM[name]||''});clearInterval(LV.iv);LV.iv=setInterval(clock,500);S.lvs='game';R();
 if(!host)setTimeout(function(){if(!lvH()){S.msg='No game found with code '+code;LV.room.leave();LV.room=null;S.lvs='join';R()}},4000)}
-function lvStart(){var ord=shuffle(lvP().filter(function(p){return p.presence.f}).map(function(p){return p.presence.n})),sc={};ord.forEach(function(n){sc[n]=0});LV.room.presence({ph:'play',ord:ord,t:0,rv:0,r:Date.now(),sc:sc,lg:null,jd:0})}
+function lvStart(){var ord=shuffle(lvP().filter(function(p){return p.presence.f}).map(function(p){return p.presence.n})),sc={};ord.forEach(function(n){sc[n]=0});LV.room.presence({ph:'play',qa:now(),ord:ord,t:0,rv:0,r:Date.now(),sc:sc,lg:null,jd:0})}
 function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
 if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
@@ -341,9 +348,9 @@ else{var ans=H.gm=='q'&&H.qt=='ans',txt=ans&&H.ord.length==2,say=txt&&!!H.sy,get
 h='<div class="pc"><span>Card '+(H.t+1)+' of '+n+'</span><span>Your turn!</span></div>'+
 (ans?ansCard(H.qs,cd.qi,o,H.t+1):cardHTML(H.gm,H.qs,cd.qi,f,H.t+1));
 if(!H.rv){if(say)h+='<div class="panel" style="text-align:center"><div style="font-size:22px;font-weight:700">Say your guess out loud</div><div class="count" style="margin:6px 0 0">'+esc(o)+' will confirm…</div></div>';else if(pend&&locked){var aH=P.some(function(p){return p.presence.n==o});h+=aH?'<div class="panel" style="text-align:center"><div class="count" style="margin:0">You said</div><div style="font-size:22px;font-weight:700;margin:2px 0 14px">“'+esc(gg.v)+'”</div><div class="count" style="margin:0">'+esc(o)+' is checking…</div></div>':judgeUI(gg.v,(f||[])[cd.qi])}else if(!locked){if(txt)h+=txtIn();else if(ans)h+=ansOpts(H.ord.filter(function(x){return x!==g}),getF,cd.qi,H.t*3+H.r%7,'data-lg');else h+='<div class="grid">'+H.ord.filter(function(x){return x!==g}).map(function(x){return '<button data-lg="'+esc(x)+'">'+av(x)+esc(x)+'</button>'}).join('')+'</div>'}else h+='<div class="count">Locked in ✓</div>'}
-else{var ok=!!H.ok;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'You got it! +1':'Not quite')+'<small>It was '+(ans?'“'+esc((f||[])[cd.qi]||'')+'”':esc(o))+'</small></div><div class="count">Next card coming up…</div>'}}}
+else{var ok=!!H.ok;h+='<div class="res '+(ok?'ok':'no')+'">'+(ok?'You got it! +1':H.to?'Time\u2019s up':'Not quite')+'<small>It was '+(ans?'“'+esc((f||[])[cd.qi]||'')+'”':esc(o))+'</small></div><div class="count">Next card coming up…</div>'}}}
 else{recHist(H.sc,H.gm);var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.sc[a]}),md=['','',''];h='<h2>Final scores</h2><div class="panel">'+r.map(function(x,i){return '<div class="score"><span class="m">'+(md[i]||i+1)+'</span>'+av(x)+esc(x)+'<b>'+H.sc[x]+'</b></div>'}).join('')+'</div>'+(host?'<button id="ag">Play again</button>':'<div class="count">Waiting for the host to start another round</div>')}
-return h}
+return (ph=='play'&&!H.rv&&H.tq?'<div class="count" id="qtm" style="text-align:center;font-weight:700;font-size:20px">'+qleft(H)+'</div>':'')+h}
 function dlg(msg,yes,fn){var d=document.createElement('div');d.className='ov dlgo';
 d.innerHTML='<div class="sheet dlg"><p>'+esc(msg)+'</p><div class="nav">'+(yes?'<button class="alt" id="dn">Cancel</button><button id="dy">'+esc(yes)+'</button>':'<button id="dy">OK</button>')+'</div></div>';
 document.body.appendChild(d);d.querySelector('#dy').onclick=function(){d.remove();if(fn)fn()};if(yes)d.querySelector('#dn').onclick=function(){d.remove()};
@@ -356,7 +363,10 @@ S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;
 function stopGame(){var me=LV.room&&lvMe();dlg(me?(me.presence.h?'Want to stop the game for everyone?':'Want to leave the game?'):'Want to stop the game?',me&&!me.presence.h?'Leave':'Stop game',function(){
 if(me&&me.presence.h){var rm=LV.room;rm.presence({ph:'closed'});LV.room=null;clearInterval(LV.iv);setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
 doReset('')})}
-function bind(){if($('hi'))$('hi').onclick=showHist;
+function bind(){Array.prototype.forEach.call(app.querySelectorAll('[data-qc]'),function(b){b.onclick=function(){S.qc=b.dataset.qc;R()}});
+if($('tqm')){$('tqm').onclick=function(){if(S.tqi>0){S.tqi--;R()}};$('tqp').onclick=function(){if(S.tqi<TQV.length-1){S.tqi++;R()}}}
+var nx=$('next');if(nx){if(!S.nt)S.nt=Date.now();var lf=4000-(Date.now()-S.nt);if(lf>0){nx.disabled=true;setTimeout(function(){var b=$('next');if(b)b.disabled=false},lf)}}
+if($('hi'))$('hi').onclick=showHist;
 Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(b){b.onclick=function(){S.av=S.av==b.dataset.ae?'':b.dataset.ae;Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(x){x.classList.toggle('on',x.dataset.ae==S.av)})}});
 Array.prototype.forEach.call(app.querySelectorAll('[data-pf]'),function(c){c.onclick=function(){var i=$('nm');if(!i)return;i.value=c.dataset.pf;S.av=c.dataset.pe||'';if(S.av)AVM[c.dataset.pf]=S.av;if(S.step=='setup')$('add').click();else{Array.prototype.forEach.call(app.querySelectorAll('[data-ae]'),function(x){x.classList.toggle('on',x.dataset.ae==S.av)});i.focus()}}});
 Array.prototype.forEach.call(app.querySelectorAll('[data-pr]'),function(a){a.onclick=function(e){e.stopPropagation();var n=a.dataset.pr;try{localStorage.setItem('profiles',JSON.stringify(profs().filter(function(x){return x!=n})))}catch(x){}R()}});
@@ -406,7 +416,7 @@ var cd=cardOf(S.t,S.order,S.gm,S.qs),g=cd.g,o=cd.o;S.picked=b.dataset.g;S.okv=is
 if($('gs'))$('gs').onclick=function(){S.picked='-';S.jd=true;R()};
 ['jy','jn'].forEach(function(id){if($(id))$(id).onclick=function(){var cd=cardOf(S.t,S.order,S.gm,S.qs);S.okv=id=='jy';if(S.okv)S.score[cd.g]++;S.jd=false;R()}});
 if($('rdy'))$('rdy').onclick=function(){S.ready=true;R()};
-if($('next'))$('next').onclick=function(){S.picked=null;S.okv=null;S.jd=false;S.ready=false;S.t++;if(S.t>=total(S.order,S.gm,S.qs))S.step='end';R()}}
+if($('next'))$('next').onclick=function(){S.nt=0;S.picked=null;S.okv=null;S.jd=false;S.ready=false;S.t++;if(S.t>=total(S.order,S.gm,S.qs))S.step='end';R()}}
 if(S.step=='end'){$('again').onclick=function(){S.i=0;S.facts={};S.qs=S.gm=='q'?pickQs():[];S.step='facts';R()};$('reset').onclick=function(){S.players=[];S.step='setup';R()}}
 }
 R();
