@@ -444,10 +444,11 @@ function lvDone(at){var H=lvH();LV.room.presence({hd:(H.hd||[]).concat(at).slice
 function lvPause(){LV.room.presence({pz:now()})}
 function lvResume(){var H=lvH(),d=Math.max(0,now()-H.pz),p={pz:null};if(H.qa)p.qa=H.qa+d;if(H.ra)p.ra=H.ra+d;LV.room.presence(p)}
 function agBanner(P,H){var n=rqOf(P,H,'again').map(function(p){return p.presence.n});return n.length?'<div class="count" style="text-align:center;margin:0 0 10px">'+n.map(esc).join(', ')+(n.length>1?' want':' wants')+' to play again</div>':''}
-function rqPanel(p){var q=p.presence.rq,n=p.presence.n;return '<div class="panel" style="text-align:center"><div class="count" style="margin:0 0 8px">'+esc(n)+' asks to '+(q.k=='pause'?'pause the game':q.k=='restart'?'restart the game':'become the host')+'</div><div class="nav"><button class="alt" data-rqn="'+q.at+'">Not now</button><button data-rqy="'+q.at+'" data-k="'+q.k+'" data-n="'+esc(n).replace(/"/g,'&quot;')+'">'+(q.k=='pause'?'Pause':q.k=='restart'?'Restart':'Make host')+'</button></div></div>'}
+function rqPanel(p){var q=p.presence.rq,n=p.presence.n;return '<p>'+esc(n)+' asks to '+(q.k=='pause'?'pause the game':q.k=='restart'?'restart the game':'become the host')+'</p><div class="nav"><button class="alt" data-rqn="'+q.at+'">Not now</button><button data-rqy="'+q.at+'" data-k="'+q.k+'" data-n="'+esc(n).replace(/"/g,'&quot;')+'">'+(q.k=='pause'?'Pause':q.k=='restart'?'Restart':'Make host')+'</button></div>'}
+function rqPop(L){return L.length?'<div class="ov dlgo"><div class="sheet dlg">'+L.map(rqPanel).join('<div style="height:20px"></div>')+'</div></div>':''}
 function hostAskBtn(me,H,bar){var a=askedBy(me,H,'host');return '<button class="alt" id="ask_host"'+(bar?'':' style="margin-top:14px"')+(a?' disabled':'')+'>'+(a?'Asked ✓':bar?'Ask to be host':'Request host role')+'</button>'}
 function ctlHTML(P,H,me,host){var x='';
-if(host&&!H.pz)rqOf(P,H,'pause').concat(rqOf(P,H,'restart'),rqOf(P,H,'host')).forEach(function(p){x+=rqPanel(p)});
+if(host&&!H.pz)x+=rqPop(rqOf(P,H,'pause').concat(rqOf(P,H,'restart'),rqOf(P,H,'host')));
 x+='<div class="ctl">'+(host?'<button class="alt" id="pz">Pause</button><button class="alt" id="rst">Restart</button>':'<button class="alt" id="ask_pause"'+(askedBy(me,H,'pause')?' disabled':'')+'>'+(askedBy(me,H,'pause')?'Asked ✓':'Ask to pause')+'</button><button class="alt" id="ask_rst"'+(askedBy(me,H,'restart')?' disabled':'')+'>'+(askedBy(me,H,'restart')?'Asked ✓':'Ask to restart')+'</button>'+hostAskBtn(me,H,1))+'</div><div style="height:72px"></div>';
 if(H.pz)x+='<div class="ov dlgo"><div class="sheet dlg"><h2 style="margin:0 0 8px">Paused</h2><p>'+(host?'Everyone sees this. Tap resume when you are ready.':'The game is paused. It continues when the host resumes.')+'</p>'+(host?'<button id="rz">Resume</button>':'')+'</div></div>';
 return x}
@@ -473,7 +474,7 @@ else{recHist(H.sc,H.gm);var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.
 var away=P.filter(function(p){return p.presence.off&&!p.isMe}).map(function(p){return p.presence.n});
 if(away.length&&ph!='lobby')h='<div class="count" style="text-align:center;margin:0 0 10px">'+ICON.away+away.map(esc).join(', ')+(away.length>1?' are':' is')+' away. The game continues when they come back.</div>'+h;
 if(ph=='play')h+=ctlHTML(P,H,me,host);
-if(ph=='lobby'||ph=='facts'||ph=='end'){if(host)h=rqOf(P,H,'host').map(rqPanel).join('')+h;else h+=hostAskBtn(me,H)}
+if(ph=='lobby'||ph=='facts'||ph=='end'){if(host)h=rqPop(rqOf(P,H,'host'))+h;else h+=hostAskBtn(me,H)}
 return (ph=='play'&&!H.rv&&H.tq?tmrHTML(H):'')+h}
 function nameDlg(nm,e,go,cancel){var d=document.createElement('div');d.className='ov dlgo';d.innerHTML='<div class="sheet dlg"><span class="av">'+avArt(e)+'</span><p>You’ve been given a name:<br><b>'+esc(nm)+'</b></p><div class="nav"><button class="alt" id="dn">Pick my own</button><button id="dy">Continue</button></div></div>';document.body.appendChild(d);d.querySelector('#dy').onclick=function(){d.remove();go()};d.querySelector('#dn').onclick=function(){d.remove();if(cancel)cancel();var i=$('nm');if(i)i.focus()}}
 function dlg(msg,yes,fn){var d=document.createElement('div');d.className='ov dlgo';
