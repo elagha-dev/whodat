@@ -221,7 +221,7 @@ ref.on('value',function(sn){cache=sn.val()||{}});
 conn.on('value',function(sn){if(sn.val()!==true||!live)return;dc();if(Object.keys(mir).length)mine.update(Object.assign({},mir,{off:null}))});
 return{pid:pid,peers:function(){return Object.keys(cache).map(function(k){return{peer:k,kind:'viewer',isMe:k==pid,sameTab:k==pid,presence:cache[k]}})},
 presence:function(patch){Object.keys(patch).forEach(function(k){if(patch[k]===null||patch[k]===undefined)delete mir[k];else mir[k]=patch[k]});live=true;dc();return mine.update(Object.assign({},patch,{off:null}))},
-drop:function(k){ref.child(k).remove()},
+drop:function(k){ref.child(k).remove()},away:function(on){return mine.update({off:on?TS:null})},
 onPeers:function(fn){ref.on('value',function(){fn({})})},
 leave:function(){live=false;ref.off();conn.off();try{mine.onDisconnect().cancel()}catch(e){}mine.remove()}}}
 var C=['#ff5a5f','#6c4cf1','#12a36a','#f08c00','#1c7ed6','#d6336c','#0ca678','#7048e8','#e8590c','#364fc7'];
@@ -334,14 +334,23 @@ function lvP(){var L=LV.room?LV.room.peers().filter(function(p){return p.kind=='
 var BOTF=[['I can juggle three oranges','I have never seen a Star Wars movie','I once met a famous footballer'],['I collect rubber ducks','I can speak a little Klingon','I have run a marathon backwards'],['I was a child model','I hate pineapple on pizza','I can solve a Rubik\u2019s cube blind']],BOTA=[['Pizza','Karaoke','Mars'],['Tacos','Dancing','Paris'],['Sushi','Chess','Tokyo']];
 function botAdd(){var H=lvH();if(!H||!LV.room||!(H.ph=='lobby'||H.ph=='facts'))return;LV.bots=LV.bots||[];var used=lvP().map(function(p){return p.presence.n}),i=1;while(used.indexOf('Bot '+i)>-1)i++;var b={name:'Bot '+i,k:(i-1)%3,room:mkRoom(LV.code,null,null,true)};LV.bots.push(b);b.room.presence({n:b.name,e:AVIDS[(i*5)%AVIDS.length]});R()}
 function botsOff(){(LV.bots||[]).forEach(function(b){try{b.room.leave()}catch(e){}});LV.bots=[]}
-function botReady(b,key,ms){if(b.key!=key){b.key=key;b.at=now()+ms+Math.random()*1500}return now()>=b.at}
+function botReady(b,key,lo,hi){if(b.key!=key){b.key=key;b.at=now()+lo+Math.random()*(hi-lo)}return now()>=b.at}
+function botTypo(t){t=String(t||'');if(Math.random()<.3&&t.length>4){var i=1+Math.floor(Math.random()*(t.length-2));return t.slice(0,i)+t.slice(i+1)}return t}
+var BOTW=['Pizza','Sushi','Paris','Chess','Mars','Tacos','Blue','Never','Sunday'];
+/* Bots behave like people: they think for a few seconds, are right about 40% of the time, make typos, judge answers, and with Chaos on they drop offline, ask to pause and ask to play again. */
 function botRun(H,P){if(!LV.bots||!LV.bots.length)return;LV.bots.forEach(function(b){var bp=P.filter(function(p){return p.presence.n==b.name})[0];if(!bp)return;var pr=bp.presence;
-if(H.ph=='facts'){if(!pr.f)b.room.presence({f:H.gm=='q'?BOTA[b.k]:BOTF[b.k]});return}
-if(H.ph!='play'||H.pz||H.rv)return;
+if(LV.chaos){if(b.away){if(now()>b.back){b.away=0;b.room.away(false)}return}if(Math.random()<.004){b.away=1;b.back=now()+8000+Math.random()*17000;b.room.away(true);return}}
+if(H.ph=='facts'){if(!pr.f&&botReady(b,'f',2500,8000))b.room.presence({f:H.gm=='q'?BOTA[b.k]:BOTF[b.k]});return}
+if(H.ph=='end'){if(LV.chaos&&!pr.rq&&botReady(b,'again',3000,9000))b.room.presence({rq:{k:'again',r:H.r,at:now()}});return}
+if(H.ph!='play'||H.pz)return;
+if(LV.chaos&&!(pr.rq&&pr.rq.r===H.r&&(H.hd||[]).indexOf(pr.rq.at)<0)&&Math.random()<.002)b.room.presence({rq:{k:'pause',r:H.r,at:now()}});
+if(H.rv)return;
 var cd=cardOf(H.t,H.ord,H.gm,H.qs),key=H.r+'.'+H.t,txt=H.gm=='q'&&H.qt=='ans'&&H.ord.length==2;
-if(cd.g==b.name){var g=pr.g;if(g&&g.r===H.r&&g.t===H.t)return;if(txt&&H.sy)return;if(!botReady(b,key,1200))return;
-var others=H.ord.filter(function(n){return n!=b.name}),v=txt?'Not sure':others[Math.floor(Math.random()*others.length)];if(v)b.room.presence({g:{t:H.t,r:H.r,v:v}})}
-else if(cd.o==b.name&&txt){var jv=pr.jv;if(jv&&jv.r===H.r&&jv.t===H.t)return;if((H.sy||H.jd==H.t+1)&&botReady(b,key+'j',2500))b.room.presence({jv:{t:H.t,r:H.r,j:Math.random()<.5?1:0}})}})}
+if(cd.g==b.name){var g=pr.g;if(g&&g.r===H.r&&g.t===H.t)return;if(txt&&H.sy)return;if(!botReady(b,key,2500,7000))return;
+var v;if(txt){var op=P.filter(function(p){return p.presence.n==cd.o})[0],ans=op&&op.presence.f&&op.presence.f[cd.qi];v=Math.random()<.45&&ans?botTypo(ans):BOTW[Math.floor(Math.random()*BOTW.length)]}
+else{var others=H.ord.filter(function(n){return n!=b.name});v=Math.random()<.4&&others.indexOf(cd.o)>-1?cd.o:others[Math.floor(Math.random()*others.length)]}
+if(v)b.room.presence({g:{t:H.t,r:H.r,v:v}})}
+else if(cd.o==b.name&&txt){var jv=pr.jv;if(jv&&jv.r===H.r&&jv.t===H.t)return;if((H.sy||H.jd==H.t+1)&&botReady(b,key+'j',2500,6000))b.room.presence({jv:{t:H.t,r:H.r,j:Math.random()<(H.sy?.5:.3)?1:0}})}})}
 function lvMe(){return lvP().filter(function(p){return p.isMe})[0]}
 function lvH(){var h=lvP().filter(function(p){return p.presence.h})[0];return h?h.presence:null}
 function chip(n,f,off){return '<span class="chip'+(f?' done':'')+(off?' away':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+(off===undefined?'':'<i class="st" title="'+(off?'Away':'Online')+'"></i>')+'</span>'}
@@ -360,17 +369,22 @@ var d=P.filter(function(o){return !o.isMe&&o.presence.n==me.presence.n&&o.peer<m
 if(me.presence.h&&H&&H.ph=='play'&&H.rv===0&&!H.pz)tick(P,H);
 if(me.presence.h&&H&&H.ph=='facts'&&P.length&&P.every(function(p){return p.presence.f})&&LV.auto!=='f'){LV.auto='f';lvStart()}
 var g=JSON.stringify([P.map(function(p){return [p.presence.rq&&p.presence.rq.at,p.presence.off?1:0,p.presence.n,!!p.presence.f,p.presence.g&&p.presence.g.t,p.presence.g&&p.presence.g.j,p.presence.jv&&p.presence.jv.j]}),H&&[H.ph,H.t,H.rv,H.lg,H.r,H.jd,H.pz,H.hd&&H.hd.length]]);
-if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game')R()}}
+if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game'){var ae=document.activeElement,ty=ae&&ae.tagName=='INPUT'&&/^(f[0-2]|gt)$/.test(ae.id),st=JSON.stringify([H&&[H.ph,H.t,H.rv,H.lg,H.r,H.jd,H.pz],!!me.presence.f,me.presence.g&&me.presence.g.t]);
+/* While someone is typing, a change in another player's state must not rebuild the screen (it kills the keyboard and caret). Update the chips in place and redraw once typing stops. */
+if((ty&&st===LV.st)||pressed()){LV.def=Date.now();plLive(H)}else{LV.st=st;LV.def=0;R()}}}}
+var PD=0;function pressed(){return PD&&Date.now()-PD<1500}
+['pointerdown','touchstart','mousedown'].forEach(function(e){document.addEventListener(e,function(){PD=Date.now()},true)});['pointerup','pointercancel','touchend','touchcancel','mouseup','click'].forEach(function(e){document.addEventListener(e,function(){PD=0},true)});
 var OFF=0;function now(){return Date.now()+OFF}
-function clkTxt(H,n){return n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more player'+(H.min-n>1?'s':'')}
-function lvToFacts(){var H=lvH();LV.room.presence(H&&H.gm=='q'?{ph:'facts',qs:pickQs()}:{ph:'facts'})}
+function clkTxt(H,n){return H.go?'Game starts in '+Math.max(1,Math.ceil((H.go-now())/1000)):n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more player'+(H.min-n>1?'s':'')}
+function lvToFacts(){var H=lvH();LV.room.presence(H&&H.gm=='q'?{ph:'facts',qs:pickQs(),go:null}:{ph:'facts',go:null})}
 function lvNext(){var H=lvH(),t=H.t+1;LV.room.presence(t>=total(H.ord,H.gm,H.qs)?{ph:'end'}:{t:t,rv:0,lg:null,jd:0,qa:now()})}
 function clock(){var H=lvH();if(!H)return;var me=lvMe();
-if(me&&me.presence.h&&(H.ph=='lobby'||H.ph=='facts'))lvP().forEach(function(p){if(!p.isMe&&p.presence.off&&now()-p.presence.off>45000)LV.room.drop(p.peer)});
+if(me&&me.presence.h)botRun(H,lvP());plLive(H);if(LV.def&&Date.now()-LV.def>1500){var fa=document.activeElement;if(!pressed()&&!(fa&&fa.tagName=='INPUT'&&/^(f[0-2]|gt)$/.test(fa.id))){LV.def=0;R()}}
+if(me&&me.presence.h&&(H.ph=='lobby'||H.ph=='facts'))lvP().forEach(function(p){if(!p.isMe&&p.presence.off&&now()-p.presence.off>120000)LV.room.drop(p.peer)});
 if(H.ph=='play'){var k=H.r+'.'+H.t;var nx=$('nxt');if(nx&&H.rv&&H.ra)nx.textContent=nxtLeft(H);if(!H.pz&&me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>7000&&LV.adv!==k){LV.adv=k;lvNext()}
 if(H.rv===0&&H.qa&&H.tq){var q=$('qtm');if(q){q.textContent=qleft(H);tmrTick(H)}if(!H.pz&&me&&me.presence.h&&now()-H.qa>H.tq*1000){var P2=lvP(),cd2=cardOf(H.t,H.ord,H.gm,H.qs),gp2=P2.filter(function(p){return p.presence.n==cd2.g})[0],g2=gp2&&gp2.presence.g;if(!(g2&&g2.r===H.r&&g2.t===H.t)&&LV.to!==k){LV.to=k;LV.done=k;LV.room.presence({rv:1,lg:'',ok:0,jd:0,sc:H.sc,ra:now(),to:1})}}}return}
-if(me&&me.presence.h)botRun(H,lvP());plLive(H);if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
-if(me&&me.presence.h&&P.length>=H.min&&LV.auto!=='l'){LV.auto='l';lvToFacts()}}
+if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
+if(me&&me.presence.h&&LV.auto!=='l'){if(P.length>=H.min){if(!H.go)LV.room.presence({go:now()+3000});else if(now()>=H.go){LV.auto='l';lvToFacts()}}else if(H.go)LV.room.presence({go:null})}}
 async function lvOpen(code,name,host,resume){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
 LV.room=mkRoom(code,resume&&resume.pid,resume&&resume.seed);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
 try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
@@ -399,7 +413,7 @@ if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
 var host=!!me.presence.h,ph=H.ph,h='';
 if(ph=='lobby'){h='<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="count" style="margin:0">'+(H.gm=='q'?(H.qt=='ans'?'Questions · guess the answer'+(H.sy?' · say it out loud':''):'Questions · guess the person'):'Facts mode')+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips" id="plist">'+plHtml(H)+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
-if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><div class="nav" style="margin-bottom:14px"><button class="alt" id="bot">+ Test bot</button>'+((LV.bots||[]).length?'<button class="alt" id="botx">Remove bots</button>':'')+'</div>'}
+if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><div class="nav" style="margin-bottom:14px"><button class="alt" id="bot">+ Test bot</button>'+((LV.bots||[]).length?'<button class="alt" id="botx">Remove bots</button><button class="alt" id="botc">Chaos: '+(LV.chaos?'on':'off')+'</button>':'')+'</div>'}
 else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='';
 if(!me.presence.f)h+=how(3,H.gm=='q'?'Answer honestly. Others will guess it was you!':'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+factInputs(H.gm,H.qs)+'</div><button id="sf">Done →</button><div class="panel" style="margin-top:18px"><div class="chips" style="margin:0">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
 else h+=how(3,'Saved! Waiting for everyone else…')+'<div class="panel"><div class="chips" id="plist">'+plHtml(H)+'</div></div>';
@@ -457,7 +471,7 @@ q('mn',function(){if(S.min>2){S.min--;if(S.min<3){S.gm='q';S.qt='ans'}R()}});q('
 q('create',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim();if(!nm){dlg('Enter your name');return}var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];if(S.av)AVM[nm]=S.av;saveProf(nm,S.av);lvOpen(c,nm,true)});
 q('joinGo',function(){var nm=$('nm').value.replace(/[.#$\[\]\/]/g,'').trim(),c=$('cd').value.trim().toUpperCase();if(!nm||c.length!=4){dlg('Enter the 4-letter code and your name');return}if(S.av)AVM[nm]=S.av;saveProf(nm,S.av);lvOpen(c,nm,false)});
 q('sf',function(){var f=readF(lvH().gm);if(!f)return;LV.room.presence({f:f})});
-q('bot',botAdd);q('botx',function(){botsOff();R()});q('ag',lvStart);
+q('bot',botAdd);q('botx',function(){botsOff();R()});q('botc',function(){LV.chaos=!LV.chaos;R()});q('ag',lvStart);
 q('sk',lvNext);
 q('pz',lvPause);q('rz',lvResume);q('rst',function(){dlg('Restart the game? Scores go back to zero.','Restart',lvStart)});
 q('ask_pause',function(){lvAsk('pause')});q('ask_rst',function(){lvAsk('restart')});q('aa',function(){lvAsk('again')});
