@@ -135,7 +135,16 @@ button.alt{background:var(--card);color:var(--ink)}
 button.ae{width:auto;flex:none;font-size:24px;line-height:1;padding:3px;box-shadow:none;border:0;background:transparent;border-radius:50%}.ae svg{display:block;width:42px;height:42px;border-radius:50%;border:2px solid var(--line)}
 button.ae.on{box-shadow:0 0 0 3px #ffb800}button.ae:active:not(:disabled),button.ae.pr:not(:disabled){background:transparent;transform:none;box-shadow:none}button.ae.on:active:not(:disabled){box-shadow:0 0 0 3px #ffb800}
 .chip .st{width:9px;height:9px;border-radius:50%;background:#12a36a;flex:none;margin-left:2px}.chip.away{opacity:.6}.chip.away .st{background:var(--mute)}
-.ctl{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(0,0,0,0),var(--bg) 45%);z-index:8;pointer-events:none}.ctl button{pointer-events:auto;width:auto;flex:none;font-size:15px;padding:8px 16px;border-width:2px;border-radius:12px;box-shadow:2px 2px 0 var(--shadow)}main:has(input:focus) .ctl{display:none}
+.devb{display:none}
+html.wlow::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:62;border:4px solid #e03131;animation:wl .5s ease-in-out infinite alternate}
+@keyframes wl{from{box-shadow:inset 0 0 0 0 rgba(224,49,49,0);opacity:.55}to{box-shadow:inset 0 0 40px 12px rgba(224,49,49,.7);opacity:1}}
+@media(prefers-reduced-motion:reduce){html.wlow::before{animation:none}}
+body.dev::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:60;border:4px solid #1c7ed6;animation:devp 1.6s ease-in-out infinite}
+body.dev::after{content:'● TEST MODE';position:fixed;top:0;left:50%;transform:translateX(-50%);background:#1c7ed6;color:#fff;font:800 10px/1 system-ui,sans-serif;letter-spacing:1px;padding:4px 10px 5px;border-radius:0 0 10px 10px;z-index:61;pointer-events:none;animation:devl 1.6s ease-in-out infinite}
+@keyframes devp{0%,100%{box-shadow:inset 0 0 0 0 rgba(28,126,214,0);opacity:.4}50%{box-shadow:inset 0 0 36px 10px rgba(28,126,214,.65);opacity:1}}
+@keyframes devl{0%,100%{opacity:.55}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){body.dev::before,body.dev::after{animation:none}}
+.ctl{position:fixed;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(0,0,0,0),var(--bg) 45%);z-index:8;pointer-events:none}.ctl button{pointer-events:auto;width:auto;flex:none;font-size:15px;padding:8px 16px;border-width:2px;border-radius:12px;box-shadow:2px 2px 0 var(--shadow)}main:has(input:focus) .ctl{display:none}
 .chip.done .av{background:#12a36a;color:#fff;border-color:#12a36a}
 @keyframes shine{from{background-position:0 0,0 0}to{background-position:0 0,100% 0}}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.done{color:#5be3a1;background:linear-gradient(#173324,#173324) padding-box,linear-gradient(110deg,#b8860b,#ffd700,#fff7b8,#ffd700,#b8860b) border-box;background-size:100% 100%,250% 100%}}
@@ -352,6 +361,25 @@ var v;if(txt){var op=P.filter(function(p){return p.presence.n==cd.o})[0],ans=op&
 else{var others=H.ord.filter(function(n){return n!=b.name});v=Math.random()<.4&&others.indexOf(cd.o)>-1?cd.o:others[Math.floor(Math.random()*others.length)]}
 if(v)b.room.presence({g:{t:H.t,r:H.r,v:v}})}
 else if(cd.o==b.name&&txt){var jv=pr.jv;if(jv&&jv.r===H.r&&jv.t===H.t)return;if((H.sy||H.jd==H.t+1)&&botReady(b,key+'j',2500,6000))b.room.presence({jv:{t:H.t,r:H.r,j:Math.random()<(H.sy?.5:.3)?1:0}})}})}
+/* Test bots are hidden. Tap the logo 5 times within 3 seconds to show or hide the bot controls (remembered on this device). */
+var DEV=false,LT=[];try{DEV=localStorage.getItem('wdbot')=='1'}catch(e){}
+function devUI(){document.body.classList.toggle('dev',DEV);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',DEV?'#1c7ed6':'#f4f4f1')}devUI();
+document.addEventListener('click',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('logo'))return;var n=Date.now();LT=LT.filter(function(x){return n-x<3000});LT.push(n);if(LT.length<5)return;LT=[];DEV=!DEV;try{localStorage.setItem('wdbot',DEV?'1':'0')}catch(x){}
+var d=document.createElement('div');d.textContent=DEV?'Test mode on':'Test mode off';d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 16px;border-radius:12px;font-weight:700;z-index:50';document.body.appendChild(d);setTimeout(function(){d.remove()},1500);devUI();R()});
+var IDLE=300000;
+/* Inactivity: the host closes the game if nobody has done anything (join, submit, guess, judge, request, tap) for 5 minutes. Automatic timers don't count as activity. */
+function idleChk(H,P){var sg=JSON.stringify([H.ph,!!H.pz,(H.hd||[]).length,P.map(function(p){var r=p.presence;return [r.n,r.f?1:0,r.g&&r.g.t,r.jv&&r.jv.t,r.rq&&r.rq.at]})]);if(sg!==LV.isg||!LV.act){LV.isg=sg;LV.act=Date.now()}if(Date.now()-LV.act>IDLE)idleEnd()}
+function idleEnd(){botsOff();clearSess();LV.act=0;LV.isg='';var rm=LV.room;if(rm){LV.room=null;clearInterval(LV.iv);rm.presence({ph:'closed',cm:'idle'});setTimeout(function(){try{rm.leave()}catch(e){}},1500)}doReset('The game ended after 5 minutes of inactivity.')}
+function isH(me){return !!(me&&me.presence.h&&!me.presence.ho)}
+var XSKIP=['n','e','f','g','jv','rq','off','h','ho','xt'],XKEEP=['n','e','f','g','jv','rq','off'];
+function lvXfer(name){LV.room.presence({ho:name,xt:now()})}
+function xferRun(H,me){if(!me)return;var P=lvP();
+if(!me.presence.h){var hp=P.filter(function(p){return p.presence.h&&p.presence.ho==me.presence.n})[0];
+if(hp&&!LV.took){var src=hp.presence,patch={};Object.keys(src).forEach(function(k){if(XSKIP.indexOf(k)<0)patch[k]=src[k]});patch.h=src.h;patch.rq=null;LV.took=true;LV.act=Date.now();LV.auto='';LV.room.presence(patch);saveSess(true)}
+if(!hp)LV.took=false;return}
+if(me.presence.ho){var nh=P.filter(function(p){return !p.isMe&&p.presence.h&&p.presence.n==me.presence.ho})[0];
+if(nh){var c={};Object.keys(me.presence).forEach(function(k){if(XKEEP.indexOf(k)<0)c[k]=null});LV.room.presence(c);saveSess(false)}
+else if(now()-(me.presence.xt||0)>10000)LV.room.presence({ho:null,xt:null})}}
 function lvMe(){return lvP().filter(function(p){return p.isMe})[0]}
 function lvH(){var h=lvP().filter(function(p){return p.presence.h})[0];return h?h.presence:null}
 function chip(n,f,off){return '<span class="chip'+(f?' done':'')+(off?' away':'')+'">'+av(n)+esc(n)+(f===undefined?'':f?' ✓':' …')+(off===undefined?'':'<i class="st" title="'+(off?'Away':'Online')+'"></i>')+'</span>'}
@@ -365,27 +393,28 @@ if(txt){var ap=P.filter(function(p){return p.presence.n==o})[0],jv=ap&&ap.presen
 else ok=isRight(H.qt,g.v,o,cd.qi,getF);
 LV.done=key;var sc=Object.assign({},H.sc);if(ok)sc[gp.presence.n]=(sc[gp.presence.n]||0)+1;LV.room.presence({rv:1,lg:g.v,ok:ok?1:0,jd:0,sc:sc,ra:now()})}
 function onP(){var P=lvP(),me=lvMe(),H=lvH();if(!me)return;
-if(H&&H.ph=='closed'&&!me.presence.h){doReset('The host ended the game.');return}
+if(H&&H.ph=='closed'&&!me.presence.h){doReset(H.cm=='idle'?'The game ended after 5 minutes of inactivity.':'The host ended the game.');return}
 var d=P.filter(function(o){return !o.isMe&&o.presence.n==me.presence.n&&o.peer<me.peer})[0];if(d){LV.name=me.presence.n+' 2';LV.room.presence({n:LV.name});return}
-if(me.presence.h&&H&&H.ph=='play'&&H.rv===0&&!H.pz)tick(P,H);
-if(me.presence.h&&H&&H.ph=='facts'&&P.length&&P.every(function(p){return p.presence.f})&&LV.auto!=='f'){LV.auto='f';lvStart()}
+if(isH(me)&&H&&H.ph=='play'&&H.rv===0&&!H.pz)tick(P,H);
+if(isH(me)&&H&&H.ph=='facts'&&P.length&&P.every(function(p){return p.presence.f})&&LV.auto!=='f'){LV.auto='f';lvStart()}
 var g=JSON.stringify([P.map(function(p){return [p.presence.rq&&p.presence.rq.at,p.presence.off?1:0,p.presence.n,!!p.presence.f,p.presence.g&&p.presence.g.t,p.presence.g&&p.presence.g.j,p.presence.jv&&p.presence.jv.j]}),H&&[H.ph,H.t,H.rv,H.lg,H.r,H.jd,H.pz,H.hd&&H.hd.length]]);
 if(g!==LV.sig){LV.sig=g;if(S.step=='lv'&&S.lvs=='game'){var ae=document.activeElement,ty=ae&&ae.tagName=='INPUT'&&/^(f[0-2]|gt)$/.test(ae.id),st=JSON.stringify([H&&[H.ph,H.t,H.rv,H.lg,H.r,H.jd,H.pz],!!me.presence.f,me.presence.g&&me.presence.g.t]);
 /* While someone is typing, a change in another player's state must not rebuild the screen (it kills the keyboard and caret). Update the chips in place and redraw once typing stops. */
 if((ty&&st===LV.st)||pressed()){LV.def=Date.now();plLive(H)}else{LV.st=st;LV.def=0;R()}}}}
 var PD=0;function pressed(){return PD&&Date.now()-PD<1500}
-['pointerdown','touchstart','mousedown'].forEach(function(e){document.addEventListener(e,function(){PD=Date.now()},true)});['pointerup','pointercancel','touchend','touchcancel','mouseup','click'].forEach(function(e){document.addEventListener(e,function(){PD=0},true)});
+['pointerdown','touchstart','mousedown'].forEach(function(e){document.addEventListener(e,function(){PD=Date.now();if(window.LV)LV.act=Date.now()},true)});document.addEventListener('keydown',function(){if(window.LV)LV.act=Date.now()},true);['pointerup','pointercancel','touchend','touchcancel','mouseup','click'].forEach(function(e){document.addEventListener(e,function(){PD=0},true)});
 var OFF=0;function now(){return Date.now()+OFF}
 function clkTxt(H,n){return H.go?'Game starts in '+Math.max(1,Math.ceil((H.go-now())/1000)):n>=H.min?'Starting…':'Waiting for '+(H.min-n)+' more player'+(H.min-n>1?'s':'')}
 function lvToFacts(){var H=lvH();LV.room.presence(H&&H.gm=='q'?{ph:'facts',qs:pickQs(),go:null}:{ph:'facts',go:null})}
 function lvNext(){var H=lvH(),t=H.t+1;LV.room.presence(t>=total(H.ord,H.gm,H.qs)?{ph:'end'}:{t:t,rv:0,lg:null,jd:0,qa:now()})}
-function clock(){var H=lvH();if(!H)return;var me=lvMe();
-if(me&&me.presence.h)botRun(H,lvP());plLive(H);if(LV.def&&Date.now()-LV.def>1500){var fa=document.activeElement;if(!pressed()&&!(fa&&fa.tagName=='INPUT'&&/^(f[0-2]|gt)$/.test(fa.id))){LV.def=0;R()}}
-if(me&&me.presence.h&&(H.ph=='lobby'||H.ph=='facts'))lvP().forEach(function(p){if(!p.isMe&&p.presence.off&&now()-p.presence.off>120000)LV.room.drop(p.peer)});
-if(H.ph=='play'){var k=H.r+'.'+H.t;var nx=$('nxt');if(nx&&H.rv&&H.ra)nx.textContent=nxtLeft(H);if(!H.pz&&me&&me.presence.h&&H.rv&&H.ra&&now()-H.ra>7000&&LV.adv!==k){LV.adv=k;lvNext()}
-if(H.rv===0&&H.qa&&H.tq){var q=$('qtm');if(q){q.textContent=qleft(H);tmrTick(H)}if(!H.pz&&me&&me.presence.h&&now()-H.qa>H.tq*1000){var P2=lvP(),cd2=cardOf(H.t,H.ord,H.gm,H.qs),gp2=P2.filter(function(p){return p.presence.n==cd2.g})[0],g2=gp2&&gp2.presence.g;if(!(g2&&g2.r===H.r&&g2.t===H.t)&&LV.to!==k){LV.to=k;LV.done=k;LV.room.presence({rv:1,lg:'',ok:0,jd:0,sc:H.sc,ra:now(),to:1})}}}return}
+function warnUI(H){var on=!!(H&&H.ph=='play'&&H.rv===0&&H.qa&&H.tq&&!H.pz&&tmrLow(H));document.documentElement.classList.toggle('wlow',on)}
+function clock(){var H=lvH();warnUI(H);if(!H)return;var me=lvMe();
+if(LV.bots&&LV.bots.length)botRun(H,lvP());if(isH(me)&&H.ph!='closed')idleChk(H,lvP());xferRun(H,me);plLive(H);if(LV.def&&Date.now()-LV.def>1500){var fa=document.activeElement;if(!pressed()&&!(fa&&fa.tagName=='INPUT'&&/^(f[0-2]|gt)$/.test(fa.id))){LV.def=0;R()}}
+if(isH(me)&&(H.ph=='lobby'||H.ph=='facts'))lvP().forEach(function(p){if(!p.isMe&&p.presence.off&&now()-p.presence.off>120000)LV.room.drop(p.peer)});
+if(H.ph=='play'){var k=H.r+'.'+H.t;var nx=$('nxt');if(nx&&H.rv&&H.ra)nx.textContent=nxtLeft(H);if(!H.pz&&isH(me)&&H.rv&&H.ra&&now()-H.ra>7000&&LV.adv!==k){LV.adv=k;lvNext()}
+if(H.rv===0&&H.qa&&H.tq){var q=$('qtm');if(q){q.textContent=qleft(H);tmrTick(H)}if(!H.pz&&isH(me)&&now()-H.qa>H.tq*1000){var P2=lvP(),cd2=cardOf(H.t,H.ord,H.gm,H.qs),gp2=P2.filter(function(p){return p.presence.n==cd2.g})[0],g2=gp2&&gp2.presence.g;if(!(g2&&g2.r===H.r&&g2.t===H.t)&&LV.to!==k){LV.to=k;LV.done=k;LV.room.presence({rv:1,lg:'',ok:0,jd:0,sc:H.sc,ra:now(),to:1})}}}return}
 if(H.ph!='lobby')return;var P=lvP(),c=$('clk');if(c)c.textContent=clkTxt(H,P.length);
-if(me&&me.presence.h&&LV.auto!=='l'){if(P.length>=H.min){if(!H.go)LV.room.presence({go:now()+3000});else if(now()>=H.go){LV.auto='l';lvToFacts()}}else if(H.go)LV.room.presence({go:null})}}
+if(isH(me)&&LV.auto!=='l'){if(P.length>=H.min){if(!H.go)LV.room.presence({go:now()+3000});else if(now()>=H.go){LV.auto='l';lvToFacts()}}else if(H.go)LV.room.presence({go:null})}}
 async function lvOpen(code,name,host,resume){if(!fbInit()){S.msg='Firebase is not set up yet.';S.step='mode';S.mode='';R();return}
 LV.room=mkRoom(code,resume&&resume.pid,resume&&resume.seed);LV.code=code;LV.name=name;LV.auto='';LV.adv='';
 try{var o=await FDB.ref('.info/serverTimeOffset').once('value');OFF=o.val()||0}catch(e){}
@@ -397,16 +426,18 @@ function clearSess(){try{localStorage.removeItem('wdsess')}catch(e){}}
 var WL=null;function keepAwake(){try{if(navigator.wakeLock&&LV.room&&document.visibilityState=='visible')navigator.wakeLock.request('screen').then(function(l){WL=l}).catch(function(){})}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState!='visible'||!LV.room)return;try{FDB.goOnline()}catch(e){}keepAwake()});
 function lvStart(){var ord=shuffle(lvP().filter(function(p){return p.presence.f}).map(function(p){return p.presence.n})),sc={};ord.forEach(function(n){sc[n]=0});LV.room.presence({ph:'play',qa:now(),ord:ord,t:0,rv:0,r:Date.now(),sc:sc,lg:null,jd:0,pz:null,hd:null})}
-function askedBy(me,H,k){var q=me.presence.rq;return !!(q&&q.k==k&&q.r===H.r&&(H.hd||[]).indexOf(q.at)<0)}
-function rqOf(P,H,k){return P.filter(function(p){var q=p.presence.rq;return !p.isMe&&q&&q.k==k&&q.r===H.r&&(H.hd||[]).indexOf(q.at)<0})}
-function lvAsk(k){var H=lvH();LV.room.presence({rq:{k:k,r:H.r,at:now()}})}
+function askedBy(me,H,k){var q=me.presence.rq;return !!(q&&q.k==k&&q.r===(H.r||0)&&(H.hd||[]).indexOf(q.at)<0)}
+function rqOf(P,H,k){return P.filter(function(p){var q=p.presence.rq;return !p.isMe&&q&&q.k==k&&q.r===(H.r||0)&&(H.hd||[]).indexOf(q.at)<0})}
+function lvAsk(k){var H=lvH();LV.room.presence({rq:{k:k,r:H.r||0,at:now()}})}
 function lvDone(at){var H=lvH();LV.room.presence({hd:(H.hd||[]).concat(at).slice(-30)})}
 function lvPause(){LV.room.presence({pz:now()})}
 function lvResume(){var H=lvH(),d=Math.max(0,now()-H.pz),p={pz:null};if(H.qa)p.qa=H.qa+d;if(H.ra)p.ra=H.ra+d;LV.room.presence(p)}
 function agBanner(P,H){var n=rqOf(P,H,'again').map(function(p){return p.presence.n});return n.length?'<div class="count" style="text-align:center;margin:0 0 10px">'+n.map(esc).join(', ')+(n.length>1?' want':' wants')+' to play again</div>':''}
+function rqPanel(p){var q=p.presence.rq,n=p.presence.n;return '<div class="panel" style="text-align:center"><div class="count" style="margin:0 0 8px">'+esc(n)+' asks to '+(q.k=='pause'?'pause the game':q.k=='restart'?'restart the game':'become the host')+'</div><div class="nav"><button class="alt" data-rqn="'+q.at+'">Not now</button><button data-rqy="'+q.at+'" data-k="'+q.k+'" data-n="'+esc(n).replace(/"/g,'&quot;')+'">'+(q.k=='pause'?'Pause':q.k=='restart'?'Restart':'Make host')+'</button></div></div>'}
+function hostAskBtn(me,H,bar){var a=askedBy(me,H,'host');return '<button class="alt" id="ask_host"'+(bar?'':' style="margin-top:14px"')+(a?' disabled':'')+'>'+(a?'Asked ✓':bar?'Ask to be host':'Request host role')+'</button>'}
 function ctlHTML(P,H,me,host){var x='';
-if(host&&!H.pz)rqOf(P,H,'pause').concat(rqOf(P,H,'restart')).forEach(function(p){var q=p.presence.rq;x+='<div class="panel" style="text-align:center"><div class="count" style="margin:0 0 8px">'+esc(p.presence.n)+' asks to '+(q.k=='pause'?'pause the game':'restart the game')+'</div><div class="nav"><button class="alt" data-rqn="'+q.at+'">Not now</button><button data-rqy="'+q.at+'" data-k="'+q.k+'">'+(q.k=='pause'?'Pause':'Restart')+'</button></div></div>'});
-x+='<div class="ctl">'+(host?'<button class="alt" id="pz">Pause</button><button class="alt" id="rst">Restart</button>':'<button class="alt" id="ask_pause"'+(askedBy(me,H,'pause')?' disabled':'')+'>'+(askedBy(me,H,'pause')?'Asked ✓':'Ask to pause')+'</button><button class="alt" id="ask_rst"'+(askedBy(me,H,'restart')?' disabled':'')+'>'+(askedBy(me,H,'restart')?'Asked ✓':'Ask to restart')+'</button>')+'</div><div style="height:72px"></div>';
+if(host&&!H.pz)rqOf(P,H,'pause').concat(rqOf(P,H,'restart'),rqOf(P,H,'host')).forEach(function(p){x+=rqPanel(p)});
+x+='<div class="ctl">'+(host?'<button class="alt" id="pz">Pause</button><button class="alt" id="rst">Restart</button>':'<button class="alt" id="ask_pause"'+(askedBy(me,H,'pause')?' disabled':'')+'>'+(askedBy(me,H,'pause')?'Asked ✓':'Ask to pause')+'</button><button class="alt" id="ask_rst"'+(askedBy(me,H,'restart')?' disabled':'')+'>'+(askedBy(me,H,'restart')?'Asked ✓':'Ask to restart')+'</button>'+hostAskBtn(me,H,1))+'</div><div style="height:72px"></div>';
 if(H.pz)x+='<div class="ov dlgo"><div class="sheet dlg"><h2 style="margin:0 0 8px">Paused</h2><p>'+(host?'Everyone sees this. Tap resume when you are ready.':'The game is paused. It continues when the host resumes.')+'</p>'+(host?'<button id="rz">Resume</button>':'')+'</div></div>';
 return x}
 function lvGame(){var P=lvP(),H=lvH(),me=lvMe();
@@ -414,7 +445,7 @@ if(!H||!me)return how(1,'Connecting… finding the game.');
 var names=P.map(function(p){return p.presence.n}).sort();S.players=names;
 var host=!!me.presence.h,ph=H.ph,h='';
 if(ph=='lobby'){h='<div class="panel"><div class="count" style="margin:0">Game code</div><div class="code">'+esc(LV.code)+'</div><div class="count" style="margin:0">'+(H.gm=='q'?(H.qt=='ans'?'Questions · guess the answer'+(H.sy?' · say it out loud':''):'Questions · guess the person'):'Facts mode')+'</div><div class="res no" style="font-size:22px;padding:12px;margin:10px 0" id="clk">'+clkTxt(H,names.length)+'</div><div class="chips" id="plist">'+plHtml(H)+'</div><div class="count">'+names.length+' joined'+(names.length<H.min?' · need '+(H.min-names.length)+' more':'')+'</div></div>';
-if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button><div class="nav" style="margin-bottom:14px"><button class="alt" id="bot">+ Test bot</button>'+((LV.bots||[]).length?'<button class="alt" id="botx">Remove bots</button><button class="alt" id="botc">Chaos: '+(LV.chaos?'on':'off')+'</button>':'')+'</div>'}
+if(host)h+='<button class="alt" id="sh" style="margin-bottom:14px">Share invite link</button>'+((DEV||(LV.bots||[]).length)?'<div class="nav" style="margin-bottom:14px"><button class="alt" id="bot">+ Test bot</button>'+((LV.bots||[]).length?'<button class="alt" id="botx">Remove bots</button><button class="alt" id="botc">Chaos: '+(LV.chaos?'on':'off')+'</button>':'')+'</div>':'')}
 else if(ph=='facts'){var all=P.every(function(p){return p.presence.f});h='';
 if(!me.presence.f)h+=how(3,H.gm=='q'?'Answer honestly. Others will guess it was you!':'Write 2–3 true facts about <u>you</u>. Keep them secret!')+'<div class="panel">'+factInputs(H.gm,H.qs)+'</div><button id="sf">Done →</button><div class="panel" style="margin-top:18px"><div class="chips" style="margin:0">'+P.map(function(p){return chip(p.presence.n,!!p.presence.f)}).join('')+'</div></div>';
 else h+=how(3,'Saved! Waiting for everyone else…')+'<div class="panel"><div class="chips" id="plist">'+plHtml(H)+'</div></div>';
@@ -431,6 +462,7 @@ else{recHist(H.sc,H.gm);var r=H.ord.slice().sort(function(a,b){return H.sc[b]-H.
 var away=P.filter(function(p){return p.presence.off&&!p.isMe}).map(function(p){return p.presence.n});
 if(away.length&&ph!='lobby')h='<div class="count" style="text-align:center;margin:0 0 10px">'+ICON.away+away.map(esc).join(', ')+(away.length>1?' are':' is')+' away. The game continues when they come back.</div>'+h;
 if(ph=='play')h+=ctlHTML(P,H,me,host);
+if(ph=='lobby'||ph=='facts'||ph=='end'){if(host)h=rqOf(P,H,'host').map(rqPanel).join('')+h;else h+=hostAskBtn(me,H)}
 return (ph=='play'&&!H.rv&&H.tq?tmrHTML(H):'')+h}
 function dlg(msg,yes,fn){var d=document.createElement('div');d.className='ov dlgo';
 d.innerHTML='<div class="sheet dlg"><p>'+esc(msg)+'</p><div class="nav">'+(yes?'<button class="alt" id="dn">Cancel</button><button id="dy">'+esc(yes)+'</button>':'<button id="dy">OK</button>')+'</div></div>';
@@ -439,10 +471,10 @@ d.onclick=function(e){if(e.target==d)d.remove()}}
 function help(){var d=document.createElement('div');d.className='ov';
 d.innerHTML='<div class="sheet"><h2>How to play</h2><ol><li>Pick a game type. Facts and Guess the person need at least 3 players, because with 2 the guess is obvious. Facts: everyone secretly writes 2–3 true facts about themselves. Questions: everyone answers 3 fun questions, then either guess who wrote an answer, or guess what a person answered (with 2 players you say your guess out loud and the other person confirms (or type it when playing apart); with 3 or more you pick from the other players’ answers).</li><li>The facts are shuffled into mystery cards. Nobody gets their own card.</li><li>On your turn, read the card and tap the person you think wrote it.</li><li>A correct guess scores 1 point. The most points at the end wins.</li></ol><h3>One phone</h3><p>Pass the same phone around. Hide the screen while writing your facts.</p><h3>Everyone on their own phone</h3><ul><li>The host creates a game and sends the invite link.</li><li>Friends open the link, add their own name and join. They appear in the lobby.</li><li>The game starts automatically once everyone has joined.</li><li>Facts are collected, then the guessing starts by itself.</li><li>Only the player whose turn it is sees the card. Everyone else just sees whose turn it is.</li><li>Anyone can ask to pause, restart, or play again. The host decides.</li><li>Only the host can end the game. Other players can leave.</li><li>Late joiners can only watch.</li></ul><h3>Tips</h3><ul><li>Pick facts that are surprising but not too obvious.</li><li>Do not react when your own card shows up.</li><li>Tap the stop or exit button at the top to leave. If the host stops the game, it ends for everyone.</li></ul><button id="hx" style="margin-top:6px">Got it</button></div>';
 document.body.appendChild(d);d.onclick=function(e){if(e.target==d||e.target.id=='hx')d.remove()}}
-function doReset(msg){botsOff();clearSess();clearInterval(LV.iv);if(LV.room){try{LV.room.leave()}catch(e){}LV.room=null}LV.sig='';LV.auto='';PRE='';
+function doReset(msg){document.documentElement.classList.remove('wlow');botsOff();clearSess();clearInterval(LV.iv);if(LV.room){try{LV.room.leave()}catch(e){}LV.room=null}LV.sig='';LV.auto='';PRE='';
 S.step='mode';S.mode='';S.lvs='';S.players=[];S.facts={};S.i=0;S.order=[];S.t=0;S.score={};S.picked=null;S.okv=null;S.jd=false;S.ready=false;S.min=2;S.gm='q';S.qt='ans';S.dur=2;S.sy=false;S.msg=msg||'';R()}
 function stopGame(){var me=LV.room&&lvMe();dlg(me?(me.presence.h?'Want to stop the game for everyone?':'Want to leave the game?'):'Want to stop the game?',me&&!me.presence.h?'Leave':'Stop game',function(){
-botsOff();clearSess();if(me&&me.presence.h){var rm=LV.room;rm.presence({ph:'closed'});LV.room=null;clearInterval(LV.iv);setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
+botsOff();clearSess();if(me&&me.presence.h){var rm=LV.room;LV.room=null;clearInterval(LV.iv);rm.presence({ph:'closed'});setTimeout(function(){try{rm.leave()}catch(e){}},1500)}
 doReset('')})}
 function bind(){Array.prototype.forEach.call(app.querySelectorAll('[data-qc]'),function(b){b.onclick=function(){S.qc=b.dataset.qc;R()}});
 if($('tqm')){$('tqm').onclick=function(){if(S.tqi>0){S.tqi--;R()}};$('tqp').onclick=function(){if(S.tqi<TQV.length-1){S.tqi++;R()}}}
@@ -475,9 +507,9 @@ q('sf',function(){var f=readF(lvH().gm);if(!f)return;LV.room.presence({f:f})});
 q('bot',botAdd);q('botx',function(){botsOff();R()});q('botc',function(){LV.chaos=!LV.chaos;R()});q('ag',lvStart);
 q('sk',lvNext);
 q('pz',lvPause);q('rz',lvResume);q('rst',function(){dlg('Restart the game? Scores go back to zero.','Restart',lvStart)});
-q('ask_pause',function(){lvAsk('pause')});q('ask_rst',function(){lvAsk('restart')});q('aa',function(){lvAsk('again')});
+q('ask_pause',function(){lvAsk('pause')});q('ask_host',function(){lvAsk('host')});q('ask_rst',function(){lvAsk('restart')});q('aa',function(){lvAsk('again')});
 Array.prototype.forEach.call(app.querySelectorAll('[data-rqn]'),function(b){b.onclick=function(){lvDone(+b.dataset.rqn)}});
-Array.prototype.forEach.call(app.querySelectorAll('[data-rqy]'),function(b){b.onclick=function(){lvDone(+b.dataset.rqy);if(b.dataset.k=='pause')lvPause();else lvStart()}});
+Array.prototype.forEach.call(app.querySelectorAll('[data-rqy]'),function(b){b.onclick=function(){lvDone(+b.dataset.rqy);if(b.dataset.k=='host')lvXfer(b.dataset.n);else if(b.dataset.k=='pause')lvPause();else lvStart()}});
 q('gs',function(){var v=$('gt').value.trim();if(!v){dlg('Type your guess first.');return}var H=lvH();LV.room.presence({g:{t:H.t,r:H.r,v:v}})});
 if($('gt'))$('gt').onkeydown=function(e){if(e.key=='Enter')$('gs').click()};
 ['jy','jn'].forEach(function(id){q(id,function(){var H=lvH(),j=id=='jy'?1:0;if(lvMe().presence.n==cardOf(H.t,H.ord,H.gm,H.qs).o)LV.room.presence({jv:{t:H.t,r:H.r,j:j}});else{var gg=lvMe().presence.g||{};LV.room.presence({g:{t:gg.t,r:gg.r,v:gg.v,j:j}})}})});
