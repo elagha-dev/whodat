@@ -295,6 +295,24 @@ html.age .wzo{padding-top:calc(44px + env(safe-area-inset-top,0px))}
 .sndt{display:flex;gap:8px}.sndt button{flex:1;padding:8px 2px;font-size:14px;box-shadow:2px 2px 0 var(--shadow);border-radius:12px}
 .sndt button.sel{background:var(--ink);color:var(--bg)}
 .sndt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mlq{position:relative}
+.lfb{position:absolute;top:-17px;left:50%;transform:translateX(-50%);background:#ffd54a;color:#1a1a1a;border:3px solid var(--line);border-radius:99px;padding:3px 16px 4px;font-weight:700;font-size:17px;white-space:nowrap;box-shadow:3px 3px 0 var(--shadow);z-index:3;pointer-events:none;animation:lfb 1.7s ease both}
+@keyframes lfb{0%{opacity:0;transform:translateX(-50%) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.18)}22%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1)}}
+.qz.ml .qtx,.qz.ml .qo b{position:relative;z-index:1}
+.qbw{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
+.qbw i{display:block;height:100%;width:var(--w);background:rgba(26,26,26,.14)}
+.qbw i.g{animation:qbg 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes qbg{from{width:0}to{width:var(--w)}}
+.qz.ml .qh{position:relative;overflow:hidden}
+.qz.ml .qh.gone{animation:qgf .9s both}
+.qz.ml .qh.gone span{display:flex;align-items:center;min-height:56px;padding:0 16px;font-size:19px;font-weight:700;color:var(--acc);text-decoration:line-through;animation:qgs .9s ease-in both}
+@keyframes qgf{from{background:rgba(255,90,95,.3)}to{background:transparent}}
+@keyframes qgs{0%{opacity:1;transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{opacity:1;transform:translateX(-4px)}100%{opacity:0;transform:scale(.96)}}
+.mlq.swp,.qz.ml.swp{animation:swin .5s ease-out both}
+@keyframes swin{from{opacity:0;transform:translateX(44px)}to{opacity:1;transform:none}}
+.hxs{font-size:13px;color:var(--mute);margin-top:6px;font-weight:600;min-height:1em}
+#hxt{padding:8px;font-size:14px;box-shadow:2px 2px 0 var(--shadow);border-radius:12px}
+@media(prefers-reduced-motion:reduce){.lfb,.qbw i,.qh.gone,.qh.gone span,.mlq.swp,.qz.ml.swp{animation:none!important}}
 </style></head><body><main id="app"></main>
 <script>
 var FBC={apiKey:"AIzaSyBrtcq3XeAQt0LwZkr8xo2eTQyASnqVum0",authDomain:"whodattttt.firebaseapp.com",databaseURL:"https://whodattttt-default-rtdb.firebaseio.com",projectId:"whodattttt",appId:"1:712331315424:web:07c813ef92b0736f902885"};
@@ -606,9 +624,10 @@ try{if(navigator.vibrate){navigator.vibrate(pt);return}}catch(e){}
 try{var l=hxEl();ev.forEach(function(e){if(e[0]<=0)l.click();else setTimeout(function(){try{l.click()}catch(x){}},e[0])})}catch(e){}}
 var TH={dark:{n:'Thriller',sp:.25},pulse:{n:'Heartbeat',sp:.25},chase:{n:'Chase',sp:.17},play:{n:'Playful',sp:.2}};
 function sndIc(){return (MUTE||!VOL)?SPK0:SPK1}
-function sndPop(){return '<div class="sndp"><div class="sndr"><button class="alt hp q" id="snm" aria-label="Mute">'+sndIc()+'</button><input type="range" id="snv" min="0" max="100" value="'+Math.round(VOL*100)+'" aria-label="Volume"></div><div class="sndl">Theme · music &amp; sounds</div><div class="sndt">'+Object.keys(TH).map(function(k){return '<button class="alt'+(k==THM?' sel':'')+'" data-th="'+k+'">'+TH[k].n+'</button>'}).join('')+'</div></div>'}
+function sndPop(){return '<div class="sndp"><div class="sndr"><button class="alt hp q" id="snm" aria-label="Mute">'+sndIc()+'</button><input type="range" id="snv" min="0" max="100" value="'+Math.round(VOL*100)+'" aria-label="Volume"></div><div class="sndl">Theme · music &amp; sounds</div><div class="sndt">'+Object.keys(TH).map(function(k){return '<button class="alt'+(k==THM?' sel':'')+'" data-th="'+k+'">'+TH[k].n+'</button>'}).join('')+'</div><div class="sndl">Haptics</div><button class="alt" id="hxt">Test vibration</button><div class="hxs" id="hxs"></div></div>'}
 function sndApply(){if(MG&&AC)MG.gain.setTargetAtTime(MUTE?0:VOL,AC.currentTime,.05);var i=sndIc();if($('snd'))$('snd').innerHTML=i;if($('snm'))$('snm').innerHTML=i}
 function sndBind(){if($('snd'))$('snd').onclick=function(){SNDOPEN=SNDOPEN?0:1;R()};if($('snm'))$('snm').onclick=function(){MUTE=MUTE?0:1;try{localStorage.setItem('wdmute',MUTE?'1':'0')}catch(e){}sndApply()};
+if($('hxt'))$('hxt').onclick=function(){var s=$('hxs'),has=!!navigator.vibrate;vib([[0,250]]);if(s)s.textContent=has?'Vibration sent. Feel nothing? Check your phone vibration settings.':'This browser has no vibration support, so trying the iPhone tap instead.'};
 var r=$('snv');if(r)r.oninput=function(){VOL=(+r.value)/100;if(VOL>0&&MUTE){MUTE=0;try{localStorage.setItem('wdmute','0')}catch(e){}}try{localStorage.setItem('wdvol',String(VOL))}catch(e){}sndApply()};
 Array.prototype.forEach.call(app.querySelectorAll('[data-th]'),function(b){b.onclick=function(){THM=b.dataset.th;try{localStorage.setItem('wdth',THM)}catch(e){}sfx();mlMusicOff();mlMusic();R()}})}
 document.addEventListener('click',function(e){if(SNDOPEN&&e.target.closest&&!e.target.closest('.sndp')&&!e.target.closest('#snd')){SNDOPEN=0;R()}});
@@ -629,6 +648,12 @@ MU.st++;MU.nx+=TH[th].sp}}
 document.addEventListener('visibilitychange',function(){if(!AC)return;try{document.hidden?AC.suspend():AC.resume()}catch(e){}});
 function wah(f,t0,d,f2){var a=sfx();if(!a)return;var t=a.currentTime+t0,o=a.createOscillator(),fl=a.createBiquadFilter(),v=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(f,t);if(f2){o.frequency.exponentialRampToValueAtTime(f2,t+d);var l=a.createOscillator(),lg=a.createGain();l.frequency.value=6;lg.gain.value=f*.025;l.connect(lg);lg.connect(o.frequency);l.start(t);l.stop(t+d+.05)}fl.type='lowpass';fl.Q.value=4;fl.frequency.setValueAtTime(250,t);fl.frequency.exponentialRampToValueAtTime(1000,t+d*.35);fl.frequency.exponentialRampToValueAtTime(300,t+d);v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(.22,t+.04);v.gain.setValueAtTime(.22,t+d*.7);v.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(fl);fl.connect(v);v.connect(MG);o.start(t);o.stop(t+d+.05)}
 function dk(f,t0,d,f2){var a=sfx();if(!a)return;var t=a.currentTime+t0,fl=a.createBiquadFilter(),v=a.createGain();fl.type='lowpass';fl.Q.value=2;fl.frequency.setValueAtTime(180,t);fl.frequency.exponentialRampToValueAtTime(520,t+d*.3);fl.frequency.exponentialRampToValueAtTime(180,t+d);v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(.3,t+.05);v.gain.setValueAtTime(.3,t+d*.6);v.gain.exponentialRampToValueAtTime(.0001,t+d);fl.connect(v);v.connect(MG);[1,1.189,.5].forEach(function(m,j){var o=a.createOscillator();o.type=j==2?'sine':'sawtooth';o.frequency.setValueAtTime(f*m,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2*m,t+d);o.connect(fl);o.start(t);o.stop(t+d+.05)});tone(62,t0,.6,'sine',.55,38)}
+var LFN={f:'50:50',c:'Ask the crowd',s:'Swap question'};
+function noise(t0,d,f0,f1,g){var a=sfx();if(!a)return;var n=Math.max(1,(a.sampleRate*d)|0),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0),i;for(i=0;i<n;i++)x[i]=Math.random()*2-1;var sr=a.createBufferSource(),fl=a.createBiquadFilter(),v=a.createGain(),t=a.currentTime+t0;sr.buffer=b;fl.type='bandpass';fl.Q.value=1.2;fl.frequency.setValueAtTime(f0,t);fl.frequency.exponentialRampToValueAtTime(f1,t+d);v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(g,t+d*.3);v.gain.exponentialRampToValueAtTime(.0001,t+d);sr.connect(fl);fl.connect(v);v.connect(MG);sr.start(t)}
+function lfSound(t){sfx();
+if(t=='f'){noise(0,.35,2000,300,.5);tone(70,0,.3,'sine',.5,40);tone(520,.12,.3,'sine',.14,160);tone(440,.34,.3,'sine',.14,130);vib([[0,40],[220,40]])}
+else if(t=='c'){noise(0,.9,300,900,.35);[0,1,2,3].forEach(function(j){tone(330+j*70,.15+j*.14,.14,'triangle',.12)});tone(784,.75,.4,'sine',.16);vib([[0,15],[130,15],[260,15],[390,15],[520,35]])}
+else{noise(0,.4,300,2400,.5);tone(440,.28,.15,'triangle',.14);tone(660,.36,.22,'triangle',.16);vib([[0,60]])}}
 function mlSound(ok){mlMusicOff();sfx();var th=THM,p=[],c=0,i,ch=function(n,t,g,ty){n.forEach(function(f,j){tone(f,t+j*.05,1.5,ty||'triangle',g)})},
 TT={dark:[0,.3,.56,.78,.94,1.03],pulse:[0,.14,.55,.69,.98,1.05],chase:[0,.2,.38,.54,.68,.8,.9,.98,1.04],play:[0,.28,.54,.78,.94,1.03]}[th];
 TT.forEach(function(t,j){if(th=='dark')tone(120,t,.16,'sine',.45+j*.04,55);else if(th=='pulse')tone(65,t,.22,'sine',.55,40);else if(th=='chase')tone(90,t,.09,'sine',.45,55);else tone(600,t,.07,'sine',.3,320)});
@@ -654,11 +679,11 @@ function qzMAns(k){if(QZ.pk!=null||QZ.hid.indexOf(k)>-1)return;if(QZ.sel===k){qz
 function qzMLock(){if(QZ.sel==null||QZ.pk!=null)return;QZ.pk=QZ.sel;var q=QZ.mq[QZ.i];QZ.mans.push(q);QZ.mres.push(q.o[QZ.pk]==q.a?1:0);R();mlSound(q.o[QZ.pk]==q.a);var z=document.querySelector('.qz'),bad=q.o[QZ.pk]!=q.a,i0=QZ.i;if(z){try{z.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}}setTimeout(function(){var n=$('mnx');if(n&&QZ.k=='mil'&&QZ.pk!=null&&QZ.i==i0){try{n.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}}},bad?3100:2100)}
 function qzMFin(o,pz){QZ.out=o;QZ.pz=pz;QZ.q=QZ.mans;QZ.res=QZ.mres;var p=0;try{p=+localStorage.getItem('wdqmbest')||0;if(pz>p)localStorage.setItem('wdqmbest',String(pz))}catch(e){}QZ.nb=p>0&&pz>p;QZ.pb=Math.max(p,pz);R()}
 function qzMNext(){var q=QZ.mq[QZ.i];if(q.o[QZ.pk]!=q.a)return qzMFin('lose',qzMSafe(QZ.i));if(QZ.i>=14)return qzMFin('win',QLD[14]);QZ.i++;QZ.pk=null;QZ.sel=null;QZ.hid=[];QZ.crowd=null;R();mlMusic()}
-function qzMLife(t){if(QZ.pk!=null||!QZ.ll[t])return;QZ.ll[t]=0;vib(18);var q=QZ.mq[QZ.i];
+function qzMLife(t){if(QZ.pk!=null||!QZ.ll[t])return;QZ.ll[t]=0;var q=QZ.mq[QZ.i];
 if(t=='f'){QZ.hid=shuffle([0,1,2,3].filter(function(k){return q.o[k]!=q.a})).slice(0,2);QZ.crowd=null;if(QZ.hid.indexOf(QZ.sel)>-1)QZ.sel=null}
 else if(t=='c'){var v=[0,1,2,3].filter(function(k){return QZ.hid.indexOf(k)<0}),ci=q.o.indexOf(q.a),a=[0,0,0,0],base=[75,58,42][q.l]+Math.floor(Math.random()*14),w=v.filter(function(k){return k!=ci}).map(function(){return .3+Math.random()}),sw=w.reduce(function(x,y){return x+y},0),left=100-base,n=0;a[ci]=base;v.filter(function(k){return k!=ci}).forEach(function(k,j){var x=Math.floor(left*w[j]/sw);a[k]=x;n+=x});a[ci]+=left-n;QZ.crowd=a}
 else{var pl=QZB.filter(function(b){return !QZ.mu[b[1]]&&qzLv(b)==q.l});if(!pl.length)pl=QZB.filter(function(b){return !QZ.mu[b[1]]});var b=shuffle(pl)[0];QZ.mu[b[1]]=1;var nq=qzMk(b,shuffle([b[2]].concat(b[3])));nq.l=qzLv(b);QZ.mq[QZ.i]=nq;QZ.hid=[];QZ.crowd=null;QZ.sel=null}
-R()}
+QZ.fx=t;R();QZ.fx=null;lfSound(t)}
 function qzMEnd(){var o=QZ.out;return '<div class="panel" style="text-align:center"><div class="qt">'+(o=='win'?'You won the top prize!':o=='walk'?'You walked away':'Game over')+'</div><div class="big" style="font-size:56px">'+qzUsd(QZ.pz)+'</div><div class="count">'+(QZ.nb?'New best prize!':'Best prize: '+qzUsd(QZ.pb))+'</div></div><button id="qagain">Play again</button><button class="alt" id="qhome" style="margin:14px 0 22px">Home</button>'+(QZ.q.length?'<div class="lbl">Review and learn more</div><div class="panel" style="padding:6px 16px">'+qzRev()+'</div>':'')}
 function qzMV(){if(QZ.out)return qzMEnd();var q=QZ.mq[QZ.i],i=QZ.i,dn=QZ.pk!=null,ok=dn&&q.o[QZ.pk]==q.a,d='',j,L=['A','B','C','D'],
 ic={f:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>',
@@ -667,8 +692,8 @@ s:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentCo
 lf=function(id,t,u,k){return '<button class="alt'+(u?'':' used')+'" id="'+id+'" title="'+t+'" aria-label="'+t+'"'+(dn?' disabled':'')+'>'+ic[k]+'</button>'};
 for(j=0;j<15;j++)d+='<i class="'+(j<i?'ok':j==i?'cur':'')+'"></i>';
 return '<div class="qd">'+d+'</div><div class="pc" style="align-items:flex-end"><span>Question '+(i+1)+' of 15<br><b style="font-size:26px;color:var(--ink)">'+qzUsd(QLD[i])+'</b></span><span style="text-align:right">Safe amount<br><b style="font-size:20px;color:var(--ink)">'+qzUsd(qzMSafe(i))+'</b></span></div>'+
-'<div class="mlrow"><div class="panel qbox mlq"><div class="qt">'+esc(q.t)+'</div><div class="qa">'+esc(q.q)+'</div></div><div class="llc">'+lf('lf5','50:50',QZ.ll.f,'f')+lf('lfc','Ask the crowd',QZ.ll.c,'c')+lf('lfs','Swap question',QZ.ll.s,'s')+'</div></div>'+
-'<div class="qz ml'+(dn?' done':'')+'">'+q.o.map(function(o,k){if(QZ.hid.indexOf(k)>-1)return '<div class="qh"></div>';var c='alt qo';if(dn){if(o==q.a)c+=' qok';else if(k==QZ.pk)c+=' qno';if(k==QZ.pk)c+=' qpk'}else if(k==QZ.sel)c+=' qsl';else if(QZ.sel!=null)c+=' qdm';return '<button class="'+c+'" data-qo="'+k+'"><span class="qtx">'+L[k]+' · '+esc(o)+'</span>'+(QZ.crowd?'<b>'+QZ.crowd[k]+'%</b>':'')+(!dn&&k==QZ.sel?'<small class="lkh">Tap again to lock in</small>':'')+'</button>'}).join('')+'</div>'+
+'<div class="mlrow"><div class="panel qbox mlq'+(QZ.fx=='s'?' swp':'')+'">'+(QZ.fx?'<div class="lfb">'+LFN[QZ.fx]+'</div>':'')+'<div class="qt">'+esc(q.t)+'</div><div class="qa">'+esc(q.q)+'</div></div><div class="llc">'+lf('lf5','50:50',QZ.ll.f,'f')+lf('lfc','Ask the crowd',QZ.ll.c,'c')+lf('lfs','Swap question',QZ.ll.s,'s')+'</div></div>'+
+'<div class="qz ml'+(dn?' done':'')+(QZ.fx=='s'?' swp':'')+'">'+q.o.map(function(o,k){if(QZ.hid.indexOf(k)>-1){var gi=QZ.hid.indexOf(k);return QZ.fx=='f'?'<div class="qh gone" style="animation-delay:'+(gi*.25)+'s"><span style="animation-delay:'+(gi*.25)+'s">'+L[k]+' · '+esc(o)+'</span></div>':'<div class="qh"></div>'}var c='alt qo';if(dn){if(o==q.a)c+=' qok';else if(k==QZ.pk)c+=' qno';if(k==QZ.pk)c+=' qpk'}else if(k==QZ.sel)c+=' qsl';else if(QZ.sel!=null)c+=' qdm';return '<button class="'+c+'" data-qo="'+k+'">'+(QZ.crowd?'<span class="qbw"><i class="'+(QZ.fx=='c'?'g':'')+'" style="--w:'+QZ.crowd[k]+'%;animation-delay:'+(k*.12)+'s"></i></span>':'')+'<span class="qtx">'+L[k]+' · '+esc(o)+'</span>'+(QZ.crowd?'<b>'+QZ.crowd[k]+'%</b>':'')+(!dn&&k==QZ.sel?'<small class="lkh">Tap again to lock in</small>':'')+'</button>'}).join('')+'</div>'+
 (dn?'<div class="mlres'+(ok?'':' bad')+'"><div class="how" style="margin:18px 0"><div><b>'+(ok?'Correct! You now have '+qzUsd(QLD[i])+'.':'Not quite. The answer is '+esc(q.a)+'. You leave with '+qzUsd(qzMSafe(i))+'.')+'</b><br>'+esc(q.f)+'<br>'+qzLink(q.w,'Learn more on Wikipedia')+'</div></div><button id="mnx">'+(ok?(i>=14?'Claim your prize':'Next question →'):'See my result')+'</button></div>':
 (i>0?'<button class="alt" id="mwk" style="margin-top:12px">Walk away with '+qzUsd(QLD[i-1])+'</button>':''))}
 V.quiz=function(){if(QZ.k=='mil')return qzMV();if(QZ.k=='surv')return qzSV();if(QZ.k=='light')return qzLV();if(QZ.i>=QZ.q.length)return QZ.k=='daily'?qzDEnd():qzEnd();var q=QZ.q[QZ.i],N=QZ.q.length,done=QZ.pk!=null,ok=done&&q.o[QZ.pk]==q.a,d='';
