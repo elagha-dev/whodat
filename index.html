@@ -140,12 +140,9 @@ html.wlow::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:
 @keyframes wl{from{box-shadow:inset 0 0 0 0 rgba(224,49,49,0);opacity:.55}to{box-shadow:inset 0 0 40px 12px rgba(224,49,49,.7);opacity:1}}
 @media(prefers-reduced-motion:reduce){html.wlow::before{animation:none}}
 body.dev::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:60;border:4px solid #1c7ed6;animation:devp 1.6s ease-in-out infinite}
-body.dev::after{content:'● TEST MODE';position:fixed;top:env(safe-area-inset-top,0px);left:50%;transform:translateX(-50%);background:#1c7ed6;color:#fff;font:800 10px/1 system-ui,sans-serif;letter-spacing:1px;padding:4px 10px 5px;border-radius:0 0 10px 10px;z-index:61;pointer-events:none;animation:devl 1.6s ease-in-out infinite}
+body.dev::after{content:'● TEST MODE';position:fixed;top:env(safe-area-inset-top,0px);left:50%;transform:translateX(-50%);background:#1c7ed6;color:#fff;font:800 6px/1 system-ui,sans-serif;letter-spacing:.8px;padding:1px 6px 2px;border-radius:0 0 6px 6px;z-index:61;pointer-events:none;animation:devl 1.6s ease-in-out infinite}
 @keyframes devp{0%,100%{box-shadow:inset 0 0 0 0 rgba(28,126,214,0);opacity:.4}50%{box-shadow:inset 0 0 36px 10px rgba(28,126,214,.65);opacity:1}}
 @keyframes devl{0%,100%{opacity:.55}50%{opacity:1}}
-html.dev{overflow:hidden}
-body.dev .ov{top:calc(26px + env(safe-area-inset-top,0px))}
-body.dev{position:fixed;top:calc(26px + env(safe-area-inset-top,0px));left:0;right:0;bottom:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 @media(prefers-reduced-motion:reduce){body.dev::before,body.dev::after{animation:none}}
 .ctl{position:fixed;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(0,0,0,0),var(--bg) 45%);z-index:8;pointer-events:none}.ctl button{pointer-events:auto;width:auto;flex:none;font-size:15px;padding:8px 16px;border-width:2px;border-radius:12px;box-shadow:2px 2px 0 var(--shadow)}main:has(input:focus) .ctl{display:none}
 .chip.done .av{background:#12a36a;color:#fff;border-color:#12a36a}
@@ -364,10 +361,10 @@ var v;if(txt){var op=P.filter(function(p){return p.presence.n==cd.o})[0],ans=op&
 else{var others=H.ord.filter(function(n){return n!=b.name});v=Math.random()<.4&&others.indexOf(cd.o)>-1?cd.o:others[Math.floor(Math.random()*others.length)]}
 if(v)b.room.presence({g:{t:H.t,r:H.r,v:v}})}
 else if(cd.o==b.name&&txt){var jv=pr.jv;if(jv&&jv.r===H.r&&jv.t===H.t)return;if((H.sy||H.jd==H.t+1)&&botReady(b,key+'j',2500,6000))b.room.presence({jv:{t:H.t,r:H.r,j:Math.random()<(H.sy?.5:.3)?1:0}})}})}
-/* Test bots are hidden. Tap the logo 5 times within 3 seconds to show or hide the bot controls (remembered on this device). */
+/* Test bots are hidden. Tap the logo 3 times within 3 seconds to show or hide the bot controls (remembered on this device). */
 var DEV=false,LT=[];try{DEV=localStorage.getItem('wdbot')=='1'}catch(e){}
 function devUI(){document.body.classList.toggle('dev',DEV);document.documentElement.classList.toggle('dev',DEV);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',DEV?'#1c7ed6':'#f4f4f1')}devUI();
-document.addEventListener('click',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('logo'))return;var n=Date.now();LT=LT.filter(function(x){return n-x<3000});LT.push(n);if(LT.length<5)return;LT=[];DEV=!DEV;try{localStorage.setItem('wdbot',DEV?'1':'0')}catch(x){}
+document.addEventListener('click',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('logo'))return;var n=Date.now();LT=LT.filter(function(x){return n-x<3000});LT.push(n);if(LT.length<3)return;LT=[];DEV=!DEV;try{localStorage.setItem('wdbot',DEV?'1':'0')}catch(x){}
 var d=document.createElement('div');d.textContent=DEV?'Test mode on':'Test mode off';d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 16px;border-radius:12px;font-weight:700;z-index:50';document.body.appendChild(d);setTimeout(function(){d.remove()},1500);devUI();R()});
 var IDLE=300000;
 /* Inactivity: the host closes the game if nobody has done anything (join, submit, guess, judge, request, tap) for 5 minutes. Automatic timers don't count as activity. */
