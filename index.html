@@ -442,6 +442,24 @@ body.duel-onl .top{margin-bottom:6px}
 .dz button:disabled{opacity:.35}
 .mlq .qa{overflow-wrap:anywhere}
 .qz.ml button.alt.qo.qx{opacity:.55;pointer-events:none;text-decoration:line-through}
+.dtm{height:6px;border-radius:3px;background:var(--soft);overflow:hidden;margin:0 0 10px}
+.dtm i{display:block;height:100%;transform-origin:left;background:#12a36a;animation:dtm 20s linear forwards}
+.dtm.nx i{background:var(--ink)}
+@keyframes dtm{from{transform:scaleX(1);background:#12a36a}60%{background:#ffd54a}to{transform:scaleX(0);background:#ff5a5f}}
+@keyframes dnx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.drv{display:flex;gap:8px;margin:0 0 12px}
+.drv div{flex:1;text-align:center;padding:8px 4px;border:2px solid var(--line);border-radius:12px;font-weight:800;font-size:16px}
+.drv b{display:block;font-size:12px;opacity:.7}
+.drv .ok{background:#d9f5e8;color:#1a1a1a}.drv .no{background:#ffe0e1;color:#1a1a1a}
+.dend{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.dtro{font-size:76px;line-height:1;animation:dpop .6s ease-out}
+.dwin{font-size:40px;font-weight:900;color:var(--ink)}
+.dsc{display:flex;align-items:baseline;gap:14px;font-size:64px;font-weight:900;color:var(--mute)}
+.dsc .w{color:#12a36a}.dsc em{font-size:36px;font-style:normal}
+.dnm{display:flex;gap:70px;font-weight:800;font-size:15px;color:var(--mute)}
+.dst{margin-top:10px;font-weight:700;font-size:16px;color:var(--ink);line-height:1.5}
+@keyframes dpop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.dtm.fz{box-shadow:0 0 0 2px var(--ink)}
 </style></head><body><main id="app"></main>
 <script>
 var FBC={apiKey:"AIzaSyBrtcq3XeAQt0LwZkr8xo2eTQyASnqVum0",authDomain:"whodattttt.firebaseapp.com",databaseURL:"https://whodattttt-default-rtdb.firebaseio.com",projectId:"whodattttt",appId:"1:712331315424:web:07c813ef92b0736f902885"};
@@ -1118,7 +1136,7 @@ function duCode(){var L='ABCDEFGHJKLMNPQRSTUVWXYZ',c='';for(var i=0;i<4;i++)c+=L
 function doRef(){return FDB.ref('games/'+DO.code.toLowerCase()+'/duel')}
 function doName(){var a=$('dn1'),n=(a&&a.value.trim())||DUN[0]||'Player';DUN[0]=n;try{localStorage.setItem('wddn',JSON.stringify(DUN))}catch(e){}return n}
 function doErr(m){DU=DU||{st:'setup'};DU.err=m;R()}
-function doNew(code,role,n){return{code:code,role:role,name:n,sn:null,shown:-1,t0:0,lk:0,pk:-1,hq:-1,res:-1,rv:-1,rn:-1,tm:0,gr:0,nx:0,seen:0,left:0,saved:0,fresh:0}}
+function doNew(code,role,n){return{code:code,role:role,name:n,sn:null,shown:-1,t0:0,lk:0,pk:-1,hq:-1,res:-1,rv:-1,rn:-1,tm:0,gr:0,nx:0,seen:0,left:0,saved:0,fresh:0,bq:-1,bt:0}}
 function doCreate(){var n=doName();if(!fbInit()){doErr('Online play needs an internet connection.');return}
 var code=duCode(),ref=FDB.ref('games/'+code.toLowerCase()+'/duel');
 ref.once('value').then(function(sn){if(sn.val()){doCreate();return}
@@ -1129,18 +1147,19 @@ var ref=FDB.ref('games/'+c.toLowerCase()+'/duel');
 ref.once('value').then(function(sn){var d=sn.val();if(!d||d.st!='wait'){doErr(!d?'Room not found.':'That game has already started.');return}if(d.gp){doErr('That room is already full.');return}
 DO=doNew(c,'g',n);DO.rf=ref;ref.update({gn:n,gp:true,gs:Object.keys(mqLoad())});try{ref.child('gp').onDisconnect().set(false)}catch(e){}doListen();S.step='duel';R()}).catch(function(){doErr('Could not reach the server.')})}
 function doListen(){DO.rf.on('value',function(sn){if(!DO)return;DO.sn=sn.val();doTick()})}
-function doGone(m){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);try{DO.rf.off()}catch(e){}}DO=null;DU=null;doReset('');S.msg=m;R()}
-function doLeave(){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);try{DO.rf.off()}catch(e){}try{if(DO.role=='h')DO.rf.remove();else DO.rf.child('gp').set(false)}catch(e){}}DO=null;DU=null;doReset('')}
+function doGone(m){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);clearTimeout(DO.bt);try{DO.rf.off()}catch(e){}}DO=null;DU=null;doReset('');S.msg=m;R()}
+function doLeave(){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);clearTimeout(DO.bt);try{DO.rf.off()}catch(e){}try{if(DO.role=='h')DO.rf.remove();else DO.rf.child('gp').set(false)}catch(e){}}DO=null;DU=null;doReset('')}
 function doTick(){var d=DO.sn,me=DO.role;
 if(!d){if(DO.seen)doGone('The room was closed.');return}
 DO.seen=1;var opLeft=me=='h'?!d.gp:!d.hp;DO.left=(d.st!='wait'&&d.st!='end'&&opLeft)?1:0;
-if(d.rn!=null&&DO.rn!=d.rn){DO.rn=d.rn;DO.shown=-1;DO.rv=-1;DO.res=-1;DO.hq=-1;DO.lk=0;DO.pk=-1;DO.saved=0}
+if(d.rn!=null&&DO.rn!=d.rn){DO.rn=d.rn;DO.shown=-1;DO.rv=-1;DO.res=-1;DO.hq=-1;DO.bq=-1;DO.lk=0;DO.pk=-1;DO.saved=0}
 if(me=='g'&&d.q&&!DO.saved){DO.saved=1;mqSave(d.q.map(function(x){return{q:x.q}}))}
-if(d.st=='play'&&DO.shown!=d.qi){DO.shown=d.qi;DO.lk=0;DO.pk=-1;DO.fresh=1}
-if(d.st=='reveal'&&DO.rv!=d.qi){DO.rv=d.qi;var r=d.r||{};if(r.w==me){tone(660,0,.1,'sine',.25);tone(990,.1,.2,'sine',.25)}else if(r.w=='h'||r.w=='g')tone(180,0,.3,'sawtooth',.15,90);else tone(300,0,.25,'triangle',.15,200)}
+if(d.st=='play'&&DO.shown!=d.qi){DO.shown=d.qi;DO.lk=0;DO.pk=-1;DO.fresh=1;DO.t0=performance.now()}
+if(d.st=='reveal'&&DO.rv!=d.qi){DO.rv=d.qi;DO.rt=performance.now();var r=d.r||{};if(r.w==me){tone(660,0,.1,'sine',.25);tone(990,.1,.2,'sine',.25)}else if(r.w=='h'||r.w=='g')tone(180,0,.3,'sawtooth',.15,90);else tone(300,0,.25,'triangle',.15,200)}
 R();if(DO&&DO.fresh&&d.st=='play'){DO.fresh=0;DO.t0=performance.now();tone(880,0,.1,'sine',.2)}
 if(DO&&me=='h')doHost(d)}
 function doHost(d){if(d.st!='play')return;var qi=d.qi;
+if(d.bot&&DO.bq!=qi){DO.bq=qi;clearTimeout(DO.bt);var q0=d.q[qi],ok=Math.random()<[.8,.65,.5][q0.l||0],ks=[];q0.o.forEach(function(o,k){if((o==q0.a)==ok)ks.push(k)});var bk=ks.length?ks[Math.floor(Math.random()*ks.length)]:0,dl=1500+Math.random()*4500;DO.bt=setTimeout(function(){var z=DO&&DO.sn;if(z&&z.st=='play'&&z.qi==qi&&!(z.a&&z.a.g))DO.rf.child('a/g').set({k:bk,t:Math.round(dl)})},dl)}
 if(DO.hq!=qi){DO.hq=qi;clearTimeout(DO.tm);clearTimeout(DO.gr);DO.gr=0;DO.tm=setTimeout(function(){doResolve(qi)},20000)}
 var q=d.q[qi],a=d.a||{};if(a.h&&a.g){doResolve(qi);return}
 var one=a.h||a.g;if(one&&q.o[one.k]==q.a&&!DO.gr)DO.gr=setTimeout(function(){doResolve(qi)},900)}
@@ -1167,19 +1186,20 @@ return '<div class="panel" style="text-align:left"><input id="dn1" maxlength="14
 function doView(){var d=DO.sn;if(!d)return '<div class="panel" style="text-align:center"><div class="qt">Connecting…</div></div>';
 var me=DO.role,op=me=='h'?'g':'h',on=esc((op=='h'?d.hn:d.gn)||'Partner'),mn=esc((me=='h'?d.hn:d.gn)||'You'),s=Object.assign({h:0,g:0},d.s||{}),st=d.st;
 if(st=='wait'){if(me=='g')return '<div class="panel" style="text-align:center"><div class="qt">You are in!</div><div class="count" style="margin:8px 0 16px">Waiting for '+on+'…</div></div>';
-var j=!!d.gp;return '<div class="panel" style="text-align:center;position:relative"><div class="count cpl" id="dcpl" style="margin:0">Game code \u00b7 tap to copy</div><div class="code" id="dcpd">'+esc(DO.code)+'</div><div class="count" style="margin:8px 0 14px">'+(j?esc(d.gn||'Partner')+' joined!':'Waiting for partner…')+'</div><button class="alt" id="dosh">Share invite</button></div><div class="lbl" style="text-align:center;margin:4px 0 8px">Intensity · break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div><button id="dos10" style="margin-top:12px'+(j?'':';opacity:.4')+'">10 questions</button><button class="alt" id="dos15" style="margin-top:10px'+(j?'':';opacity:.4')+'">15 questions</button>'}
+var j=!!d.gp;return '<div class="panel" style="text-align:center;position:relative"><div class="count cpl" id="dcpl" style="margin:0">Game code \u00b7 tap to copy</div><div class="code" id="dcpd">'+esc(DO.code)+'</div><div class="count" style="margin:8px 0 14px">'+(j?esc(d.gn||'Partner')+' joined!':'Waiting for partner…')+'</div><button class="alt" id="dosh">Share invite</button>'+(j?'':'<button class="alt" id="dobot" style="margin-top:10px">Practice vs bot</button>')+'</div><div class="lbl" style="text-align:center;margin:4px 0 8px">Intensity · break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div><button id="dos10" style="margin-top:12px'+(j?'':';opacity:.4')+'">10 questions</button><button class="alt" id="dos15" style="margin-top:10px'+(j?'':';opacity:.4')+'">15 questions</button>'}
 if(st=='count')return '<div class="panel" style="text-align:center"><div class="qt">'+mn+' vs '+on+'</div><div class="big" style="font-size:44px">Get ready!</div></div>';
 if(st=='end'){var w=s.h==s.g?'':s.h>s.g?'h':'g',av=function(r){var c=d.ts&&d.ts[r];return c&&c.n?(c.m/c.n/1000).toFixed(2)+'s':'–'},cn=function(r){return(d.ts&&d.ts[r]&&d.ts[r].n)||0};
-return '<div class="panel" style="text-align:center"><div class="qt">'+(w?(w==me?'You win!':on+' wins!'):"It's a tie!")+'</div><div class="big">'+s[me]+' – '+s[op]+'</div><div style="font-size:18px;font-weight:700;margin-top:10px">You: '+cn(me)+' right · avg '+av(me)+'</div><div style="font-size:18px;font-weight:700;margin-top:6px">'+on+': '+cn(op)+' right · avg '+av(op)+'</div></div>'+(me=='h'?'<button id="dore"'+(d.gp?'':' style="opacity:.4"')+'>Rematch</button>':'<div class="count" style="text-align:center;margin:0 0 10px">Waiting for '+on+'…</div>')+'<button class="alt" id="doh" style="margin:14px 0 22px">Home</button>'}
+return '<div class="dend"><div class="dtro">'+(w?(w==me?'\ud83c\udfc6':'\ud83d\ude14'):'\ud83e\udd1d')+'</div><div class="dwin">'+(w?(w==me?'You win!':on+' wins!'):"It's a tie!")+'</div><div class="dsc"><span class="'+(w==me?'w':'')+'">'+s[me]+'</span><em>\u2013</em><span class="'+(w==op?'w':'')+'">'+s[op]+'</span></div><div class="dnm"><span>You</span><span>'+on+'</span></div><div class="dst"><div>'+cn(me)+' right \u00b7 avg '+av(me)+'</div><div>'+cn(op)+' right \u00b7 avg '+av(op)+'</div></div></div>'+(me=='h'?'<button id="dore"'+(d.gp?'':' style="opacity:.4"')+'>Rematch</button>':'<div class="count" style="text-align:center;margin:0 0 10px">Waiting for '+on+'…</div>')+'<button class="alt" id="doh" style="margin:14px 0 22px">Home</button>'}
 var q=d.q[d.qi]||{o:[]},a=d.a||{},r=d.r||{},opw=a[op]&&q.o[a[op].k]!=q.a,bc='wt',msg='';
 if(st=='play'){if(DO.lk){if(q.o[DO.pk]!=q.a){bc='bad';msg='\u2715 You got it wrong<small>'+on+'\u2019s turn</small>'}else{msg='Locked in<small>Waiting for '+on+'\u2026</small>'}}else if(a[op]){if(opw){bc='go';msg='\u2715 '+on+' got it wrong<small>YOUR TURN \u2013 answer now!</small>'}else{msg=on+' answered<small>Waiting\u2026</small>'}}else msg='Answer fast!'}
 else{var win=r.w=='h'||r.w=='g';msg=r.w==me?'You +'+r.pts+' \u00b7 '+(r.wt/1000).toFixed(2)+'s':win?on+' +'+r.pts+' \u00b7 '+(r.wt/1000).toFixed(2)+'s':'Nobody scored';bc=r.w==me?'go':win?'bad':'nb'}
 var L='ABCD',dn=st=='reveal',dots='',lv=q.l||0;for(var j=0;j<d.n;j++){var rj=d.rs&&d.rs[j];dots+='<i class="'+(j<d.qi||(j==d.qi&&dn)?(rj==me?'ok':rj==op?'no':''):j==d.qi?'cur':'')+'"></i>'}
 var b=q.o.map(function(o,k){var c='alt qo';if(dn){if(o==q.a)c+=' qok';else if(DO.lk&&DO.pk==k)c+=' qno';else c+=' qdm';if(DO.lk&&DO.pk==k&&o==q.a)c+=' qpk'}else if(DO.lk)c+=DO.pk==k?(o==q.a?' qsl':' qno'):(opw&&a[op].k==k?' qno qx':' qdm');else if(opw&&a[op].k==k)c+=' qno qx';return '<button class="'+c+'" data-dk="'+k+'"><span class="qtx">'+L.charAt(k)+' · '+esc(o)+'</span></button>'}).join('');
-return '<div class="qd">'+dots+'</div><div class="pc"><span>Question '+(d.qi+1)+'/'+d.n+(DO.left?' · '+on+' left':'')+'</span><span>You '+s[me]+' · '+on+' '+s[op]+'</span></div><div class="dbn2 '+bc+'">'+msg+'</div><div class="mlrow"><div class="panel qbox mlq"><div class="dz"><button id="dzm" aria-label="Smaller text"'+(DZI<1?' disabled':'')+'>A−</button><button id="dzp" aria-label="Bigger text"'+(DZI>5?' disabled':'')+'>A+</button></div><div class="qt">'+['Easy','Medium','Hard'][lv]+' · '+(lv+1)+' pt</div><div class="qa" style="font-size:'+Math.round(21*DZS[DZI])+'px">'+esc(q.q||'')+'</div></div></div><div class="qz ml'+(dn?' done':'')+'">'+b+'</div>'+(dn?'<div class="count" style="font-size:13px">'+esc(q.f||'')+'</div>':'')}
+var ans=function(r){var x=a[r];return x?(q.o[x.k]==q.a?'\u2713 ':'\u2715 ')+(x.t/1000).toFixed(2)+'s':'no answer'},cls=function(r){var x=a[r];return x?(q.o[x.k]==q.a?'ok':'no'):''},extra=dn?'<div class="drv"><div class="'+cls(me)+'"><b>You</b>'+ans(me)+'</div><div class="'+cls(op)+'"><b>'+on+'</b>'+ans(op)+'</div></div>'+(d.br>0?'<div class="dtm nx"><i style="animation:dnx '+d.br+'ms linear forwards;animation-delay:-'+(((performance.now()-(DO.rt||performance.now()))/1000)).toFixed(2)+'s"></i></div>':''):(function(){var fe=[a.h,a.g].filter(function(x){return x&&q.o[x.k]==q.a}).map(function(x){return x.t}),el=fe.length?Math.min.apply(null,fe)/1000:Math.max(0,(performance.now()-DO.t0)/1000);return '<div class="dtm'+(fe.length?' fz':'')+'"><i style="animation-delay:-'+el.toFixed(2)+'s'+(fe.length?';animation-play-state:paused':'')+'"></i></div>'})();
+return '<div class="qd">'+dots+'</div><div class="pc"><span>Question '+(d.qi+1)+'/'+d.n+(DO.left?' · '+on+' left':'')+'</span><span>You '+s[me]+' · '+on+' '+s[op]+'</span></div><div class="dbn2 '+bc+'">'+msg+'</div>'+extra+'<div class="mlrow"><div class="panel qbox mlq"><div class="dz"><button id="dzm" aria-label="Smaller text"'+(DZI<1?' disabled':'')+'>A−</button><button id="dzp" aria-label="Bigger text"'+(DZI>5?' disabled':'')+'>A+</button></div><div class="qt">'+['Easy','Medium','Hard'][lv]+' · '+(lv+1)+' pt</div><div class="qa" style="font-size:'+Math.round(21*DZS[DZI])+'px">'+esc(q.q||'')+'</div></div></div><div class="qz ml'+(dn?' done':'')+'">'+b+'</div>'+(dn?'<div class="count" style="font-size:13px">'+esc(q.f||'')+'</div>':'')}
 function doBind(){var g=function(id,f){var e=$(id);if(e)e.onclick=f},d=DO.sn;
 var bs=app.querySelectorAll('.qo');for(var i=0;i<bs.length;i++)(function(b){b.onpointerdown=function(e){e.preventDefault();doTap(+b.dataset.dk)};b.onclick=function(e){e.preventDefault()}})(bs[i]);
-g('dosh',doShare);g('dcpd',function(){cpTxt(DO.code,function(ok){var l=$('dcpl');if(!l)return;l.classList.toggle('ok',ok);l.textContent=ok?'Copied \u2713':'Could not copy';setTimeout(function(){var x=$('dcpl');if(x){x.classList.remove('ok');x.textContent='Game code \u00b7 tap to copy'}},1500)})});Array.prototype.forEach.call(app.querySelectorAll('[data-br]'),function(b){b.onclick=function(){DBR=+b.dataset.br;try{localStorage.setItem('wddb',DBR)}catch(e){}R()}});g('dzm',function(){DZI=Math.max(0,DZI-1);try{localStorage.setItem('wddz',DZI)}catch(e){}R()});g('dzp',function(){DZI=Math.min(6,DZI+1);try{localStorage.setItem('wddz',DZI)}catch(e){}R()});g('dos10',function(){doStart(10)});g('dos15',function(){doStart(15)});g('doq',doLeave);g('doh',doLeave);g('dore',function(){doStart(d.n>10?15:10)})}
+g('dosh',doShare);g('dobot',function(){DO.rf.update({gn:'Bot',gp:true,bot:true})});g('dcpd',function(){cpTxt(DO.code,function(ok){var l=$('dcpl');if(!l)return;l.classList.toggle('ok',ok);l.textContent=ok?'Copied \u2713':'Could not copy';setTimeout(function(){var x=$('dcpl');if(x){x.classList.remove('ok');x.textContent='Game code \u00b7 tap to copy'}},1500)})});Array.prototype.forEach.call(app.querySelectorAll('[data-br]'),function(b){b.onclick=function(){DBR=+b.dataset.br;try{localStorage.setItem('wddb',DBR)}catch(e){}R()}});g('dzm',function(){DZI=Math.max(0,DZI-1);try{localStorage.setItem('wddz',DZI)}catch(e){}R()});g('dzp',function(){DZI=Math.min(6,DZI+1);try{localStorage.setItem('wddz',DZI)}catch(e){}R()});g('dos10',function(){doStart(10)});g('dos15',function(){doStart(15)});g('doq',doLeave);g('doh',doLeave);g('dore',function(){doStart(d.n>10?15:10)})}
 function duLandBind(){var g=function(id,f){var e=$(id);if(e)e.onclick=f};g('doc',doCreate);g('doj',doJoin);g('dol',function(){DU={st:'lsetup'};R()});g('dub',function(){DU=null;doReset('')})}
 setTimeout(function(){if(DPRE&&!PRE&&!DO){DU={st:'setup',jc:DPRE.toUpperCase()};S.step='duel';R()}},400);
 var R0=R;R=function(){R0.apply(this,arguments);xpDom();duBind()};
