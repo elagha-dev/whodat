@@ -420,6 +420,11 @@ body.thp-on main{padding-bottom:80px}body.thp-g main{padding-bottom:120px}
 .xpm:has(.xnv){display:flex;align-items:center;gap:7px}.xnv{flex:none;width:22px;height:22px;border-radius:50%;overflow:hidden;border:1.5px solid var(--line);display:block}.xnv svg,.xnv img{display:block;width:100%;height:100%}
 #thp .rg{display:flex;gap:10px}#thp .rg button.tn:not(.nvn){min-width:110px;padding:0 14px}
 body.thp-rg #qagain,body.thp-rg #qhome{display:none!important}
+.du{display:flex;flex-direction:column;gap:8px;min-height:calc(100vh - 80px)}.dup{flex:1;display:flex;flex-direction:column;gap:8px;border:3px solid var(--line);border-radius:18px;padding:10px;box-shadow:4px 4px 0 var(--shadow);color:#1a1a1a}.dup.p1{background:#e8f0ff}.dup.p2{background:#ffece8;transform:rotate(180deg)}.dh{display:flex;justify-content:space-between;font-weight:800;font-size:15px}.dq{flex:1;display:flex;align-items:center;font-size:17px;font-weight:700;line-height:1.25;text-align:left}.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dbtn{min-height:52px;padding:6px 8px;font-size:15px;font-weight:700;line-height:1.15;border:3px solid var(--line);border-radius:14px;background:#fff;color:#1a1a1a;box-shadow:none;touch-action:manipulation;overflow-wrap:anywhere}.dbtn.ok{background:#12a36a;color:#fff}.dbtn.no{background:#ff5a5f;color:#fff}.dbtn.dm{opacity:.4}.dbn{font-weight:800;font-size:16px}.dfx{font-size:12px;line-height:1.25;color:#444}.dmid{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;color:var(--mute)}.dtb{flex:1;height:8px;border:2px solid var(--line);border-radius:6px;overflow:hidden;background:var(--soft)}.dtb i{display:block;height:100%;background:var(--acc);animation:dtb 20s linear forwards}@keyframes dtb{from{width:100%}to{width:0}}.dquit{width:auto;min-height:0;padding:3px 12px;font-size:12px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);box-shadow:none}.dni{width:100%;box-sizing:border-box;font-size:18px;padding:12px;border:3px solid var(--line);border-radius:14px;margin:0 0 10px;background:var(--card);color:var(--ink)}
+
+body.duel-on .wsheet .top,body.duel-on .wsheet .wz{display:none}body.duel-on .wsheet{padding:10px}body.duel-on .du{height:calc(100dvh - 44px);min-height:0}body.duel-on .dup{min-height:0}
+.mlg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.mlg .opt{height:100%;width:100%;min-width:0;box-sizing:border-box;padding:14px 8px!important;text-align:center;font-size:16px;white-space:normal;overflow-wrap:anywhere;line-height:1.15}.mlg .opt::before,.mlg .opt::after{display:none!important}button.opt.dub2{position:relative;color:#1a1a1a;background:radial-gradient(circle at 14% 24%,#e7f5ff 0 6px,transparent 7px),radial-gradient(circle at 86% 74%,#e7f5ff 0 8px,transparent 9px),radial-gradient(circle at 70% 18%,#e7f5ff 0 4px,transparent 5px),repeating-linear-gradient(115deg,#74c0fc 0 14px,#4dabf7 14px 28px)}
+.dbtn.sel{background:#ffd54a}
 </style></head><body><main id="app"></main>
 <script>
 var FBC={apiKey:"AIzaSyBrtcq3XeAQt0LwZkr8xo2eTQyASnqVum0",authDomain:"whodattttt.firebaseapp.com",databaseURL:"https://whodattttt-default-rtdb.firebaseio.com",projectId:"whodattttt",appId:"1:712331315424:web:07c813ef92b0736f902885"};
@@ -523,7 +528,7 @@ for(var i in keep)if($(i))$(i).value=keep[i];
 if(n&&fo&&$(fo))$(fo).focus();bind();var key=S.step+'|'+S.lvs+'|'+(Hh?Hh.ph+':'+Hh.t:'')+(S.step=='quiz'?'|'+QZ.i:'');if(R.k===key){if(DEV)document.body.scrollTop=sc0;else window.scrollTo(0,sc0);var a1=document.querySelector('.wsheet');if(a1)a1.scrollTop=st0;var b1=document.querySelector('.avs');if(b1)b1.scrollLeft=al0}else{if(DEV)document.body.scrollTop=0;else window.scrollTo(0,0)}R.k=key;ageUI();thSync();bnkSync();hostSync()}
 var V={
 mode:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';return m+
-'<div class="nav" style="flex-direction:column"><div class="hh2"><div id="hw" class="hw"><div class="hu"><button id="y1" class="yes">Yes<small>One phone</small></button><button id="n1" class="alt">No<small>Own phones</small></button></div><button id="mh" class="opt hs" aria-expanded="false"><span class="hl">Host a game<small>For your group</small></span><span class="hq">One phone?</span><span class="hc">‹</span></button></div><button id="mj" class="opt alt" style="width:100%">Join a game<small>Enter the code</small></button></div><button id="mq" class="opt alt" style="width:100%">Solo quiz<small>World knowledge · see how many you get right</small></button><button id="mlr" class="opt alt llb" style="width:100%">Lightning round<small>60 seconds · answer as many as you can</small></button><button id="mml" class="opt alt mlb" style="width:100%">Want a million?<small>'+mlSub()+'</small></button></div>'},
+'<div class="nav" style="flex-direction:column"><div class="hh2"><div id="hw" class="hw"><div class="hu"><button id="y1" class="yes">Yes<small>One phone</small></button><button id="n1" class="alt">No<small>Own phones</small></button></div><button id="mh" class="opt hs" aria-expanded="false"><span class="hl">Host a game<small>For your group</small></span><span class="hq">One phone?</span><span class="hc">‹</span></button></div><button id="mj" class="opt alt" style="width:100%">Join a game<small>Enter the code</small></button></div><button id="mq" class="opt alt" style="width:100%">Solo quiz<small>World knowledge · see how many you get right</small></button><button id="mlr" class="opt alt llb" style="width:100%">Lightning round<small>60 seconds · answer as many as you can</small></button><div class="mlg"><button id="mml" class="opt alt mlb">Want a million?<small>Single player'+mlBest()+'</small></button><button id="mdu" class="opt alt dub2">Million duel<small>Double player</small></button></div></div>'},
 lv:function(){var m=S.msg?'<div class="how" style="background:var(--ink);color:var(--bg)"><div>'+esc(S.msg)+'</div></div>':'';S.msg='';
 if(S.lvs=='cfg')return how(1,'Paste your Firebase web config below. Your friends will not need to.')+m+'<div class="panel"><textarea id="cfg" rows="8" placeholder="const firebaseConfig = { apiKey: ..." style="font-size:14px"></textarea></div><div class="nav"><button class="alt" id="bk" aria-label="Back">←</button><button id="cfgok">Save →</button></div>';
 if(S.lvs=='choose')return m+'<div class="nav" style="flex-direction:column"><button id="hostb">Host a game</button><button class="alt" id="joinb" style="width:100%">Join a game</button><button class="alt" id="bk" style="width:100%" aria-label="Back">←</button></div>';
@@ -662,7 +667,231 @@ var QZB=[
 ["Food","Which country is paella from?","Spain",["Portugal","Mexico","Italy"],"The dish comes from the Valencia region on Spain's east coast.","Paella"],
 ["Tech","Who is often called the first computer programmer?","Ada Lovelace",["Grace Hopper","Alan Turing","Charles Babbage"],"In 1843 she published an algorithm meant for Babbage's Analytical Engine.","Ada_Lovelace"],
 ["Tech","Who was granted the first US patent for the telephone?","Alexander Graham Bell",["Thomas Edison","Nikola Tesla","Guglielmo Marconi"],"The patent was granted in March 1876.","Alexander_Graham_Bell"],
-["World","Which currency is shared by most European Union countries?","Euro",["Pound","Franc","Krone"],"Euro notes and coins entered everyday use in 2002.","Euro"]
+["World","Which currency is shared by most European Union countries?","Euro",["Pound","Franc","Krone"],"Euro notes and coins entered everyday use in 2002.","Euro"],
+["Geography", "Which is the largest continent by area?", "Asia", ["Africa", "North America", "Europe"], "Asia covers about 30% of Earth's land area.", "Asia", 0],
+["Geography", "What is the capital of France?", "Paris", ["Lyon", "Marseille", "Nice"], "Paris sits on the River Seine.", "Paris", 0],
+["Geography", "What is the capital of Japan?", "Tokyo", ["Kyoto", "Osaka", "Seoul"], "Tokyo became the capital in 1868, when the emperor moved there from Kyoto.", "Tokyo", 0],
+["Geography", "What is the capital of Italy?", "Rome", ["Milan", "Naples", "Florence"], "Rome has been inhabited for nearly 3,000 years.", "Rome", 0],
+["Geography", "What is the capital of Spain?", "Madrid", ["Barcelona", "Seville", "Valencia"], "Madrid is one of the highest capital cities in Europe, at about 650 m.", "Madrid", 0],
+["Geography", "Which river flows through London?", "Thames", ["Severn", "Mersey", "Trent"], "The Thames is about 346 km long.", "Thames", 0],
+["Geography", "Which country is shaped like a boot?", "Italy", ["Greece", "Portugal", "Chile"], "Italy's boot shape is one of the easiest to spot on a map.", "Italy", 0],
+["Geography", "What is the capital of Egypt?", "Cairo", ["Alexandria", "Giza", "Luxor"], "Cairo lies on the Nile, close to the pyramids of Giza.", "Cairo", 0],
+["Geography", "What is the capital of Germany?", "Berlin", ["Munich", "Hamburg", "Frankfurt"], "Berlin was divided by a wall from 1961 to 1989.", "Berlin", 0],
+["Geography", "In which US state is the Grand Canyon?", "Arizona", ["Nevada", "Utah", "Colorado"], "The Grand Canyon is about 446 km long.", "Arizona", 0],
+["Geography", "What is the capital of Portugal?", "Lisbon", ["Porto", "Faro", "Madrid"], "Lisbon is one of the oldest cities in Western Europe.", "Lisbon", 0],
+["Science", "What is the chemical formula for water?", "H2O", ["CO2", "O2", "NaCl"], "Each water molecule has two hydrogen atoms and one oxygen atom.", "H2O", 0],
+["Space", "Which planet is known as the Red Planet?", "Mars", ["Venus", "Jupiter", "Mercury"], "Iron oxide, or rust, on its surface gives Mars its red colour.", "Mars", 0],
+["Space", "How many planets are in our Solar System?", "8", ["7", "9", "10"], "Pluto was reclassified as a dwarf planet in 2006.", "8", 0],
+["Nature", "What do bees collect from flowers to make honey?", "Nectar", ["Sap", "Dew", "Petals"], "Bees turn nectar into honey by evaporating most of its water in the hive.", "Nectar", 0],
+["Science", "Which force keeps your feet on the ground?", "Gravity", ["Magnetism", "Friction", "Static electricity"], "Earth's gravity pulls everything towards its centre.", "Gravity", 0],
+["Science", "Which organ pumps blood around the human body?", "Heart", ["Liver", "Lungs", "Kidney"], "An adult heart beats around 100,000 times a day.", "Heart", 0],
+["Science", "At sea level, at what temperature in °C does water boil?", "100", ["90", "110", "212"], "100 °C is the same as 212 °F.", "100", 0],
+["Science", "Which gas do humans need to breathe to live?", "Oxygen", ["Nitrogen", "Carbon dioxide", "Helium"], "Oxygen makes up about 21% of the air we breathe.", "Oxygen", 0],
+["Space", "What is the closest star to Earth?", "The Sun", ["Proxima Centauri", "Sirius", "Polaris"], "The Sun is a star, about 150 million km away.", "The Sun", 0],
+["Nature", "Which big cat is often called the king of the jungle?", "Lion", ["Tiger", "Leopard", "Jaguar"], "Lions actually live in grasslands, not jungles.", "Lion", 0],
+["Nature", "Which is the fastest land animal?", "Cheetah", ["Lion", "Pronghorn", "Greyhound"], "A cheetah can reach about 100 km/h in short bursts.", "Cheetah", 0],
+["Nature", "How many legs does a spider have?", "8", ["6", "10", "12"], "Spiders are arachnids, not insects.", "8", 0],
+["Nature", "What do giant pandas mainly eat?", "Bamboo", ["Fish", "Berries", "Grass"], "A panda can eat more than 10 kg of bamboo a day.", "Bamboo", 0],
+["Nature", "What is a baby kangaroo called?", "Joey", ["Cub", "Calf", "Pup"], "A joey lives in its mother's pouch for months.", "Joey", 0],
+["Nature", "Which flightless bird lives in Antarctica?", "Penguin", ["Ostrich", "Emu", "Kiwi"], "Emperor penguins breed through the Antarctic winter.", "Penguin", 0],
+["Nature", "What is a group of lions called?", "A pride", ["A herd", "A pack", "A flock"], "A pride is usually built around related females.", "A pride", 0],
+["Nature", "Which mammal lays eggs?", "Platypus", ["Kangaroo", "Bat", "Otter"], "The platypus and the echidnas are the only egg-laying mammals.", "Platypus", 0],
+["History", "Who was the first President of the United States?", "George Washington", ["Thomas Jefferson", "Abraham Lincoln", "John Adams"], "Washington took office in 1789.", "George Washington", 0],
+["History", "Which ancient civilisation built the pyramids at Giza?", "The Egyptians", ["The Romans", "The Greeks", "The Aztecs"], "The Great Pyramid was built about 4,500 years ago.", "The Egyptians", 0],
+["History", "Which explorer reached the Americas in 1492, sailing for Spain?", "Christopher Columbus", ["Marco Polo", "Vasco da Gama", "Ferdinand Magellan"], "Columbus landed in the Caribbean, not mainland North America.", "Christopher Columbus", 0],
+["History", "Which country built the Great Wall?", "China", ["Japan", "Mongolia", "India"], "Parts of the wall are more than 2,000 years old.", "China", 0],
+["History", "In which year did humans first land on the Moon?", "1969", ["1959", "1972", "1965"], "Apollo 11 landed on 20 July 1969.", "1969", 0],
+["History", "Which monarch reigned over the UK for 70 years until 2022?", "Queen Elizabeth II", ["Queen Victoria", "King George III", "King Charles III"], "She was the longest-reigning British monarch.", "Queen Elizabeth II", 0],
+["Culture", "Who wrote Romeo and Juliet?", "William Shakespeare", ["Charles Dickens", "Jane Austen", "Christopher Marlowe"], "Shakespeare wrote it in the 1590s.", "William Shakespeare", 0],
+["Culture", "In which Disney film does a snowman named Olaf appear?", "Frozen", ["Moana", "Tangled", "Brave"], "Olaf dreams of experiencing summer.", "Frozen", 0],
+["Culture", "Who painted The Starry Night?", "Vincent van Gogh", ["Claude Monet", "Pablo Picasso", "Salvador Dalí"], "Van Gogh painted it in 1889, while staying at an asylum in France.", "Vincent van Gogh", 0],
+["Culture", "How many strings does a standard guitar have?", "6", ["4", "5", "8"], "Bass guitars usually have four strings.", "6", 0],
+["Culture", "Which instrument has 88 keys?", "Piano", ["Organ", "Accordion", "Harpsichord"], "A standard piano has 52 white keys and 36 black keys.", "Piano", 0],
+["Culture", "Who wrote the Harry Potter books?", "J.K. Rowling", ["Roald Dahl", "C.S. Lewis", "Suzanne Collins"], "The first book came out in 1997.", "J.K. Rowling", 0],
+["Culture", "Which fairy-tale heroine lost a glass slipper at a ball?", "Cinderella", ["Snow White", "Rapunzel", "Belle"], "The prince searched the whole kingdom for the owner of the slipper.", "Cinderella", 0],
+["Culture", "In which country did the ancient Olympic Games begin?", "Greece", ["Italy", "Egypt", "Turkey"], "They began at Olympia, traditionally in 776 BC.", "Greece", 0],
+["Sports", "How many players does one football (soccer) team have on the pitch?", "11", ["9", "10", "12"], "Each side plays with eleven, including the goalkeeper.", "11", 0],
+["Sports", "In which sport do players score with a slam dunk?", "Basketball", ["Volleyball", "Netball", "Handball"], "Dunking was banned in US college basketball from 1967 to 1976.", "Basketball", 0],
+["Sports", "How many rings are on the Olympic flag?", "5", ["4", "6", "7"], "They stand for the five inhabited continents.", "5", 0],
+["Sports", "Which sport is played at Wimbledon?", "Tennis", ["Cricket", "Golf", "Squash"], "Wimbledon is played on grass courts.", "Tennis", 0],
+["Sports", "What do you call one stroke under par in golf?", "Birdie", ["Eagle", "Bogey", "Albatross"], "Two strokes under par is an eagle.", "Birdie", 0],
+["Sports", "How many points is a touchdown worth in American football, before the extra point?", "6", ["3", "7", "5"], "A field goal is worth three points.", "6", 0],
+["Food", "Which fruit is the main ingredient of guacamole?", "Avocado", ["Lime", "Tomato", "Mango"], "Guacamole comes from Mexico.", "Avocado", 0],
+["Food", "Which country is sushi from?", "Japan", ["China", "Korea", "Thailand"], "Sushi began as a way of preserving fish in fermented rice.", "Japan", 0],
+["Food", "Which nut is the main ingredient of marzipan?", "Almond", ["Cashew", "Walnut", "Hazelnut"], "Marzipan is made from ground almonds and sugar.", "Almond", 0],
+["Food", "Which legume is hummus made from?", "Chickpeas", ["Lentils", "Soybeans", "Kidney beans"], "Tahini, lemon and garlic are added to the chickpeas.", "Chickpeas", 0],
+["Tech", "Which company makes the iPhone?", "Apple", ["Samsung", "Google", "Sony"], "Apple released the first iPhone in 2007.", "Apple", 0],
+["Tech", "What does CPU stand for?", "Central Processing Unit", ["Computer Personal Unit", "Central Program Utility", "Core Power Unit"], "The CPU acts as the brain of a computer.", "Central Processing Unit", 0],
+["Tech", "Which company makes the Windows operating system?", "Microsoft", ["Apple", "IBM", "Intel"], "Windows first launched in 1985.", "Microsoft", 0],
+["Tech", "Which search engine is the most widely used in the world?", "Google", ["Bing", "Yahoo", "DuckDuckGo"], "Google was founded in 1998.", "Google", 0],
+["Culture", "Which band recorded Bohemian Rhapsody?", "Queen", ["The Beatles", "Led Zeppelin", "ABBA"], "Freddie Mercury was Queen's lead singer.", "Queen", 0],
+["Culture", "Which singer is known as the King of Pop?", "Michael Jackson", ["Elvis Presley", "Prince", "Justin Timberlake"], "His album Thriller is one of the best-selling albums ever.", "Michael Jackson", 0],
+["Culture", "Which animated film features a clownfish named Nemo?", "Finding Nemo", ["Shark Tale", "Moana", "The Little Mermaid"], "Pixar released Finding Nemo in 2003.", "Finding Nemo", 0],
+["Culture", "At which school does Harry Potter study?", "Hogwarts", ["Beauxbatons", "Durmstrang", "Ilvermorny"], "In the books, Hogwarts is hidden in the Scottish Highlands.", "Hogwarts", 0],
+["Culture", "Which film sends a girl named Dorothy to the Land of Oz?", "The Wizard of Oz", ["Alice in Wonderland", "Mary Poppins", "Peter Pan"], "The film came out in 1939.", "The Wizard of Oz", 0],
+["Culture", "Which band had members named John, Paul, George and Ringo?", "The Beatles", ["The Rolling Stones", "The Who", "The Kinks"], "The band formed in Liverpool.", "The Beatles", 0],
+["World", "What is the currency of the United Kingdom?", "Pound sterling", ["Euro", "Dollar", "Franc"], "The pound is the oldest currency still in use.", "Pound sterling", 0],
+["World", "How many continents are there?", "7", ["5", "6", "8"], "They are Africa, Antarctica, Asia, Australia/Oceania, Europe, North America and South America.", "7", 0],
+["Geography", "Which is the largest lake in Africa?", "Lake Victoria", ["Lake Tanganyika", "Lake Malawi", "Lake Chad"], "It is shared by Uganda, Kenya and Tanzania.", "Lake Victoria", 1],
+["Geography", "What is the capital of Argentina?", "Buenos Aires", ["Santiago", "Montevideo", "Lima"], "The name roughly means 'good airs' or 'fair winds'.", "Buenos Aires", 1],
+["Geography", "Timbuktu is a historic city in which country?", "Mali", ["Niger", "Chad", "Morocco"], "Timbuktu was a major centre of trade and learning in the Middle Ages.", "Mali", 1],
+["Geography", "Which mountain range is the traditional border between Europe and Asia?", "The Ural Mountains", ["The Alps", "The Carpathians", "The Pyrenees"], "The Urals run about 2,500 km north to south through Russia.", "The Ural Mountains", 1],
+["Geography", "Which is the longest river in Europe?", "The Volga", ["The Danube", "The Rhine", "The Seine"], "The Volga is more than 3,500 km long and flows through Russia.", "The Volga", 1],
+["Geography", "What is the capital of Switzerland?", "Bern", ["Zurich", "Geneva", "Basel"], "Zurich is bigger, but Bern is the capital.", "Bern", 1],
+["Geography", "Which is the largest country in South America by area?", "Brazil", ["Argentina", "Peru", "Colombia"], "Brazil covers almost half of the continent.", "Brazil", 1],
+["Geography", "Lake Titicaca sits on the border of Peru and which other country?", "Bolivia", ["Chile", "Ecuador", "Argentina"], "It is one of the highest large navigable lakes in the world.", "Bolivia", 1],
+["Geography", "What is the capital of Kenya?", "Nairobi", ["Mombasa", "Kampala", "Addis Ababa"], "Nairobi National Park sits right next to the city.", "Nairobi", 1],
+["Geography", "Serengeti National Park is in which country?", "Tanzania", ["Kenya", "Uganda", "Zambia"], "The yearly wildebeest migration crosses into Kenya's Maasai Mara.", "Tanzania", 1],
+["Geography", "What is the capital of Thailand?", "Bangkok", ["Phuket", "Chiang Mai", "Hanoi"], "Bangkok's full ceremonial name is one of the longest place names in the world.", "Bangkok", 1],
+["Geography", "Which strait separates Alaska from Russia?", "The Bering Strait", ["The Davis Strait", "The Hudson Strait", "The Cook Strait"], "It is only about 85 km wide at its narrowest point.", "The Bering Strait", 1],
+["Geography", "Which country has the longest coastline in the world?", "Canada", ["Russia", "Australia", "Indonesia"], "Canada's coastline is more than 200,000 km long.", "Canada", 1],
+["Geography", "Which sea lies between Italy and the Balkan Peninsula?", "The Adriatic Sea", ["The Aegean Sea", "The Black Sea", "The Baltic Sea"], "Venice and Dubrovnik both sit on the Adriatic.", "The Adriatic Sea", 1],
+["Geography", "Which is the largest island in the Mediterranean?", "Sicily", ["Sardinia", "Crete", "Cyprus"], "Sicily covers about 25,700 km².", "Sicily", 1],
+["Geography", "Which African country is nicknamed the Rainbow Nation?", "South Africa", ["Nigeria", "Kenya", "Ghana"], "The nickname became popular after apartheid ended.", "South Africa", 1],
+["Science", "Who formulated the three laws of motion?", "Isaac Newton", ["Galileo Galilei", "Albert Einstein", "Johannes Kepler"], "Newton published them in 1687.", "Isaac Newton", 1],
+["Science", "What is the chemical symbol for sodium?", "Na", ["So", "Sd", "S"], "The symbol comes from natrium, the Latin name.", "Na", 1],
+["Science", "What is the pH of pure water at room temperature?", "7", ["1", "10", "14"], "A pH below 7 is acidic and above 7 is basic.", "7", 1],
+["Science", "Which subatomic particle carries a negative charge?", "Electron", ["Proton", "Neutron", "Photon"], "An electron is about 1,800 times lighter than a proton.", "Electron", 1],
+["Space", "Which planet has the most known moons?", "Saturn", ["Jupiter", "Uranus", "Neptune"], "Saturn has well over 200 confirmed moons.", "Saturn", 1],
+["Science", "What is the study of fungi called?", "Mycology", ["Botany", "Entomology", "Virology"], "Mushrooms, yeasts and moulds are all fungi.", "Mycology", 1],
+["Science", "Which blood cells help the body fight infection?", "White blood cells", ["Red blood cells", "Platelets", "Plasma cells"], "White blood cells are made in the bone marrow.", "White blood cells", 1],
+["Science", "Rock formed from cooled lava or magma is called what?", "Igneous rock", ["Sedimentary rock", "Metamorphic rock", "Fossil rock"], "Granite and basalt are both igneous rocks.", "Igneous rock", 1],
+["Science", "In which layer of the atmosphere is the ozone layer?", "The stratosphere", ["The troposphere", "The mesosphere", "The exosphere"], "The ozone layer absorbs most of the Sun's harmful UV radiation.", "The stratosphere", 1],
+["Science", "What is the chemical symbol for iron?", "Fe", ["Ir", "In", "I"], "Fe comes from ferrum, the Latin word for iron.", "Fe", 1],
+["Science", "How many chromosomes do humans normally have?", "46", ["23", "44", "48"], "We inherit 23 from each parent.", "46", 1],
+["Science", "What is the SI unit of electrical resistance?", "Ohm", ["Volt", "Watt", "Ampere"], "It is named after the German physicist Georg Ohm.", "Ohm", 1],
+["Science", "A lack of which vitamin causes scurvy?", "Vitamin C", ["Vitamin A", "Vitamin D", "Vitamin B12"], "Sailors once got scurvy on long voyages without fresh fruit.", "Vitamin C", 1],
+["Science", "Which gas makes up most of the Sun?", "Hydrogen", ["Helium", "Oxygen", "Carbon"], "Hydrogen makes up about 73% of the Sun's mass.", "Hydrogen", 1],
+["Science", "Through which of these does sound normally travel fastest?", "A solid", ["A liquid", "A gas", "A vacuum"], "Sound cannot travel through a vacuum at all.", "A solid", 1],
+["Science", "Which organ produces insulin?", "Pancreas", ["Liver", "Stomach", "Kidney"], "Insulin helps control the level of sugar in the blood.", "Pancreas", 1],
+["Nature", "Which land animal has the longest pregnancy?", "Elephant", ["Giraffe", "Rhinoceros", "Hippopotamus"], "An elephant pregnancy lasts about 22 months.", "Elephant", 1],
+["Nature", "Which is the largest species of big cat?", "Tiger", ["Lion", "Jaguar", "Leopard"], "Siberian tigers can weigh more than 250 kg.", "Tiger", 1],
+["Nature", "Which is the deepest ocean?", "The Pacific Ocean", ["The Atlantic Ocean", "The Indian Ocean", "The Arctic Ocean"], "The Pacific contains the Mariana Trench.", "The Pacific Ocean", 1],
+["Nature", "Which is the largest desert in the world, counting polar ones?", "Antarctica", ["The Sahara", "The Arabian Desert", "The Gobi"], "A desert is defined by very low rainfall, not heat.", "Antarctica", 1],
+["Nature", "How many compartments does a cow's stomach have?", "4", ["2", "3", "5"], "Cows chew cud to digest tough grass.", "4", 1],
+["Nature", "Which tree produces acorns?", "Oak", ["Beech", "Chestnut", "Elm"], "Acorns take six to 24 months to ripen.", "Oak", 1],
+["Nature", "What is a baby swan called?", "A cygnet", ["A gosling", "A chick", "A duckling"], "A baby goose is a gosling.", "A cygnet", 1],
+["Nature", "Which bird is famous for mimicking human speech?", "Parrot", ["Eagle", "Owl", "Flamingo"], "African grey parrots are especially good talkers.", "Parrot", 1],
+["History", "Who was the first Emperor of Rome?", "Augustus", ["Julius Caesar", "Nero", "Constantine"], "Augustus ruled from 27 BC.", "Augustus", 1],
+["History", "In which year did World War I begin?", "1914", ["1912", "1916", "1918"], "It began in the summer of 1914 and ended in 1918.", "1914", 1],
+["History", "Who was British Prime Minister for most of World War II?", "Winston Churchill", ["Neville Chamberlain", "Clement Attlee", "Anthony Eden"], "Churchill led Britain from 1940 to 1945.", "Winston Churchill", 1],
+["History", "Which ship carried the Pilgrims to America in 1620?", "The Mayflower", ["The Santa Maria", "The Endeavour", "The Discovery"], "The Mayflower sailed from Plymouth, England.", "The Mayflower", 1],
+["History", "Whose tomb was discovered in Egypt's Valley of the Kings in 1922?", "Tutankhamun", ["Ramses II", "Cleopatra", "Akhenaten"], "Howard Carter led the dig.", "Tutankhamun", 1],
+["History", "In which year did the Soviet Union dissolve?", "1991", ["1985", "1989", "1993"], "It split into 15 independent countries.", "1991", 1],
+["History", "Who led India's non-violent campaign for independence?", "Mahatma Gandhi", ["Jawaharlal Nehru", "Subhas Chandra Bose", "B. R. Ambedkar"], "India became independent in 1947.", "Mahatma Gandhi", 1],
+["History", "Which battle in 1815 ended Napoleon's rule?", "Waterloo", ["Trafalgar", "Austerlitz", "Borodino"], "The battle took place in what is now Belgium.", "Waterloo", 1],
+["History", "Which Chinese dynasty built the Forbidden City?", "The Ming dynasty", ["The Qing dynasty", "The Tang dynasty", "The Han dynasty"], "It was built in Beijing in the early 1400s.", "The Ming dynasty", 1],
+["History", "In which city was Archduke Franz Ferdinand assassinated in 1914?", "Sarajevo", ["Vienna", "Belgrade", "Budapest"], "His death set off the chain of events that led to World War I.", "Sarajevo", 1],
+["History", "Who was the first woman to win a Nobel Prize?", "Marie Curie", ["Florence Nightingale", "Mother Teresa", "Rosalind Franklin"], "Curie won the Nobel Prize in Physics in 1903.", "Marie Curie", 1],
+["History", "Which US President delivered the Gettysburg Address?", "Abraham Lincoln", ["George Washington", "Theodore Roosevelt", "Ulysses S. Grant"], "Lincoln gave the speech in 1863.", "Abraham Lincoln", 1],
+["Culture", "Who composed the Moonlight Sonata?", "Ludwig van Beethoven", ["Mozart", "Chopin", "Bach"], "Beethoven wrote it around 1801.", "Ludwig van Beethoven", 1],
+["Culture", "Which artist painted The Persistence of Memory, with its melting clocks?", "Salvador Dalí", ["Pablo Picasso", "René Magritte", "Joan Miró"], "Dalí was a leading figure of Surrealism.", "Salvador Dalí", 1],
+["Culture", "In which Shakespeare play does the Prince of Denmark appear?", "Hamlet", ["Macbeth", "Othello", "King Lear"], "Hamlet is Shakespeare's longest play.", "Hamlet", 1],
+["Culture", "Who wrote Nineteen Eighty-Four?", "George Orwell", ["Aldous Huxley", "Ray Bradbury", "H. G. Wells"], "George Orwell was the pen name of Eric Blair.", "George Orwell", 1],
+["Culture", "Which museum in Paris houses the Mona Lisa?", "The Louvre", ["Musée d'Orsay", "Centre Pompidou", "The Orangerie"], "The Louvre is one of the most visited museums in the world.", "The Louvre", 1],
+["Culture", "Who wrote Pride and Prejudice?", "Jane Austen", ["Charlotte Brontë", "George Eliot", "Mary Shelley"], "It was published in 1813.", "Jane Austen", 1],
+["Culture", "Which author created the detective Sherlock Holmes?", "Arthur Conan Doyle", ["Agatha Christie", "Edgar Allan Poe", "Charles Dickens"], "Sherlock Holmes first appeared in 1887.", "Arthur Conan Doyle", 1],
+["Culture", "Which dance is at the heart of Rio's Carnival?", "Samba", ["Salsa", "Tango", "Flamenco"], "Samba schools compete in a huge parade each year.", "Samba", 1],
+["Culture", "Who directed Jurassic Park (1993)?", "Steven Spielberg", ["George Lucas", "James Cameron", "Ridley Scott"], "Spielberg also directed Schindler's List in 1993.", "Steven Spielberg", 1],
+["Culture", "Which film won the Oscar for Best Picture for 2019 releases?", "Parasite", ["1917", "Joker", "Once Upon a Time in Hollywood"], "It was the first non-English-language film to win Best Picture.", "Parasite", 1],
+["Culture", "Which composer wrote The Magic Flute?", "Wolfgang Amadeus Mozart", ["Joseph Haydn", "Giuseppe Verdi", "Antonio Vivaldi"], "The opera premiered in Vienna in 1791.", "Wolfgang Amadeus Mozart", 1],
+["Culture", "Which singer released the 2011 album 21?", "Adele", ["Beyoncé", "Taylor Swift", "Rihanna"], "It includes the song Rolling in the Deep.", "Adele", 1],
+["Culture", "Which actor played Captain Jack Sparrow?", "Johnny Depp", ["Orlando Bloom", "Brad Pitt", "Geoffrey Rush"], "The first Pirates of the Caribbean film came out in 2003.", "Johnny Depp", 1],
+["Culture", "Which Pixar film follows a rat who dreams of being a chef?", "Ratatouille", ["Cars", "Up", "Coco"], "The film is set in Paris.", "Ratatouille", 1],
+["Sports", "Which country hosted the 2016 Summer Olympics?", "Brazil", ["Japan", "China", "Greece"], "Rio de Janeiro hosted the Games.", "Brazil", 1],
+["Sports", "How many holes are played in a standard round of golf?", "18", ["9", "12", "21"], "The 18-hole round became standard after St Andrews in Scotland settled on it.", "18", 1],
+["Sports", "Which Grand Slam tennis tournament is played on clay in Paris?", "The French Open", ["Wimbledon", "The US Open", "The Australian Open"], "It is also known as Roland Garros.", "The French Open", 1],
+["Sports", "In which country did cricket originate?", "England", ["Australia", "India", "South Africa"], "Cricket began in the south-east of England.", "England", 1],
+["Sports", "How long is a marathon?", "42.195 km", ["40 km", "36.2 km", "50 km"], "That is about 26.2 miles.", "42.195 km", 1],
+["Sports", "Which country won the 2022 FIFA World Cup?", "Argentina", ["France", "Brazil", "Croatia"], "Lionel Messi captained Argentina to the title in Qatar.", "Argentina", 1],
+["Sports", "Which swimmer won eight gold medals at the 2008 Olympics?", "Michael Phelps", ["Ian Thorpe", "Mark Spitz", "Ryan Lochte"], "Phelps finished his career with 23 Olympic golds.", "Michael Phelps", 1],
+["Sports", "Which sport uses the terms 'love', 'deuce' and 'advantage'?", "Tennis", ["Cricket", "Golf", "Baseball"], "A game at 40-40 is called deuce.", "Tennis", 1],
+["Food", "Gouda cheese comes from which country?", "The Netherlands", ["Switzerland", "France", "Belgium"], "Gouda is named after the Dutch city of Gouda.", "The Netherlands", 1],
+["Food", "Which herb is the main ingredient of traditional pesto?", "Basil", ["Parsley", "Mint", "Oregano"], "Pesto comes from Genoa in Italy.", "Basil", 1],
+["Food", "Tequila is made from which plant?", "Blue agave", ["Sugar cane", "Corn", "Aloe vera"], "Most tequila comes from the Mexican state of Jalisco.", "Blue agave", 1],
+["Food", "Which country is the dish pad thai from?", "Thailand", ["Vietnam", "Malaysia", "China"], "Pad thai is made with stir-fried rice noodles.", "Thailand", 1],
+["Food", "What is the main ingredient of traditional miso?", "Fermented soybeans", ["Rice", "Seaweed", "Fish"], "Miso is a staple of Japanese cooking.", "Fermented soybeans", 1],
+["Food", "Which fruit is dried to make prunes?", "Plums", ["Grapes", "Figs", "Dates"], "Raisins come from grapes.", "Plums", 1],
+["Food", "Which spice gives curry its yellow colour?", "Turmeric", ["Cumin", "Paprika", "Cinnamon"], "Turmeric is a root related to ginger.", "Turmeric", 1],
+["Tech", "Who co-founded Apple with Steve Jobs?", "Steve Wozniak", ["Bill Gates", "Paul Allen", "Tim Cook"], "They started Apple in 1976.", "Steve Wozniak", 1],
+["Tech", "What does RAM stand for?", "Random Access Memory", ["Rapid Action Module", "Read And Modify", "Run All Memory"], "RAM is a computer's short-term working memory.", "Random Access Memory", 1],
+["Tech", "In which year was the first iPhone released?", "2007", ["2005", "2009", "2010"], "Steve Jobs unveiled it in January 2007.", "2007", 1],
+["Tech", "What does GPS stand for?", "Global Positioning System", ["General Position Signal", "Global Planet Satellite", "Ground Position Software"], "GPS relies on a network of satellites.", "Global Positioning System", 1],
+["Tech", "Who co-founded Microsoft with Paul Allen?", "Bill Gates", ["Steve Jobs", "Larry Ellison", "Elon Musk"], "They founded Microsoft in 1975.", "Bill Gates", 1],
+["Space", "Which planet is the hottest in the Solar System?", "Venus", ["Mercury", "Mars", "Jupiter"], "Venus's thick atmosphere traps heat, pushing it to about 465 °C.", "Venus", 1],
+["Space", "What was the first artificial satellite in space?", "Sputnik 1", ["Explorer 1", "Vostok 1", "Apollo 1"], "The Soviet Union launched it in 1957.", "Sputnik 1", 1],
+["Space", "Which NASA rover landed on Mars in 2021?", "Perseverance", ["Curiosity", "Opportunity", "Spirit"], "It carried a small helicopter called Ingenuity.", "Perseverance", 1],
+["World", "What is the currency of Switzerland?", "Swiss franc", ["Euro", "Krona", "Mark"], "Switzerland is not a member of the European Union.", "Swiss franc", 1],
+["World", "Which committee awards the Nobel Peace Prize?", "The Norwegian Nobel Committee", ["The United Nations", "The Swedish Academy", "The Red Cross"], "The other Nobel prizes are awarded in Sweden.", "The Norwegian Nobel Committee", 1],
+["Geography", "Which is the deepest lake in the world?", "Lake Baikal", ["Lake Superior", "Lake Tanganyika", "The Caspian Sea"], "Baikal holds about a fifth of the world's unfrozen fresh surface water.", "Lake Baikal", 2],
+["Geography", "Which African country defeated Italy at the Battle of Adwa in 1896?", "Ethiopia", ["Egypt", "Sudan", "Libya"], "The victory kept Ethiopia independent.", "Ethiopia", 2],
+["Geography", "Which country is completely surrounded by South Africa?", "Lesotho", ["Eswatini", "Botswana", "Namibia"], "Lesotho lies entirely above 1,000 m in altitude.", "Lesotho", 2],
+["Geography", "What is the capital of Kazakhstan?", "Astana", ["Almaty", "Tashkent", "Bishkek"], "It was named Nur-Sultan from 2019 to 2022.", "Astana", 2],
+["Geography", "Which is the longest river in Asia?", "The Yangtze", ["The Yellow River", "The Mekong", "The Ganges"], "The Yangtze is about 6,300 km long.", "The Yangtze", 2],
+["Geography", "Which two countries share the longest international land border?", "Canada and the United States", ["Russia and China", "Argentina and Chile", "Kazakhstan and Russia"], "The border is about 8,900 km long.", "Canada and the United States", 2],
+["Geography", "What is the capital of Myanmar?", "Naypyidaw", ["Yangon", "Mandalay", "Bago"], "The government moved there from Yangon in the mid-2000s.", "Naypyidaw", 2],
+["Geography", "Which US state has the longest coastline?", "Alaska", ["Florida", "California", "Hawaii"], "Alaska has more coastline than any other US state.", "Alaska", 2],
+["Geography", "Aconcagua, the highest mountain in the Americas, is in which country?", "Argentina", ["Chile", "Peru", "Bolivia"], "At about 6,960 m it is the highest peak outside Asia.", "Argentina", 2],
+["Geography", "The Strait of Malacca separates the Malay Peninsula from which Indonesian island?", "Sumatra", ["Java", "Borneo", "Sulawesi"], "It is one of the busiest shipping lanes in the world.", "Sumatra", 2],
+["Geography", "Which South American country has two capital cities?", "Bolivia", ["Ecuador", "Paraguay", "Peru"], "La Paz is the seat of government and Sucre is the constitutional capital.", "Bolivia", 2],
+["Science", "Which element has the chemical symbol W?", "Tungsten", ["Tin", "Titanium", "Thallium"], "W comes from wolfram, the German name for tungsten.", "Tungsten", 2],
+["Science", "Who discovered radioactivity in 1896?", "Henri Becquerel", ["Marie Curie", "Ernest Rutherford", "Wilhelm Röntgen"], "Becquerel found it while working with uranium salts.", "Henri Becquerel", 2],
+["Science", "What is the longest bone in the human body?", "The femur", ["The tibia", "The humerus", "The fibula"], "The femur is the thigh bone.", "The femur", 2],
+["Science", "Which of the common ABO/Rh blood types is the rarest?", "AB negative", ["O negative", "B negative", "A negative"], "Only around 1% of people have AB negative blood.", "AB negative", 2],
+["Science", "Which halogen is liquid at room temperature?", "Bromine", ["Chlorine", "Iodine", "Fluorine"], "Bromine and mercury are the only elements that are liquid at room temperature.", "Bromine", 2],
+["Science", "Who proposed the Sun-centred model of the Solar System in 1543?", "Nicolaus Copernicus", ["Galileo Galilei", "Johannes Kepler", "Tycho Brahe"], "His book was published in the year he died.", "Nicolaus Copernicus", 2],
+["Science", "What is the atomic number of carbon?", "6", ["4", "8", "12"], "Carbon is the basis of organic chemistry.", "6", 2],
+["Science", "What is the SI unit of force?", "Newton", ["Joule", "Pascal", "Watt"], "One newton accelerates a 1 kg mass by 1 metre per second squared.", "Newton", 2],
+["Science", "What is the most abundant protein in the human body?", "Collagen", ["Keratin", "Haemoglobin", "Insulin"], "Collagen makes up roughly a quarter to a third of the body's protein.", "Collagen", 2],
+["Science", "Which physicist is known for the uncertainty principle?", "Werner Heisenberg", ["Niels Bohr", "Erwin Schrödinger", "Max Planck"], "Heisenberg formulated it in 1927.", "Werner Heisenberg", 2],
+["Science", "What is the process by which plants lose water vapour through their leaves?", "Transpiration", ["Respiration", "Osmosis", "Germination"], "Most of the water escapes through tiny pores called stomata.", "Transpiration", 2],
+["Space", "Which spacecraft was the first to reach interstellar space?", "Voyager 1", ["Pioneer 10", "Voyager 2", "New Horizons"], "Voyager 1 crossed the heliopause in 2012.", "Voyager 1", 2],
+["Space", "Which moon of Saturn has a thick atmosphere?", "Titan", ["Europa", "Enceladus", "Io"], "Titan has lakes of liquid methane.", "Titan", 2],
+["Space", "Who was the first woman in space?", "Valentina Tereshkova", ["Sally Ride", "Svetlana Savitskaya", "Mae Jemison"], "She flew on Vostok 6 in 1963.", "Valentina Tereshkova", 2],
+["Space", "Which planet has the shortest day?", "Jupiter", ["Mercury", "Earth", "Saturn"], "Jupiter spins once in about 10 hours.", "Jupiter", 2],
+["Space", "Which large galaxy is the closest to the Milky Way?", "Andromeda", ["Triangulum", "Whirlpool", "Sombrero"], "Andromeda is about 2.5 million light-years away.", "Andromeda", 2],
+["History", "Which treaty formally ended World War I with Germany?", "The Treaty of Versailles", ["The Treaty of Paris", "The Treaty of Vienna", "The Treaty of Tordesillas"], "It was signed in 1919.", "The Treaty of Versailles", 2],
+["History", "Which Carthaginian general crossed the Alps with elephants?", "Hannibal", ["Scipio", "Hamilcar", "Hasdrubal"], "He fought Rome in the Second Punic War.", "Hannibal", 2],
+["History", "Who became the first emperor of a unified China in 221 BC?", "Qin Shi Huang", ["Liu Bang", "Kublai Khan", "Emperor Wu of Han"], "He is buried near the Terracotta Army.", "Qin Shi Huang", 2],
+["History", "In which year did Constantinople fall to the Ottomans?", "1453", ["1204", "1492", "1389"], "Its fall marked the end of the Byzantine Empire.", "1453", 2],
+["History", "In which year was the Great Fire of London?", "1666", ["1605", "1688", "1715"], "It destroyed much of the medieval city.", "1666", 2],
+["History", "Who was the last Tsar of Russia?", "Nicholas II", ["Alexander III", "Alexander II", "Peter the Great"], "He abdicated in 1917.", "Nicholas II", 2],
+["History", "Who led the Haitian Revolution?", "Toussaint Louverture", ["Simón Bolívar", "Benito Juárez", "Fulgencio Batista"], "Haiti became independent in 1804.", "Toussaint Louverture", 2],
+["History", "The Hundred Years' War was fought between England and which country?", "France", ["Spain", "Scotland", "Portugal"], "It actually lasted 116 years.", "France", 2],
+["History", "Who was the first European to reach India by sea?", "Vasco da Gama", ["Ferdinand Magellan", "Christopher Columbus", "Bartolomeu Dias"], "He arrived in 1498.", "Vasco da Gama", 2],
+["History", "Which pharaoh built the Great Pyramid of Giza?", "Khufu", ["Ramses II", "Tutankhamun", "Akhenaten"], "Khufu is also known by the Greek name Cheops.", "Khufu", 2],
+["History", "Which conflict was fought between the Houses of Lancaster and York?", "The Wars of the Roses", ["The Hundred Years' War", "The English Civil War", "The Anglo-Dutch Wars"], "It was fought in 15th-century England.", "The Wars of the Roses", 2],
+["Culture", "Who wrote The Divine Comedy?", "Dante Alighieri", ["Petrarch", "Boccaccio", "Virgil"], "Dante wrote it in the early 1300s.", "Dante Alighieri", 2],
+["Culture", "Which author wrote War and Peace?", "Leo Tolstoy", ["Fyodor Dostoevsky", "Anton Chekhov", "Ivan Turgenev"], "The novel was published in full in 1869.", "Leo Tolstoy", 2],
+["Culture", "Which painter created The Birth of Venus?", "Sandro Botticelli", ["Leonardo da Vinci", "Raphael", "Titian"], "The painting hangs in the Uffizi Gallery in Florence.", "Sandro Botticelli", 2],
+["Culture", "Who composed The Rite of Spring?", "Igor Stravinsky", ["Sergei Rachmaninoff", "Claude Debussy", "Maurice Ravel"], "Its 1913 premiere in Paris caused an uproar.", "Igor Stravinsky", 2],
+["Culture", "In which city is the Prado Museum?", "Madrid", ["Barcelona", "Seville", "Lisbon"], "The Prado is home to works by Velázquez and Goya.", "Madrid", 2],
+["Culture", "Who wrote The Great Gatsby?", "F. Scott Fitzgerald", ["Ernest Hemingway", "John Steinbeck", "William Faulkner"], "It was published in 1925.", "F. Scott Fitzgerald", 2],
+["Culture", "Which playwright wrote Waiting for Godot?", "Samuel Beckett", ["Harold Pinter", "Tom Stoppard", "Eugène Ionesco"], "Beckett won the Nobel Prize in Literature in 1969.", "Samuel Beckett", 2],
+["Culture", "Which Spanish artist painted Guernica?", "Pablo Picasso", ["Salvador Dalí", "Joan Miró", "Francisco Goya"], "Picasso painted it in 1937 in response to a bombing.", "Pablo Picasso", 2],
+["Culture", "Which Japanese director made Seven Samurai?", "Akira Kurosawa", ["Hayao Miyazaki", "Yasujirō Ozu", "Takeshi Kitano"], "The film was released in 1954.", "Akira Kurosawa", 2],
+["Culture", "Who wrote the epic poem Paradise Lost?", "John Milton", ["John Donne", "William Blake", "Alexander Pope"], "Milton was blind when he composed it.", "John Milton", 2],
+["Nature", "Which living animal has the strongest measured bite force?", "Saltwater crocodile", ["Great white shark", "Hippopotamus", "Jaguar"], "Its bite force has been measured at about 3,700 psi.", "Saltwater crocodile", 2],
+["Nature", "Which is the smallest species of bear?", "The sun bear", ["The giant panda", "The sloth bear", "The spectacled bear"], "Sun bears live in the forests of Southeast Asia.", "The sun bear", 2],
+["Nature", "Which bird lays the largest egg?", "Ostrich", ["Emu", "Albatross", "Condor"], "An ostrich egg weighs about 1.4 kg.", "Ostrich", 2],
+["Nature", "Which bird is the fastest in a dive?", "Peregrine falcon", ["Golden eagle", "Swift", "Osprey"], "A peregrine can top 300 km/h in a stoop.", "Peregrine falcon", 2],
+["Nature", "Which is the largest species of penguin?", "Emperor penguin", ["King penguin", "Gentoo penguin", "Adélie penguin"], "Emperor penguins stand up to about 1.1 m tall.", "Emperor penguin", 2],
+["Nature", "Which is the tallest tree species in the world?", "Coast redwood", ["Giant sequoia", "Douglas fir", "Mountain ash"], "Coast redwoods can top 110 m.", "Coast redwood", 2],
+["Sports", "Who has won the most Olympic gold medals of all time?", "Michael Phelps", ["Usain Bolt", "Larisa Latynina", "Carl Lewis"], "Phelps won 23 golds.", "Michael Phelps", 2],
+["Sports", "Which country has won the most Rugby World Cup titles?", "South Africa", ["New Zealand", "England", "Australia"], "South Africa has won four times, most recently in 2023.", "South Africa", 2],
+["Sports", "Which footballer scored the 'Hand of God' goal in 1986?", "Diego Maradona", ["Lionel Messi", "Gabriel Batistuta", "Mario Kempes"], "He scored it against England at the World Cup.", "Diego Maradona", 2],
+["Sports", "Which city hosted the 2012 Summer Olympics?", "London", ["Beijing", "Athens", "Rio de Janeiro"], "London was the first city to host the Games three times.", "London", 2],
+["Sports", "Which sprinter holds the 100 m world record of 9.58 seconds?", "Usain Bolt", ["Yohan Blake", "Asafa Powell", "Tyson Gay"], "Bolt set the record in Berlin in 2009.", "Usain Bolt", 2],
+["Sports", "Which country hosted the first FIFA World Cup in 1930?", "Uruguay", ["Brazil", "Italy", "Argentina"], "Uruguay also won that first tournament.", "Uruguay", 2],
+["Food", "Which country is the biggest producer of saffron?", "Iran", ["India", "Spain", "Morocco"], "Iran grows the large majority of the world's saffron.", "Iran", 2],
+["Food", "Which Italian cheese is traditionally used in tiramisu?", "Mascarpone", ["Ricotta", "Mozzarella", "Parmesan"], "Mascarpone is a soft, creamy cheese.", "Mascarpone", 2],
+["Food", "What is the main ingredient of the Greek dip tzatziki?", "Yoghurt", ["Feta", "Aubergine", "Chickpeas"], "It is mixed with cucumber and garlic.", "Yoghurt", 2],
+["Food", "Which country is the cocktail mojito from?", "Cuba", ["Mexico", "Spain", "Brazil"], "A mojito is made with rum, lime, sugar, mint and soda.", "Cuba", 2],
+["Food", "Which spice is generally the most expensive by weight?", "Saffron", ["Cinnamon", "Cardamom", "Black pepper"], "Each saffron thread is hand-picked from a crocus flower.", "Saffron", 2],
+["Tech", "Which British mathematician led the effort to break the Enigma code in World War II?", "Alan Turing", ["Charles Babbage", "Tim Berners-Lee", "Alan Sugar"], "The work was done at Bletchley Park.", "Alan Turing", 2],
+["Tech", "In which year was Google founded?", "1998", ["1994", "2001", "2004"], "Larry Page and Sergey Brin founded it in 1998.", "1998", 2],
+["Tech", "What does HTML stand for?", "HyperText Markup Language", ["High Transfer Markup Logic", "Hyper Tool Making Language", "Home Text Mapping Layout"], "HTML is the standard language for building web pages.", "HyperText Markup Language", 2],
+["Tech", "Which programming language has a coffee cup as its logo?", "Java", ["Python", "Swift", "Kotlin"], "Java was created at Sun Microsystems and released in 1995.", "Java", 2]
 ];
 function qzH(t){var h=5381;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return (h>>>0).toString(36)}
 function qzLoad(){if(QZ.ld)return;QZ.ld=1;try{var o=JSON.parse(localStorage.getItem('wdqseen')||'null');if(o&&o.s&&o.t){QZ.seen=o.s;QZ.t0=o.t;return}}catch(e){}QZ.seen=[];QZ.t0=Date.now()}
@@ -832,7 +1061,108 @@ function xpHome(){var d=xpL(),l=xpLv(d.xp),t=Math.round((d.xp-xpBase(l))/(xpBase
 function xpDom(){try{var q=S.step=='quiz'&&($('qagain')||$('qshr'));
 if(q){if(!QZ.xd){QZ.xd=1;QZ.xr=xpAward()}if(QZ.xr&&!app.querySelector('.xpc')){q.insertAdjacentHTML('beforebegin',xpCard(QZ.xr));setTimeout(function(){var i=app.querySelector('.xpbar i');if(i&&i.dataset.to)i.style.width=i.dataset.to+'%'},60)}}
 else{if(QZ.xd)QZ.xd=0;var hw=$('hw');if(hw&&!app.querySelector('.xph'))hw.parentNode.insertAdjacentHTML('beforebegin',xpHome())}}catch(e){}}
-var R0=R;R=function(){R0.apply(this,arguments);xpDom()};
+var MQS=null;
+function mqLoad(){if(MQS)return MQS;MQS={};try{JSON.parse(localStorage.getItem('wdmq')||'[]').forEach(function(x){MQS[x]=1})}catch(e){}return MQS}
+function mqSel(arr,n,ex){var s=mqLoad(),nx=function(b){return !(ex&&ex[b[1]])},u=arr.filter(function(b){return !s[b[1]]&&nx(b)});if(u.length<n){arr.forEach(function(b){delete s[b[1]]});u=arr.filter(nx);if(u.length<n)u=arr.slice()}return shuffle(u).slice(0,n)}
+function mqSave(list){var s=mqLoad();list.forEach(function(q){s[q.q]=1});try{localStorage.setItem('wdmq',JSON.stringify(Object.keys(s)))}catch(e){}}
+var DU=null,DUN=['Player 1','Player 2'];try{var dn0=JSON.parse(localStorage.getItem('wddn')||'null');if(dn0&&dn0.length==2)DUN=dn0}catch(e){}
+function duClear(){if(!DU)return;clearTimeout(DU.tm);clearTimeout(DU.nx);clearInterval(DU.cdi)}
+function duelStart(n){duClear();var P=[[],[],[]],cnt=n==15?[5,5,5]:[3,4,3],qs=[];QZB.forEach(function(b){P[qzLv(b)].push(b)});
+[0,1,2].forEach(function(l){mqSel(P[l],cnt[l]).forEach(function(b){var q=qzMk(b,shuffle([b[2]].concat(b[3])));q.l=l;qs.push(q)})});mqSave(qs);
+DU={st:'count',n:qs.length,q:qs,i:0,s:[0,0],t:[[],[]],lk:[0,0],pk:[-1,-1],w:-1,cd:3,pts:0,wt:0};S.step='duel';S.lvs='';R();
+DU.cdi=setInterval(function(){DU.cd--;if(DU.cd<0){clearInterval(DU.cdi);duPlay()}else{R();tone(660,0,.1,'sine',.2)}},700);tone(660,0,.1,'sine',.2)}
+function duPlay(){DU.st='play';DU.lk=[0,0];DU.pk=[-1,-1];DU.w=-1;R();DU.t0=performance.now();DU.tm=setTimeout(function(){duReveal(-1)},20000);tone(880,0,.12,'sine',.25)}
+function duReveal(w){clearTimeout(DU.tm);DU.st='reveal';DU.w=w;R();DU.nx=setTimeout(duNext,3400)}
+function duNext(){DU.i++;if(DU.i>=DU.n){DU.st='end';R();return}duPlay()}
+function duTap(p,k){if(!DU||DU.st!='play'||DU.lk[p])return;var t=performance.now()-DU.t0,q=DU.q[DU.i];
+if(q.o[k]==q.a){DU.pts=1+q.l;DU.s[p]+=DU.pts;DU.t[p].push(t);DU.wt=t;tone(660,0,.1,'sine',.25);tone(990,.1,.2,'sine',.25);duReveal(p)}
+else{DU.lk[p]=1;DU.pk[p]=k;tone(180,0,.3,'sawtooth',.15,90);var bs=app.querySelectorAll('[data-dp="'+p+'"]');for(var i=0;i<bs.length;i++)bs[i].classList.add(i==k?'no':'dm');if(DU.lk[0]&&DU.lk[1])duReveal(-1)}}
+function duPanel(p){var q=DU.q[DU.i]||{o:[]},st=DU.st,h='<div class="dup p'+(p+1)+'"><div class="dh"><span>'+esc(DUN[p])+'</span><span>'+DU.s[p]+' pts</span></div>';
+if(st=='count')return h+'<div class="dq" style="justify-content:center;font-size:60px">'+(DU.cd>0?DU.cd:'Go!')+'</div></div>';
+h+='<div class="dq">'+esc(q.q)+'</div>';
+if(st=='reveal')h+='<div class="dbn">'+(DU.w>=0?esc(DUN[DU.w])+' +'+DU.pts+' · '+(DU.wt/1000).toFixed(2)+'s':'Nobody scored')+'</div><div class="dfx">'+esc(q.f||'')+'</div>';
+return h+'<div class="dg">'+q.o.map(function(o,k){var c='';if(st=='reveal'){c=o==q.a?' ok':DU.pk[p]==k?' no':' dm'}else if(DU.lk[p])c=DU.pk[p]==k?' no':' dm';return '<button class="dbtn'+c+'" data-dp="'+p+'" data-dk="'+k+'">'+esc(o)+'</button>'}).join('')+'</div></div>'}
+function duAvg(p){var t=DU.t[p];return t.length?(t.reduce(function(x,y){return x+y},0)/t.length/1000).toFixed(2)+'s':'–'}
+V.duel=function(){if(DO)return doView();if(!DU)return '';
+if(DU.st=='setup')return duLand();
+if(DU.st=='lsetup')return '<div class="panel" style="text-align:left"><div class="qt" style="text-align:center">Million duel</div><div class="count" style="margin:6px 0 14px;text-align:center">Two players, one phone. Same questions for both. Fastest right answer wins the points: easy 1, medium 2, hard 3. Get it wrong and the other player can still answer. Both wrong, nobody scores. No banker calls. Put the phone flat between you.</div><input id="dn1" maxlength="14" value="'+esc(DUN[0])+'" class="dni"><input id="dn2" maxlength="14" value="'+esc(DUN[1])+'" class="dni"><button id="du10" style="margin-top:6px">Quick · 10 questions</button><button id="du15" class="alt" style="margin-top:10px">Full · 15 questions</button><button id="dub" class="alt" style="margin-top:10px">Back</button></div>';
+if(DU.st=='end'){var a=DU.s[0],b=DU.s[1],w=a==b?-1:a>b?0:1;return '<div class="panel" style="text-align:center"><div class="qt">'+(w<0?"It's a tie!":esc(DUN[w])+' wins!')+'</div><div class="big">'+a+' – '+b+'</div><div style="font-size:18px;font-weight:700;margin-top:10px">'+esc(DUN[0])+': '+DU.t[0].length+' right · avg '+duAvg(0)+'</div><div style="font-size:18px;font-weight:700;margin-top:6px">'+esc(DUN[1])+': '+DU.t[1].length+' right · avg '+duAvg(1)+'</div></div><button id="dure">Rematch</button><button class="alt" id="duh" style="margin:14px 0 22px">Home</button>'}
+return '<div class="du">'+duPanel(1)+'<div class="dmid"><span>Question '+(DU.i+1)+' of '+DU.n+'</span>'+(DU.st=='play'?'<span class="dtb"><i></i></span>':'<span></span>')+'<button id="duq" class="dquit">Quit</button></div>'+duPanel(0)+'</div>'};
+function duBind(){try{document.body.classList.toggle('duel-on',S.step=='duel'&&(DO?!!(DO.sn&&DO.sn.st!='wait'&&DO.sn.st!='end'&&DO.sn.st!='count'):(!!DU&&(DU.st=='count'||DU.st=='play'||DU.st=='reveal'))));if(S.step=='mode'){var m=$('mdu');if(m)m.onclick=function(){DU={st:'setup'};S.step='duel';R()};return}
+if(S.step!='duel'||(!DU&&!DO))return;if(DO)return doBind();if(DU.st=='setup')return duLandBind();var bs=app.querySelectorAll('.dbtn');for(var i=0;i<bs.length;i++)(function(b){b.onpointerdown=function(e){e.preventDefault();duTap(+b.dataset.dp,+b.dataset.dk)};b.onclick=function(e){e.preventDefault()}})(bs[i]);
+var g=function(id,f){var e=$(id);if(e)e.onclick=f};
+g('du10',function(){duSave();duelStart(10)});g('du15',function(){duSave();duelStart(15)});g('dub',function(){DU=null;doReset('')});
+g('duq',function(){duClear();DU=null;doReset('')});g('duh',function(){DU=null;doReset('')});g('dure',function(){duelStart(DU.n>10?15:10)})}catch(e){}}
+function duSave(){var a=$('dn1'),b=$('dn2');DUN=[(a&&a.value.trim())||'Player 1',(b&&b.value.trim())||'Player 2'];try{localStorage.setItem('wddn',JSON.stringify(DUN))}catch(e){}}
+var DO=null,DPRE=(/(?:^|&)d=([A-Za-z]{4})/.exec(location.hash.slice(1))||[])[1]||'';
+function duCode(){var L='ABCDEFGHJKLMNPQRSTUVWXYZ',c='';for(var i=0;i<4;i++)c+=L.charAt(Math.floor(Math.random()*L.length));return c}
+function doRef(){return FDB.ref('games/'+DO.code.toLowerCase()+'/duel')}
+function doName(){var a=$('dn1'),n=(a&&a.value.trim())||DUN[0]||'Player';DUN[0]=n;try{localStorage.setItem('wddn',JSON.stringify(DUN))}catch(e){}return n}
+function doErr(m){DU=DU||{st:'setup'};DU.err=m;R()}
+function doNew(code,role,n){return{code:code,role:role,name:n,sn:null,shown:-1,t0:0,lk:0,pk:-1,hq:-1,res:-1,rv:-1,rn:-1,tm:0,gr:0,nx:0,seen:0,left:0,saved:0,fresh:0}}
+function doCreate(){var n=doName();if(!fbInit()){doErr('Online play needs an internet connection.');return}
+var code=duCode(),ref=FDB.ref('games/'+code.toLowerCase()+'/duel');
+ref.once('value').then(function(sn){if(sn.val()){doCreate();return}
+DO=doNew(code,'h',n);DO.rf=ref;ref.set({st:'wait',hn:n,gn:'',gp:false,hp:true,rn:0});try{ref.onDisconnect().remove()}catch(e){}doListen();S.step='duel';R()}).catch(function(){doErr('Could not reach the server.')})}
+function doJoin(){var n=doName(),c=(($('djc')||{}).value||'').trim().toUpperCase();if(c.length!=4){doErr('Enter the 4-letter room code.');return}
+if(!fbInit()){doErr('Online play needs an internet connection.');return}
+var ref=FDB.ref('games/'+c.toLowerCase()+'/duel');
+ref.once('value').then(function(sn){var d=sn.val();if(!d||d.st!='wait'){doErr(!d?'Room not found.':'That game has already started.');return}if(d.gp){doErr('That room is already full.');return}
+DO=doNew(c,'g',n);DO.rf=ref;ref.update({gn:n,gp:true,gs:Object.keys(mqLoad())});try{ref.child('gp').onDisconnect().set(false)}catch(e){}doListen();S.step='duel';R()}).catch(function(){doErr('Could not reach the server.')})}
+function doListen(){DO.rf.on('value',function(sn){if(!DO)return;DO.sn=sn.val();doTick()})}
+function doGone(m){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);try{DO.rf.off()}catch(e){}}DO=null;DU=null;doReset('');S.msg=m;R()}
+function doLeave(){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);try{DO.rf.off()}catch(e){}try{if(DO.role=='h')DO.rf.remove();else DO.rf.child('gp').set(false)}catch(e){}}DO=null;DU=null;doReset('')}
+function doTick(){var d=DO.sn,me=DO.role;
+if(!d){if(DO.seen)doGone('The room was closed.');return}
+DO.seen=1;var opLeft=me=='h'?!d.gp:!d.hp;DO.left=(d.st!='wait'&&d.st!='end'&&opLeft)?1:0;
+if(d.rn!=null&&DO.rn!=d.rn){DO.rn=d.rn;DO.shown=-1;DO.rv=-1;DO.res=-1;DO.hq=-1;DO.lk=0;DO.pk=-1;DO.saved=0}
+if(me=='g'&&d.q&&!DO.saved){DO.saved=1;mqSave(d.q.map(function(x){return{q:x.q}}))}
+if(d.st=='play'&&DO.shown!=d.qi){DO.shown=d.qi;DO.lk=0;DO.pk=-1;DO.fresh=1}
+if(d.st=='reveal'&&DO.rv!=d.qi){DO.rv=d.qi;var r=d.r||{};if(r.w==me){tone(660,0,.1,'sine',.25);tone(990,.1,.2,'sine',.25)}else if(r.w=='h'||r.w=='g')tone(180,0,.3,'sawtooth',.15,90);else tone(300,0,.25,'triangle',.15,200)}
+R();if(DO&&DO.fresh&&d.st=='play'){DO.fresh=0;DO.t0=performance.now();tone(880,0,.1,'sine',.2)}
+if(DO&&me=='h')doHost(d)}
+function doHost(d){if(d.st!='play')return;var qi=d.qi;
+if(DO.hq!=qi){DO.hq=qi;clearTimeout(DO.tm);clearTimeout(DO.gr);DO.gr=0;DO.tm=setTimeout(function(){doResolve(qi)},20000)}
+var q=d.q[qi],a=d.a||{};if(a.h&&a.g){doResolve(qi);return}
+var one=a.h||a.g;if(one&&q.o[one.k]==q.a&&!DO.gr)DO.gr=setTimeout(function(){doResolve(qi)},900)}
+function doResolve(qi){var d=DO&&DO.sn;if(!d||d.st!='play'||d.qi!=qi||DO.res==qi)return;DO.res=qi;clearTimeout(DO.tm);clearTimeout(DO.gr);DO.gr=0;
+var q=d.q[qi],a=d.a||{},ok=function(r){return a[r]&&q.o[a[r].k]==q.a},w='',pts=0,wt=0,s=Object.assign({h:0,g:0},d.s||{});
+if(ok('h')&&ok('g'))w=a.h.t<=a.g.t?'h':'g';else if(ok('h'))w='h';else if(ok('g'))w='g';
+if(w){pts=1+q.l;wt=a[w].t;s[w]+=pts}
+var up={st:'reveal',r:{w:w||'-',pts:pts,wt:wt},s:s};
+['h','g'].forEach(function(r){if(ok(r)){var c=(d.ts&&d.ts[r])||{n:0,m:0};up['ts/'+r]={n:c.n+1,m:c.m+a[r].t}}});
+DO.rf.update(up);DO.nx=setTimeout(function(){doNext(qi)},3400)}
+function doNext(qi){var d=DO&&DO.sn;if(!d||d.st!='reveal'||d.qi!=qi)return;
+if(qi+1>=d.n)DO.rf.update({st:'end'});else DO.rf.update({st:'play',qi:qi+1,go:firebase.database.ServerValue.TIMESTAMP,a:null,r:null})}
+function doStart(n){var d=DO&&DO.sn;if(!d||!d.gp)return;var ex={};(d.gs||[]).forEach(function(x){ex[x]=1});
+var P=[[],[],[]],cnt=n==15?[5,5,5]:[3,4,3],qs=[];QZB.forEach(function(b){P[qzLv(b)].push(b)});
+[0,1,2].forEach(function(l){mqSel(P[l],cnt[l],ex).forEach(function(b){var q=qzMk(b,shuffle([b[2]].concat(b[3])));q.l=l;qs.push(q)})});mqSave(qs);
+DO.rf.update({st:'count',n:qs.length,q:qs.map(function(q){return{q:q.q,o:q.o,a:q.a,f:q.f||'',l:q.l,t:q.t||''}}),qi:0,s:{h:0,g:0},ts:null,a:null,r:null,rn:(d.rn||0)+1});
+clearTimeout(DO.nx);setTimeout(function(){if(DO&&DO.sn&&DO.sn.st=='count')DO.rf.update({st:'play',qi:0,go:firebase.database.ServerValue.TIMESTAMP})},3200)}
+function doTap(k){var d=DO&&DO.sn;if(!d||d.st!='play'||DO.lk)return;var t=Math.round(performance.now()-DO.t0),q=d.q[d.qi];DO.lk=1;DO.pk=k;
+if(q.o[k]!=q.a)tone(180,0,.3,'sawtooth',.15,90);DO.rf.child('a/'+DO.role).set({k:k,t:t});R()}
+function doShare(){var u=location.href.split('#')[0]+'#d='+DO.code,t='Join my Million duel! Room code: '+DO.code;
+if(navigator.share){navigator.share({title:'Million duel',text:t,url:u}).catch(function(){})}else{try{navigator.clipboard.writeText(t+' '+u);alert('Invite copied')}catch(e){prompt('Copy this invite',u)}}}
+function duLand(){var e=DU.err?'<div class="count" style="color:var(--acc);font-weight:700;text-align:center;margin:0 0 10px">'+esc(DU.err)+'</div>':'';
+return '<div class="panel" style="text-align:left"><div class="qt" style="text-align:center">Million duel</div><div class="count" style="margin:6px 0 14px;text-align:center">Play together online, each on your own phone. Same questions, and the fastest right answer wins the points: easy 1, medium 2, hard 3. Get it wrong and the other player can still answer. Both wrong, nobody scores.</div><input id="dn1" maxlength="14" placeholder="Your name" value="'+esc(DUN[0]==='Player 1'?'':DUN[0])+'" class="dni">'+e+'<button id="doc">Create a room</button><div style="text-align:center;margin:14px 0 8px;font-weight:700;color:var(--mute)">or join your partner</div><input id="djc" maxlength="4" placeholder="CODE" value="'+esc(DU.jc||'')+'" class="dni" style="text-transform:uppercase;text-align:center;letter-spacing:6px;font-size:22px"><button id="doj" class="alt">Join room</button><button id="dol" class="alt" style="margin-top:10px">Same phone instead</button><button id="dub" class="alt" style="margin-top:10px">Back</button></div>'}
+function doView(){var d=DO.sn;if(!d)return '<div class="panel" style="text-align:center"><div class="qt">Connecting…</div></div>';
+var me=DO.role,op=me=='h'?'g':'h',on=esc((op=='h'?d.hn:d.gn)||'Partner'),mn=esc((me=='h'?d.hn:d.gn)||'You'),s=Object.assign({h:0,g:0},d.s||{}),st=d.st;
+if(st=='wait'){if(me=='g')return '<div class="panel" style="text-align:center"><div class="qt">You are in!</div><div class="count" style="margin:8px 0 16px">Waiting for '+on+' to start the game…</div></div><button class="alt" id="doq">Leave</button>';
+var j=!!d.gp;return '<div class="panel" style="text-align:center"><div class="qt">Your room code</div><div class="big" style="letter-spacing:8px">'+esc(DO.code)+'</div><div class="count" style="margin:8px 0 14px">'+(j?esc(d.gn||'Your partner')+' joined!':'Send the code to your partner. Waiting for them…')+'</div><button class="alt" id="dosh">Share invite</button></div><button id="dos10" style="margin-top:12px'+(j?'':';opacity:.4')+'">Start · 10 questions</button><button class="alt" id="dos15" style="margin-top:10px'+(j?'':';opacity:.4')+'">Start · 15 questions</button><button class="alt" id="doq" style="margin:10px 0 22px">Cancel</button>'}
+if(st=='count')return '<div class="panel" style="text-align:center"><div class="qt">'+mn+' vs '+on+'</div><div class="big" style="font-size:44px">Get ready!</div><div class="count">Same questions, fastest right answer wins.</div></div>';
+if(st=='end'){var w=s.h==s.g?'':s.h>s.g?'h':'g',av=function(r){var c=d.ts&&d.ts[r];return c&&c.n?(c.m/c.n/1000).toFixed(2)+'s':'–'},cn=function(r){return(d.ts&&d.ts[r]&&d.ts[r].n)||0};
+return '<div class="panel" style="text-align:center"><div class="qt">'+(w?(w==me?'You win!':on+' wins!'):"It's a tie!")+'</div><div class="big">'+s[me]+' – '+s[op]+'</div><div style="font-size:18px;font-weight:700;margin-top:10px">You: '+cn(me)+' right · avg '+av(me)+'</div><div style="font-size:18px;font-weight:700;margin-top:6px">'+on+': '+cn(op)+' right · avg '+av(op)+'</div></div>'+(me=='h'?'<button id="dore"'+(d.gp?'':' style="opacity:.4"')+'>Rematch</button>':'<div class="count" style="text-align:center;margin:0 0 10px">Waiting for '+on+' to start a rematch…</div>')+'<button class="alt" id="doh" style="margin:14px 0 22px">Home</button>'}
+var q=d.q[d.qi]||{o:[]},a=d.a||{},r=d.r||{},opw=a[op]&&q.o[a[op].k]!=q.a,msg='';
+if(st=='play'){if(DO.lk)msg=q.o[DO.pk]!=q.a?'Wrong! '+on+' can still answer…':'Locked in! Waiting…';else if(a[op])msg=opw?on+' got it wrong. Your turn!':on+' answered…';else msg='Answer fast!'}
+else msg=r.w==me?'You +'+r.pts+' · '+(r.wt/1000).toFixed(2)+'s':(r.w=='h'||r.w=='g')?on+' +'+r.pts+' · '+(r.wt/1000).toFixed(2)+'s':'Nobody scored';
+var b=q.o.map(function(o,k){var c='';if(st=='reveal')c=o==q.a?' ok':(DO.lk&&DO.pk==k)?' no':' dm';else if(DO.lk)c=DO.pk==k?(o==q.a?' sel':' no'):' dm';else if(opw&&a[op].k==k)c=' dm';return '<button class="dbtn'+c+'" data-dk="'+k+'">'+esc(o)+'</button>'}).join('');
+return '<div class="du"><div class="dup p1"><div class="dh"><span>You · '+s[me]+' pts</span><span>'+on+' · '+s[op]+' pts</span></div><div class="dq">'+esc(q.q||'')+'</div><div class="dbn">'+msg+'</div>'+(st=='reveal'?'<div class="dfx">'+esc(q.f||'')+'</div>':'')+'<div class="dg">'+b+'</div></div><div class="dmid"><span>Question '+(d.qi+1)+' of '+d.n+(DO.left?' · '+on+' left':'')+'</span><button id="doq" class="dquit">Quit</button></div></div>'}
+function doBind(){var g=function(id,f){var e=$(id);if(e)e.onclick=f},d=DO.sn;
+var bs=app.querySelectorAll('.dbtn');for(var i=0;i<bs.length;i++)(function(b){b.onpointerdown=function(e){e.preventDefault();doTap(+b.dataset.dk)};b.onclick=function(e){e.preventDefault()}})(bs[i]);
+g('dosh',doShare);g('dos10',function(){doStart(10)});g('dos15',function(){doStart(15)});g('doq',doLeave);g('doh',doLeave);g('dore',function(){doStart(d.n>10?15:10)})}
+function duLandBind(){var g=function(id,f){var e=$(id);if(e)e.onclick=f};g('doc',doCreate);g('doj',doJoin);g('dol',function(){DU={st:'lsetup'};R()});g('dub',function(){DU=null;doReset('')})}
+setTimeout(function(){if(DPRE&&!PRE&&!DO){DU={st:'setup',jc:DPRE.toUpperCase()};S.step='duel';R()}},400);
+var R0=R;R=function(){R0.apply(this,arguments);xpDom();duBind()};
 setTimeout(function(){idb(function(db){if(db)try{db.transaction('f','readwrite').objectStore('f').delete('m')}catch(e){}})},0);
 function mlMusic(){if(MU.on)return;var a=sfx();if(!a)return;if(THM=='mine'&&MYURL)return mlMine(a);MU.on=1;MU.th=THM;MU.g=a.createGain();MU.g.gain.setValueAtTime(.0001,a.currentTime);MU.g.gain.exponentialRampToValueAtTime(.6,a.currentTime+1.2);MU.g.connect(MG);MU.d=[];
 if(!TH[THM].b&&!TH[THM].ch&&THM!='pulse'&&THM!='play'&&THM!='arcade'&&THM!='jazz'&&THM!='space'&&THM!='clock'){var lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=240;lp.connect(MU.g);
@@ -897,10 +1227,11 @@ function ghInit(){QZ.g0=Date.now();QZ.gs=0;QZ.gp=0;QZ.gt=[];QZ.gh=ghLoad();QZ.gc
 function ghTick(){if(!(S.step=='quiz'&&QZ.k=='mil'&&!QZ.out&&QZ.gh)){clearInterval(GH.iv);GH.iv=0;return}var n=ghIdx(QZ.gh);if(n===GH.n)return;GH.n=n;var els=app.querySelectorAll('.qd.gm i');if(els.length!=15)return;Array.prototype.forEach.call(els,function(x,j){x.classList.remove('gh','fin');var o=x.querySelector('.ghd');if(o)o.remove();if(j==Math.min(n,14)){x.classList.add('gh');if(n>=QZ.gh.t.length)x.classList.add('fin');if(QZ.gc)x.insertAdjacentHTML('beforeend',ghd(j,QZ.gc))}})}
 function ghLock(ok){var tn=ghNow();QZ.gt.push(tn);ghPause();var g=QZ.gh;if(!g||!ok)return;var i=QZ.i;if(i>=g.t.length){QZ.gc={txt:'Past your best',cl:'ahead'};return}var d=(g.t[i]-tn)/1000;QZ.gc=Math.abs(d)<.05?{txt:'Even',cl:''}:d>0?{txt:d.toFixed(1)+'s ahead',cl:'ahead'}:{txt:(-d).toFixed(1)+'s behind',cl:'behind'}}
 function ghSave(pz,bp){try{var gt=[];QZ.gt.forEach(function(x,j){if(QZ.mres[j])gt.push(Math.round(x))});if(!gt.length)return;var og=ghLoad(),tot=gt[gt.length-1];if(og?(pz>og.pz||(pz==og.pz&&tot<og.t[og.t.length-1])):pz>=bp)localStorage.setItem('wdqmghost',JSON.stringify({pz:pz,t:gt}))}catch(e){}}
-function qzLv(b){var f=function(x){return b[1].indexOf(x)>-1};return QE.some(f)?0:QH.some(f)?2:1}
+function qzLv(b){if(b[6]!=null)return b[6];var f=function(x){return b[1].indexOf(x)>-1};return QE.some(f)?0:QH.some(f)?2:1}
 function qzMSafe(i){return i>=10?32000:i>=5?1000:0}
+function mlBest(){var b=0;try{b=+localStorage.getItem('wdqmbest')||0}catch(e){}return b?'<br>Best '+qzUsd(b):''}
 function mlSub(){var b=0;try{b=+localStorage.getItem('wdqmbest')||0}catch(e){}return '15 questions · lifelines · win $1,000,000'+(b?'<br>Best prize: '+qzUsd(b):'')}
-function qzMStart(){S.mode='solo';S.step='quiz';S.lvs='';QZ.k='mil';hostPrime();var used={},P=[[],[],[]],mk=function(b){used[b[1]]=1;var q=qzMk(b,shuffle([b[2]].concat(b[3])));q.l=qzLv(b);return q};QZB.forEach(function(b){P[qzLv(b)].push(b)});QZ.mq=[];[0,1,2].forEach(function(l){var c=shuffle(P[l]).slice(0,5);while(c.length<5)c.push(shuffle(QZB.filter(function(b){return !used[b[1]]&&c.indexOf(b)<0}))[0]);c.forEach(function(b){QZ.mq.push(mk(b))})});QZ.mu=used;QZ.i=0;QZ.ll={f:1,c:1,s:1};QZ.hid=[];QZ.crowd=null;QZ.sel=null;QZ.pk=null;QZ.out=null;QZ.mans=[];QZ.mres=[];ghInit();R();mlMusic()}
+function qzMStart(){S.mode='solo';S.step='quiz';S.lvs='';QZ.k='mil';hostPrime();var used={},P=[[],[],[]],mk=function(b){used[b[1]]=1;var q=qzMk(b,shuffle([b[2]].concat(b[3])));q.l=qzLv(b);return q};QZB.forEach(function(b){P[qzLv(b)].push(b)});QZ.mq=[];[0,1,2].forEach(function(l){var c=mqSel(P[l],5);while(c.length<5)c.push(shuffle(QZB.filter(function(b){return !used[b[1]]&&c.indexOf(b)<0}))[0]);c.forEach(function(b){QZ.mq.push(mk(b))})});QZ.mu=used;mqSave(QZ.mq);QZ.i=0;QZ.ll={f:1,c:1,s:1};QZ.hid=[];QZ.crowd=null;QZ.sel=null;QZ.pk=null;QZ.out=null;QZ.mans=[];QZ.mres=[];ghInit();R();mlMusic()}
 function qzMAns(k){if(BN.open||QZ.pk!=null||QZ.hid.indexOf(k)>-1)return;if(QZ.sel===k){qzMLock();return}QZ.sel=k;sfx();mlMusic();tone(330,0,.09,'sine',.2,260);vib(8);hostFinal(k);R()}
 function qzMLock(){if(BN.open||QZ.sel==null||QZ.pk!=null)return;var q=QZ.mq[QZ.i];
 if(q.o[QZ.sel]!=q.a&&QZ.pf.sc>0){QZ.pf.sc--;QZ.hr=QZ.sel;QZ.hid.push(QZ.sel);QZ.sel=null;QZ.fx='r';R();QZ.fx=null;QZ.hr=-1;try{tone(392,0,.1,'triangle',.25);tone(523,.1,.2,'triangle',.25);vib(30)}catch(e){}hostSay('Not that one. But you have a second chance.',{now:1});return}
@@ -913,7 +1244,7 @@ else if(t=='c'){var v=[0,1,2,3].filter(function(k){return QZ.hid.indexOf(k)<0}),
 else{var pl=QZB.filter(function(b){return !QZ.mu[b[1]]&&qzLv(b)==q.l});if(!pl.length)pl=QZB.filter(function(b){return !QZ.mu[b[1]]});var b=shuffle(pl)[0];QZ.mu[b[1]]=1;var nq=qzMk(b,shuffle([b[2]].concat(b[3])));nq.l=qzLv(b);QZ.mq[QZ.i]=nq;QZ.lq={};QZ.hid=[];QZ.crowd=null;QZ.sel=null}
 QZ.fx=t;R();QZ.fx=null;lfSound(t)}
 function qzMEnd(){var o=QZ.out,m=Math.max(QZ.pz,QZ.pb||0),nx=QLD.filter(function(x){return x>m})[0],rc=o=='win'?15:(QZ.rch||QZ.mres.length),t='<div class="panel" style="text-align:center"><div class="qt">'+(o=='win'?'You won the top prize!':o=='walk'?'You walked away':o=='deal'?'You took the deal':'Game over')+'</div><div class="big" style="font-size:56px">'+qzUsd(QZ.pz)+'</div><div style="font-size:18px;font-weight:700;margin-top:6px">'+(o=='win'?'All 15 questions':'Reached question '+rc+' of 15')+'</div><div class="count">'+(QZ.nb?'New best prize!':'Best prize: '+qzUsd(QZ.pb))+'</div>',dealv=bnkVerdict(),rv=(QZ.q.length?qzRvw():'');
-return t+dealv+'</div><button id="qagain">'+(o=='win'?'Play again':'Try again')+(nx&&o!='win'?'<small style="display:block;font-size:14px;font-weight:600;opacity:.85;margin-top:2px">Next goal: '+qzUsd(nx)+'</small>':'')+'</button><button class="alt" id="qhome" style="margin:14px 0 22px">Home</button>'+rv}
+return t+dealv+'</div>'+(nx&&o!='win'?'<div class="xpm" style="text-align:center;margin:0 0 10px">Next goal: '+qzUsd(nx)+'</div>':'')+'<button id="qagain">'+(o=='win'?'Play again':'Try again')+'</button><button class="alt" id="qhome" style="margin:14px 0 22px">Home</button>'+rv}
 function qzMV(){if(QZ.out)return qzMEnd();if(QZ.pp)return qzMPK();var q=QZ.mq[QZ.i],i=QZ.i,dn=QZ.pk!=null,ok=dn&&q.o[QZ.pk]==q.a,d='',j,L=['A','B','C','D'],
 ic={f:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>',
 c:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6.5 19c0-3 2.4-5 5.5-5s5.5 2 5.5 5"/><circle cx="4.8" cy="10.5" r="1.8"/><circle cx="19.2" cy="10.5" r="1.8"/></svg>',
