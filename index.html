@@ -580,6 +580,9 @@ body.dev .wsheet::after{content:"";position:absolute;inset:0;border-radius:inher
 .cvf.hdl,.cvf.hdr,.cvf.hdc{margin-left:-12px!important;margin-right:-12px!important;padding-left:22px!important;padding-right:22px!important;border-radius:0 0 19px 19px}
 .cvf.hdl:has(#mdsl),.cvf.hdr:has(#mdsl){min-height:calc(66px + env(safe-area-inset-bottom,0px));align-items:flex-start;box-sizing:border-box}.cvf.hdc:has(#mdsl){min-height:calc(154px + env(safe-area-inset-bottom,0px));align-items:flex-start;box-sizing:border-box}
 .mdp.mdm .mdc{padding:3px 8px!important}.mdp.mdm .mdc .av{width:30px;height:30px}.mdp.mdm .mdc .mdn,.mdp.mdm .mdc .mdb{line-height:1.1!important;margin:0!important}.mdp.mdm{gap:6px}
+.mdc .mdi.lbl{height:20px;min-height:0;padding:0 7px;font-size:10px;line-height:1;border-radius:10px;align-self:center}.mdc{align-content:center;row-gap:0}.mdc.lose{min-height:0}
+.qz.ml.vote .vt{background:none;padding:0;gap:0}.qz.ml.vote .vt em{display:none}.qz.ml.vote .mdpk{gap:0;padding-left:5px;flex-wrap:nowrap}.qz.ml.vote .vt .av{width:20px;height:20px;font-size:10px;margin:0 0 0 -5px;box-shadow:0 0 0 2px #fff}
+.mdtg{border:0!important;background:transparent!important;box-shadow:none!important;padding:0 4px!important}.mdtg .cn{vertical-align:-2px;margin-left:2px}
 </style><style id="wdx1">
 body:has(.ov:not(.cvo)) #thp,body:has(.ov:not(.cvo)) #rxb,body:has(.ov:not(.cvo)) #rxt{display:none!important}
 .cvf{justify-content:flex-start}.cvf .lfxb{margin-left:0}.cvf:not(:has(.lfxb)){justify-content:space-between}
@@ -1621,7 +1624,7 @@ else{var v=[0,1,2,3].filter(function(k){return MD.hid.indexOf(k)<0}),ci=q.o.inde
 try{lfSound(t)}catch(e){}R()}
 function mdCard(d,r,me){var p=d.pl[r],nm=dN(d,r),av=dA(d,r),a=d.a||{},rv=d.ph=='rev',st,ic,k='';
 if(p.s=='on'){if(rv){var rr=d.r&&d.r[r];st=rr=='sk'?'Skipped':rr=='ok'?'Correct':'Next up';ic=rr=='ok'?'\u2713':rr=='sk'?'\u00bb':'\u203a';k=rr=='ok'?' ok':''}else if(a[r]){st='Locked in';ic='\u2713';k=' k'}else{st='Thinking\u2026';ic='<i></i><i></i><i></i>';k=' t'}}
-else if(p.s=='lose'){st='Out';ic='\u2715 OUT';k=' no lbl'}else if(p.s=='walk'){st='Walked away';ic='\u2192'}else{st='Won the top prize';ic='\ud83c\udfc6';k=' ok'}
+else if(p.s=='lose'){st='Out';ic='OUT';k=' no lbl'}else if(p.s=='walk'){st='Walked away';ic='\u2192'}else{st='Won the top prize';ic='\ud83c\udfc6';k=' ok'}
 return '<div class="mdc'+(r==me?' me':'')+(p.s=='on'?'':' out')+(p.s=='lose'?' lose':'')+'">'+duAv(av,nm,'',dC(d,r))+'<div class="mdn">'+(r==me?'You':esc(nm))+'</div><div class="mdb">'+qzUsd(p.s=='on'?mdBk(p):p.pz)+'</div><span class="mdi'+k+'" role="img" title="'+st+'" aria-label="'+st+'">'+ic+'</span></div>'}
 function mdDots(p,cur){var h='';for(var j=0;j<15;j++){var c=j<p.c?'ok':(p.s=='lose'&&j==p.c?'no':(p.s=='on'&&j==cur?'cur':''));h+='<i class="'+c+'"></i>'}return h}
 function mdView(d){var me=DO.role,mro=mdRo(d),oth=mro.filter(function(x){return x!=me}),op=oth[0]||(me=='h'?'g':'h'),pl=d.pl,pm=pl[me],po=pl[op],qi=d.qi,q=d.q[qi]||{o:[],q:'',t:'',l:0},a=d.a||{},r=d.r||{},rev=d.ph=='rev',on=esc(dN(d,op)),usd=qzUsd,L=['A','B','C','D'],
@@ -1650,7 +1653,7 @@ var opts=q.o.map(function(o,k){if(!rev&&MD.hid.indexOf(k)>-1)return '<div class=
  else if(locked){c+=(a[me]&&a[me].k===k)?' qsl':' qdm'}
  else if(alive){if(k===MD.sel)c+=' qsl';else if(MD.sel!=null)c+=' qdm'}
  return '<button class="'+c+'" data-qo="'+k+'">'+(MD.crowd&&!rev?'<span class="qbw"><i style="--w:'+MD.crowd[k]+'%"></i></span>':'')+'<span class="qtx">'+L[k]+' \u00b7 '+esc(o)+'</span>'+(MD.crowd&&!rev?'<b>'+MD.crowd[k]+'%</b>':'')+tg+(alive&&!locked&&k===MD.sel?'<small class="lkh">Tap again to lock in</small>':'')+'</button>'}).join('');
-return '<div class="mdp'+(mro.length>2?' mdm':'')+'">'+[me].concat(oth).map(function(x){return mdCard(d,x,me)}).join('')+'</div><button class="alt mdtg" id="mdtg" aria-expanded="'+(MDINF?1:0)+'"><span>Question '+(qi+1)+' of 15 \u00b7 '+usd(QLD[qi])+'</span><span>'+(MDINF?'\u25b4':'\u25be')+'</span></button><div class="mdinf'+(MDINF?'':' hid')+'"><div class="qd">'+mdDots(pm,qi)+'</div>'+oth.map(function(x){return '<div class="qd mdq2">'+mdDots(pl[x],qi)+'</div>'}).join('')
+return '<div class="mdp'+(mro.length>2?' mdm':'')+'">'+[me].concat(oth).map(function(x){return mdCard(d,x,me)}).join('')+'</div><button class="alt mdtg" id="mdtg" aria-expanded="'+(MDINF?1:0)+'"><span>Question '+(qi+1)+' of 15 \u00b7 '+QLD[qi].toLocaleString('en-US')+' <i class="cn"></i></span><span>'+(MDINF?'\u25b4':'\u25be')+'</span></button><div class="mdinf'+(MDINF?'':' hid')+'"><div class="qd">'+mdDots(pm,qi)+'</div>'+oth.map(function(x){return '<div class="qd mdq2">'+mdDots(pl[x],qi)+'</div>'}).join('')
 +'<div class="pc" style="align-items:flex-start"><span>Question '+(qi+1)+' of 15<br><b style="font-size:26px;color:var(--ink)">'+usd(QLD[qi])+'</b></span><span style="text-align:right">Safe amount<br><b style="font-size:20px;color:var(--ink)">'+usd(qzMSafe(qi))+'</b></span></div></div>'
 +'<div class="dbn2 '+bc+'"><span>'+msg+'</span><small>'+sm+'</small></div>'
 +'<div class="mlrow'+(HST=='f'||HST=='n'?' nolf':'')+'"><div class="panel qbox mlq"><div class="qt">'+esc(q.t)+'</div><div class="qa" style="font-size:'+Math.round(19*DZS[DZI])+'px">'+esc(q.q)+'</div></div><div class="llc">'+lf('mdl5','50:50',MD.ll.f,'f')+lf('mdlc','Ask Your Group',MD.ll.c,'c')+mdLk()+'</div></div>'
