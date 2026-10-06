@@ -1428,9 +1428,11 @@ DO=doNew(c,'g',n);DO.rf=ref;ref.update({dc:null,gn:n,ga:duA(),gp:true,gs:Object.
 function doListen(){DO.rf.on('value',function(sn){if(!DO)return;DO.sn=sn.val();try{rxIn()}catch(e){}doTick()})}
 function doGone(m){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);clearTimeout(DO.bt);try{DO.rf.off()}catch(e){}}DO=null;DU=null;doReset('');S.msg=m;R()}
 function doLeave(){if(DO){clearTimeout(DO.tm);clearTimeout(DO.gr);clearTimeout(DO.nx);clearTimeout(DO.bt);try{DO.rf.off()}catch(e){}try{if(DO.role=='h')DO.rf.remove();else DO.rf.child('gp').set(false)}catch(e){}}DO=null;DU=null;doReset('')}
+function esc0(x){return String(x).replace(/[<>&]/g,'')}
 function doTick(){var d=DO.sn,me=DO.role;
-if(!d){if(DO.seen)doGone('The challenge was cancelled.');return}
-DO.seen=1;var opLeft=me=='h'?!d.gp:!d.hp;DO.left=(d.st!='wait'&&d.st!='end'&&opLeft)?1:0;
+if(!d){if(DO.seen)doGone(DO.lhn?esc0(DO.lhn)+' left, so the challenge was cancelled.':'The challenge was cancelled.');return}
+DO.seen=1;if(me=='g')DO.lhn=d.hn||'';if(me=='h'){if(DO.pgp&&!d.gp&&d.st=='wait')toast((DO.pgn||'Your friend')+' left the challenge','warn',3500);DO.pgp=!!d.gp;if(d.gn)DO.pgn=d.gn}
+var opLeft=me=='h'?!d.gp:!d.hp;DO.left=(d.st!='wait'&&d.st!='end'&&opLeft)?1:0;
 if(d.rn!=null&&DO.rn!=d.rn){DO.rn=d.rn;DO.shown=-1;DO.rv=-1;DO.res=-1;DO.hq=-1;DO.bq=-1;DO.lk=0;DO.pk=-1;DO.saved=0}
 if(me=='g'&&d.q&&!DO.saved){DO.saved=1;mqSave(d.q.map(function(x){return{q:x.q}}))}
 if(d.st=='play'&&DO.shown!=d.qi){DO.shown=d.qi;DO.lk=0;DO.pk=-1;DO.fresh=1;DO.t0=performance.now()}
@@ -1480,7 +1482,9 @@ doJoin=function(){var c=(($('djc')||{}).value||'').trim().toUpperCase();if(c.len
 FDB.ref('games/'+c.toLowerCase()+'/party').once('value').then(function(p){if(p.val())ptJoin(c,n);else doJoin0()}).catch(function(){doJoin0()})};
 function ptRx(d){var X=d.rx||{},k;if(!PT._rx){PT._rx={};for(k in X)PT._rx[k]=X[k]&&X[k].n;return}for(k in X){var r=X[k];if(k==PT.pid||!r||!r.n||r.n===PT._rx[k])continue;PT._rx[k]=r.n;var ph=typeof r.p=='number';if(!(ph?!!RXP[r.p]:rxOk(r.e))||!rxOn())continue;rxShow(ph?r.p:r.e,'op',((d.p||{})[k]||{}).n||'')}}
 function ptPl(d){var P=d.p||{};return Object.keys(P).map(function(id){return{id:id,n:P[id].n,s:P[id].s||0,a:P[id].a,av:P[id].av||'',h:P[id].h,r:P[id].r}})}
-function ptTick(){var d=PT.sn;if(!d){if(PT.seen)ptGone('The host ended the party.');return}PT.seen=1;try{ptRx(d)}catch(e){}
+function ptTick(){var d=PT.sn;if(!d){if(PT.seen)ptGone((PT.hn?esc0(PT.hn)+' (host)':'The host')+' left, so the party ended.');return}PT.seen=1;
+try{var P0=d.p||{},N0=PT.nm||{};Object.keys(N0).forEach(function(k){if(!P0[k]&&k!=PT.pid)toast(esc0(N0[k])+' left the party','warn',3500)});PT.nm={};Object.keys(P0).forEach(function(k){PT.nm[k]=P0[k].n||'A player';if(P0[k].h)PT.hn=P0[k].n})}catch(e){}
+try{ptRx(d)}catch(e){}
 if(d.st=='play'&&PT.shown!=d.qi){PT.shown=d.qi;PT.k=-1;PT.q0=Date.now();clearInterval(PT.iv);var h=PT.iv=setInterval(function(){var e=$('ptcdn');if(!e||!PT||!PT.sn||PT.sn.st!='play'){clearInterval(h);return}e.textContent=Math.max(0,Math.ceil(((PT.sn.tl||30)*1000-(Date.now()-PT.q0))/1000))+'s'},250)}
 R();if(PT.host)ptHost(d)}
 function ptHost(d){if(d.st=='play'){if(PT.hq!=d.qi){PT.hq=d.qi;clearTimeout(PT.tm);PT.tm=setTimeout(function(){ptReveal(d.qi)},(d.tl||30)*1000)}
