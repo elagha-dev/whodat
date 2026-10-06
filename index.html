@@ -586,7 +586,7 @@ body.thp-on:not(.thp-fp) .cvf.hdc{padding-bottom:calc(88px + env(safe-area-inset
 .dwt .dcc{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:0;margin:0;padding:7px 12px;font-size:13px;font-weight:600;color:var(--mute);border-style:dashed;box-shadow:none}
 .dwt .dcc b{font-size:20px;letter-spacing:4px;color:var(--ink);font-weight:800}
 .dwt .dcc em{font-style:normal}
-.dwt>.dbr.dmd{margin:18px 0 0}
+.dwt>.dbr.dmd{margin:18px 0 0}.dwt.dhw{flex:1;margin:0;min-height:0}.dwt.dhw>.dbr.dmd{margin:0}.dwt.dhw>.dmc{margin-top:8px}.dwt.dhw>.dlb{margin:auto 0;padding-top:28px}.dwt.dhw .dinv{margin-top:0}
 .dmd button{padding:9px 4px;font-size:15px}
 .dmc{text-align:center;color:var(--mute);font-size:13px;font-weight:600;margin:6px 0 0}
 </style>
@@ -1591,7 +1591,7 @@ function duRow(d){return '<div class="dpl"><span>'+duAv(d.ha,d.hn)+esc(d.hn||'')
 function doView(){var d=DO.sn;if(!d)return '<div class="panel" style="text-align:center"><div class="qt">Connecting…</div></div>';
 var me=DO.role,op=me=='h'?'g':'h',on=esc((op=='h'?d.hn:d.gn)||'Partner'),mn=esc((me=='h'?d.hn:d.gn)||'You'),s=Object.assign({h:0,g:0},d.s||{}),st=d.st,ma=(me=='h'?d.ha:d.ga)||'',oa=(op=='h'?d.ha:d.ga)||'';
 if(st=='wait'){if(me=='g')return '<div class="dwt"><div class="panel" style="text-align:center"><div class="qt">You are in!</div>'+duLobby(d)+'</div></div>';
-var j=!!d.gp,MP='<div class="dbr dmd">'+[['m','Millionaire'],['s','Fastest finger']].map(function(x){return '<button class="alt'+(DMODE==x[0]?' on':'')+'" data-dm="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>'+'<div class="dmc">'+(DMODE=='m'?'15 questions':'Fastest correct answer wins')+'</div>'+(DMODE=='m'?'':'<div class="lbl" style="text-align:center;margin:10px 0 6px">Break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div>'),IV=j?'':'<div class="dinv"><button class="alt dcc" id="dcpd"><span>Code</span><b>'+esc(DO.code)+'</b><em class="cpl" id="dcpl">Tap to copy</em></button></div>';return '<div class="dwt">'+duLobby(d)+MP+IV+'</div>'}
+var j=!!d.gp,MP='<div class="dbr dmd">'+[['m','Millionaire'],['s','Fastest finger']].map(function(x){return '<button class="alt'+(DMODE==x[0]?' on':'')+'" data-dm="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div>'+'<div class="dmc">'+(DMODE=='m'?'15 questions':'Fastest correct answer wins')+'</div>'+(DMODE=='m'?'':'<div class="lbl" style="text-align:center;margin:10px 0 6px">Break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div>'),IV=j?'':'<div class="dinv"><button class="alt dcc" id="dcpd"><span>Code</span><b>'+esc(DO.code)+'</b><em class="cpl" id="dcpl">Tap to copy</em></button></div>';return '<div class="dwt dhw">'+MP+duLobby(d)+IV+'</div>'}
 if(st=='end'&&d.md)return mdEnd(d);if(st=='play'&&d.md)return mdView(d);
 if(st=='count')return '<div class="panel cnt" style="text-align:center"><div class="qt">'+mn+' vs '+on+'</div><div class="big" style="font-size:44px">Get ready!</div></div>';
 if(st=='end'){var w=s.h==s.g?'':s.h>s.g?'h':'g',av=function(r){var c=d.ts&&d.ts[r];return c&&c.n?(c.m/c.n/1000).toFixed(2)+'s':'–'},cn=function(r){return(d.ts&&d.ts[r]&&d.ts[r].n)||0};
