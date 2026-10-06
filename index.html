@@ -507,7 +507,7 @@ body.dev .wsheet{border-color:#1c7ed6;animation:devc 1.6s ease-in-out infinite}
 .cvw .qd{margin:0 0 6px}.cvw .qd i{height:7px}.cvw .mdp{margin:0 0 6px}.cvw .pc{margin:2px 2px 6px}.cvw .pc b{font-size:20px!important}.cvw .pc span:last-child b{font-size:16px!important}
 .cvw .mlrow{margin-bottom:10px}.cvw .mlrow.nolf .llc{display:none}.cvw .mlq{padding:8px 12px 10px}.cvw .mlq .qa{line-height:1.15}
 .cvw .qz.ml{gap:8px}.cvw .qz.ml button.alt.qo,.cvw .qz.ml .qh{min-height:54px}.cvw .qz.ml button.alt.qo{padding:6px 34px 6px 10px;font-size:16px}
-.cvw .dbn2{padding:6px 10px;font-size:16px;margin:0 0 8px}.cvw .dfx2{min-height:30px;margin-top:6px}
+.cvw .dbn2{padding:6px 10px;font-size:16px;margin:0 0 8px}.dbn2{height:auto!important;min-height:38px;flex-direction:row!important;flex-wrap:wrap;align-items:baseline;justify-content:center;column-gap:8px;row-gap:0;padding:5px 10px!important;font-size:15px!important}.dbn2 span{white-space:nowrap}.dbn2 small{display:inline!important;margin:0!important;font-size:13px!important;font-weight:700;opacity:.85}.cvw .dfx2{min-height:30px;margin-top:6px}
 #thp button.alt.fl.lf{background:#ffd54a;color:#1a1a1a;font-size:15px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0}#thp .fl small{font-size:8px;font-weight:800}
 body.cvon #thp{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 body.cvon #thp.sf.l,body.cvon #thp.sn.l,body.cvon #thp.sw.l,body.cvon #thp.sg.l{left:calc(max(0px,(100vw - 480px)/2) + 30px)}
@@ -617,14 +617,14 @@ body.thp-on:not(.thp-fp) .cvf.hdc{padding-bottom:calc(88px + env(safe-area-inset
 .dsg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
 .cdsm{display:inline-block;border:2px dashed var(--line);border-radius:99px;padding:4px 14px;font-weight:800;font-size:13px;letter-spacing:2px;background:var(--soft);cursor:pointer}
 .mdp.mdm{flex-wrap:wrap}.mdp.mdm .mdc{flex:1 1 calc(50% - 5px);padding:6px 8px}
-.dwt.dhw>.dsg{margin:auto 0;padding-top:28px}.dwt .dcc.dcs{padding:3px 10px;font-size:11px}.dwt .dcc.dcs b{font-size:14px;letter-spacing:2px}
+.dwt.dhw>.dsg{margin:auto 0;padding-top:28px}
 .dsg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
 .dba{display:block;margin:0 auto 6px;padding:7px 18px;font-size:14px;width:auto}.dwt.dhw{position:relative}.dwt.dhw .dba{position:absolute;right:0;bottom:84px;margin:0;padding:5px 14px;height:32px;font-size:13px;z-index:2}.dfv{position:relative}.dfv #dobt{position:absolute;right:4px;top:-44px;width:auto!important;height:32px;padding:0 14px!important;font-size:13px!important;z-index:2}[data-rmb]{cursor:pointer}
 .mdc{grid-template-columns:auto 1fr auto;padding:6px 10px}
 .mdc .av{width:32px;height:32px}
 .mdn{font-size:13px}.mdb{font-size:16px}
 .mdi{grid-row:1/3;grid-column:3;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:900;background:var(--soft);color:var(--mute);margin-left:6px}
-.mdi.t{display:flex;gap:2px;align-items:center;justify-content:center}
+.mdi.lbl{width:auto;min-width:26px;padding:0 9px;border-radius:13px;font-size:11px;letter-spacing:.6px;white-space:nowrap}.mdi.t{display:flex;gap:2px;align-items:center;justify-content:center}
 .mdi.t i{width:4px;height:4px;border-radius:50%;background:currentColor;animation:mdt 1s infinite}
 .mdi.t i:nth-child(2){animation-delay:.15s}.mdi.t i:nth-child(3){animation-delay:.3s}
 @keyframes mdt{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-3px);opacity:1}}
@@ -1613,7 +1613,7 @@ else{var v=[0,1,2,3].filter(function(k){return MD.hid.indexOf(k)<0}),ci=q.o.inde
 try{lfSound(t)}catch(e){}R()}
 function mdCard(d,r,me){var p=d.pl[r],nm=dN(d,r),av=dA(d,r),a=d.a||{},rv=d.ph=='rev',st,ic,k='';
 if(p.s=='on'){if(rv){var rr=d.r&&d.r[r];st=rr=='sk'?'Skipped':rr=='ok'?'Correct':'Next up';ic=rr=='ok'?'\u2713':rr=='sk'?'\u00bb':'\u203a';k=rr=='ok'?' ok':''}else if(a[r]){st='Locked in';ic='\u2713';k=' k'}else{st='Thinking\u2026';ic='<i></i><i></i><i></i>';k=' t'}}
-else if(p.s=='lose'){st='Out';ic='\u2715';k=' no'}else if(p.s=='walk'){st='Walked away';ic='\u2192'}else{st='Won the top prize';ic='\ud83c\udfc6';k=' ok'}
+else if(p.s=='lose'){st='Out';ic='\u2715 OUT';k=' no lbl'}else if(p.s=='walk'){st='Walked away';ic='\u2192'}else{st='Won the top prize';ic='\ud83c\udfc6';k=' ok'}
 return '<div class="mdc'+(r==me?' me':'')+(p.s=='on'?'':' out')+(p.s=='lose'?' lose':'')+'">'+duAv(av,nm,'',dC(d,r))+'<div class="mdn">'+(r==me?'You':esc(nm))+'</div><div class="mdb">'+qzUsd(p.s=='on'?mdBk(p):p.pz)+'</div><span class="mdi'+k+'" role="img" title="'+st+'" aria-label="'+st+'">'+ic+'</span></div>'}
 function mdDots(p,cur){var h='';for(var j=0;j<15;j++){var c=j<p.c?'ok':(p.s=='lose'&&j==p.c?'no':(p.s=='on'&&j==cur?'cur':''));h+='<i class="'+c+'"></i>'}return h}
 function mdView(d){var me=DO.role,mro=mdRo(d),oth=mro.filter(function(x){return x!=me}),op=oth[0]||(me=='h'?'g':'h'),pl=d.pl,pm=pl[me],po=pl[op],qi=d.qi,q=d.q[qi]||{o:[],q:'',t:'',l:0},a=d.a||{},r=d.r||{},rev=d.ph=='rev',on=esc(dN(d,op)),usd=qzUsd,L=['A','B','C','D'],
@@ -1626,7 +1626,7 @@ if(!rev){
   else{msg='Locked in \u2713';sm=(po.s=='on'&&!a[op])?'Waiting for '+on+'\u2026':'Revealing\u2026'}}
  else{msg=a[op]?'Locked in':'Watching '+on;sm=a[op]?on+' is waiting for the reveal':'You are out with '+usd(pm.pz)+' \u00b7 following along'}
 }else{
- var rm=r[me],ro=r[op],sy=function(x){return x=='ok'?'\u2713':x=='no'?'\u2715':x=='sk'?'skipped':x=='w'?'walked':x=='win'?'\ud83c\udfc6':''},ot=oth.length>1?(oth.filter(function(x){return r[x]!==undefined}).map(function(x){return nmOf(x)+' '+sy(r[x])}).join(', ')||'everyone else is out'):(ro?on+' '+sy(ro):on+' is out');
+ var rm=r[me],ro=r[op],sy=function(x){return x=='ok'?'\u2713':x=='no'?'\u2715':x=='sk'?'skipped':x=='w'?'walked':x=='win'?'\ud83c\udfc6':''},ot=oth.length>1?(function(){var k=oth.filter(function(x){return r[x]=='ok'}).length;return k?k+' of '+oth.length+' others right':'none of the others got it'})():(ro?on+' '+sy(ro):on+' is out');
  if(played){if(rm=='sk'){bc='wt';msg='You skipped';sm='\u2212100 coins \u00b7 no prize for this question \u00b7 '+ot}else if(rm=='ok'){bc='go';msg='Correct!';sm='You have '+usd(mdBk(pm))+' \u00b7 '+ot}else if(rm=='win'){bc='go';msg='You won '+usd(pm.pz)+'!';sm=ot}else if(rm=='w'){msg='You walked away';sm='Taking '+usd(pm.pz)+' \u00b7 '+ot}else{bc='bad';msg='Not quite \u2013 you\u2019re out';sm='Leaving with '+usd(pm.pz)+' \u00b7 '+ot}}
  else{if(ro=='sk'){msg=on+' skipped this question';sm='Paid 100 coins \u00b7 earns no prize step'}else if(ro=='ok'){msg=on+' got it right';sm='Now at '+usd(mdBk(po))}else if(ro=='win'){msg=on+' won '+usd(po.pz)+'!'}else if(ro=='w'){msg=on+' walked away';sm='Taking '+usd(po.pz)}else{msg=on+' got it wrong';sm='Out with '+usd(po.pz)}}
 }
@@ -1644,7 +1644,7 @@ var opts=q.o.map(function(o,k){if(!rev&&MD.hid.indexOf(k)>-1)return '<div class=
  return '<button class="'+c+'" data-qo="'+k+'">'+(MD.crowd&&!rev?'<span class="qbw"><i style="--w:'+MD.crowd[k]+'%"></i></span>':'')+'<span class="qtx">'+L[k]+' \u00b7 '+esc(o)+'</span>'+(MD.crowd&&!rev?'<b>'+MD.crowd[k]+'%</b>':'')+tg+(alive&&!locked&&k===MD.sel?'<small class="lkh">Tap again to lock in</small>':'')+'</button>'}).join('');
 return '<div class="mdp'+(mro.length>2?' mdm':'')+'">'+[me].concat(oth).map(function(x){return mdCard(d,x,me)}).join('')+'</div><div class="qd">'+mdDots(pm,qi)+'</div>'+oth.map(function(x){return '<div class="qd mdq2">'+mdDots(pl[x],qi)+'</div>'}).join('')
 +'<div class="pc" style="align-items:flex-start"><span>Question '+(qi+1)+' of 15<br><b style="font-size:26px;color:var(--ink)">'+usd(QLD[qi])+'</b></span><span style="text-align:right">Safe amount<br><b style="font-size:20px;color:var(--ink)">'+usd(qzMSafe(qi))+'</b></span></div>'
-+'<div class="dbn2 '+bc+'">'+msg+'<small>'+sm+'</small></div>'
++'<div class="dbn2 '+bc+'"><span>'+msg+'</span><small>'+sm+'</small></div>'
 +'<div class="mlrow'+(HST=='f'||HST=='n'?' nolf':'')+'"><div class="panel qbox mlq"><div class="qt">'+esc(q.t)+'</div><div class="qa" style="font-size:'+Math.round(19*DZS[DZI])+'px">'+esc(q.q)+'</div></div><div class="llc">'+lf('mdl5','50:50',MD.ll.f,'f')+lf('mdlc','Ask Your Group',MD.ll.c,'c')+mdLk()+'</div></div>'
 +'<div class="qz ml'+(rev?' vote':'')+(alive&&!locked?'':' spec')+'">'+opts+'</div>'
 +(qi>0&&pm.s=='on'||(rev&&played&&qi>0)?'<button class="alt" id="mdwk" style="margin-top:12px;visibility:'+(alive&&!locked?'visible':'hidden')+'">Walk away with '+usd(QLD[qi-1])+'</button>':'')
@@ -1679,7 +1679,7 @@ var me=DO.role,sx=dSeats(d),oth=sx.filter(function(r){return r!=me}),aa=d.a||{},
 if(oth.length>1&&qz0){var wr=function(r){return aa[r]&&qz0.o[aa[r].k]!=qz0.a?1:0},ar=oth.filter(function(r){return aa[r]}).sort(function(x,y){return(wr(y)-wr(x))||(aa[x].t-aa[y].t)});if(d.st=='reveal'&&d.r&&oth.indexOf(d.r.w)>-1)op=d.r.w;else if(ar.length)op=ar[0]}
 var on=esc(dN(d,op)),mn=esc(d[me+'n']||'You'),s=Object.assign({h:0,g:0,p:0,q:0,x:0,y:0},d.s||{}),st=d.st,ma=dA(d,me),oa=dA(d,op);
 if(st=='wait'){if(me!='h')return '<div class="dwt"><div class="panel" style="text-align:center"><div class="qt">You are in!</div>'+duLobby(d)+'</div></div>';
-var j=dFull(d),em=dEff(d),MP='<div class="dbr dmd">'+[['m','Millionaire'],['s','Fastest finger']].map(function(x){return '<button class="alt'+(em==x[0]?' on':'')+'" data-dm="'+x[0]+'"'+''+'>'+x[1]+'</button>'}).join('')+'</div>'+'<div class="dmc">'+(DMODE=='m'?'15 questions'+(dSeats(d).length>2?' · most winnings wins':''):'Fastest correct answer wins'+(dSeats(d).length>2?' · '+dSeats(d).length+' players':''))+'</div>'+(DMODE=='m'?'':'<div class="lbl" style="text-align:center;margin:10px 0 6px">Break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div>'),IV=d.bot?'':'<div class="dinv"><button class="alt dcc'+(j?' dcs':'')+'" id="dcpd"><span>Code</span><b>'+esc(DO.code)+'</b><em class="cpl" id="dcpl">Tap to copy</em></button></div>';return '<div class="dwt dhw">'+MP+duLobby(d)+IV+'</div>'}
+var j=dFull(d),em=dEff(d),MP='<div class="dbr dmd">'+[['m','Millionaire'],['s','Fastest finger']].map(function(x){return '<button class="alt'+(em==x[0]?' on':'')+'" data-dm="'+x[0]+'"'+''+'>'+x[1]+'</button>'}).join('')+'</div>'+'<div class="dmc">'+(DMODE=='m'?'15 questions'+(dSeats(d).length>2?' · most winnings wins':''):'Fastest correct answer wins'+(dSeats(d).length>2?' · '+dSeats(d).length+' players':''))+'</div>'+(DMODE=='m'?'':'<div class="lbl" style="text-align:center;margin:10px 0 6px">Break between questions</div><div class="dbr">'+DBRL.map(function(l,k){return '<button class="alt'+(k==DBR?' on':'')+'" data-br="'+k+'">'+l[0]+'<small>'+l[1]+'</small></button>'}).join('')+'</div>'),IV=d.bot?'':'<div class="dinv"><button class="alt dcc'+'" id="dcpd"><span>Code</span><b>'+esc(DO.code)+'</b><em class="cpl" id="dcpl">Tap to copy</em></button></div>';return '<div class="dwt dhw">'+MP+duLobby(d)+IV+'</div>'}
 if(st=='end'&&d.md)return mdEnd(d);if(st=='play'&&d.md)return mdView(d);
 if(st=='count')return '<div class="panel cnt" style="text-align:center"><div class="qt">'+(oth.length>1?sx.map(function(r){return esc(dN(d,r))}).join(' \u00b7 '):mn+' vs '+on)+'</div><div class="big" style="font-size:44px">Get ready!</div></div>';
 if(st=='end'&&oth.length>1){var rk=sx.slice().sort(function(x,y){return s[y]-s[x]}),tp=s[rk[0]],wn=rk.filter(function(r){return s[r]==tp}),w1=wn.length==1?wn[0]:'',tv=function(r){var c=d.ts&&d.ts[r];return c&&c.n?c.n+' right \u00b7 avg '+(c.m/c.n/1000).toFixed(2)+'s':'0 right'};
