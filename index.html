@@ -1906,7 +1906,7 @@ else if(n==3&&!HORNY){DEV=!DEV;try{localStorage.setItem('wdbot',DEV?'1':'0')}cat
 var G=null,RAF=0;
 function gl(){if(!document.body.classList.contains('horny')){if(G){G.remove();G=null}RAF=0;return}
 if(!G){G=document.createElement('div');G.id='hglow';document.body.appendChild(G)}
-var w=document.querySelector('.wsheet');
+var w=document.querySelector('.wsheet'),ov=document.querySelectorAll('.ov');if(w)for(var i=0;i<ov.length;i++)if(!ov[i].contains(w)&&getComputedStyle(ov[i]).display!='none'){w=null;break}
 if(w){var r=w.getBoundingClientRect(),k=r.left+'|'+r.top+'|'+r.width+'|'+r.height;if(G._k!==k){G._k=k;G.style.cssText='display:block;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;border-radius:'+getComputedStyle(w).borderRadius}}else if(G._k!==0){G._k=0;G.style.cssText='display:none'}
 RAF=requestAnimationFrame(gl)}
 function gs(){if(document.body.classList.contains('horny')&&!RAF)gl()}
